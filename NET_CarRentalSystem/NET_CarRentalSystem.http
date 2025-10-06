@@ -1,0 +1,6 @@
+@NET_CarRentalSystem_HostAddress = http://localhost:5238
+
+GET {{NET_CarRentalSystem_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

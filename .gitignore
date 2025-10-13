@@ -1,0 +1,36 @@
+﻿**/[Bb]in/
+**/[Oo]bj/
+
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+#Visual Studio Code
+.vscode/
+
+#Rider/ReSharper
+.idea/
+*.sln.iml
+*.DotSettings.user
+
+#important.
+appsettings.Development.json
+secrets.json
+
+**/[Pp]ackages/
+project.lock.json
+project.assets.json
+
+**/Logs/
+
+# Windows & macOS
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+.DS_Store
+
+*.zip
+*.rar
+*.7z

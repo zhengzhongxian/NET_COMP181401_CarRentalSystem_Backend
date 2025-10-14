@@ -19,4 +19,8 @@
     <ProjectReference Include="..\NET_CarRentalSystem.Application\NET_CarRentalSystem.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
+
 </Project>

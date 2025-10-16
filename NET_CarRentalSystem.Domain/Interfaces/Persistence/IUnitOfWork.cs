@@ -1,4 +1,4 @@
-﻿namespace NET_CarRentalSystem.Domain.Interfaces;
+﻿namespace NET_CarRentalSystem.Domain.Interfaces.Persistence;
 
 public interface IUnitOfWork : IDisposable
 {

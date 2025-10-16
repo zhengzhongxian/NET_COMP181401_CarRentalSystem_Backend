@@ -1,4 +1,4 @@
-﻿using NET_CarRentalSystem.Domain.Interfaces;
+﻿using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using System.Collections;
 

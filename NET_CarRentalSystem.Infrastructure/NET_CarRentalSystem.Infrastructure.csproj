@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NET_CarRentalSystem.Application\NET_CarRentalSystem.Application.csproj" />
+    <ProjectReference Include="..\NET_CarRentalSystem.Shared\NET_CarRentalSystem.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>

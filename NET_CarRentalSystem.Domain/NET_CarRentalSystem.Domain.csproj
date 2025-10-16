@@ -10,4 +10,8 @@
     <Folder Include="Exceptions\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\NET_CarRentalSystem.Shared\NET_CarRentalSystem.Shared.csproj" />
+  </ItemGroup>
+
 </Project>

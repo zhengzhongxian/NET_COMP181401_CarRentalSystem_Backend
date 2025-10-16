@@ -20,6 +20,14 @@ public class RenticarWriteDbContext(DbContextOptions<RenticarWriteDbContext> opt
 
     public DbSet<Transmission> Transmissions => Set<Transmission>();
 
+    public DbSet<Location> Locations => Set<Location>();
+
+    public DbSet<Booking> Bookings => Set<Booking>();
+
+    public DbSet<VehicleImage> VehicleImages => Set<VehicleImage>();
+
+    public DbSet<VehicleAttribute> VehicleAttributes => Set<VehicleAttribute>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

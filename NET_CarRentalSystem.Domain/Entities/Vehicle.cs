@@ -49,4 +49,7 @@ public class Vehicle : BaseEntity
     public virtual Fuel? Fuel { get; set; }
 
     public virtual Transmission? Transmission { get; set; }
+
+    public virtual ICollection<VehicleImage> VehicleImages { get; set; } = [];
+    public virtual ICollection<VehicleAttribute> VehicleAttributes { get; set; } = [];
 }

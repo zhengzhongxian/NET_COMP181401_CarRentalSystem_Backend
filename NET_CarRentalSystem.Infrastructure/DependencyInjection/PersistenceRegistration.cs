@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NET_CarRentalSystem.Domain.Interfaces;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
+using NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 
 namespace NET_CarRentalSystem.Infrastructure.DependencyInjection;
 
@@ -16,6 +18,10 @@ public static class PersistenceRegistration
 
         services.AddDbContext<RenticarReadDbContext>(options =>
             options.UseSqlServer(configuration.GetConnectionString("RenticarReadDbContext")));
+
+        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }

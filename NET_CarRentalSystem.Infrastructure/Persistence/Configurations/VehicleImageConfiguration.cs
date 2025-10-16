@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
 
@@ -41,6 +42,10 @@ public class VehicleImageConfiguration : IEntityTypeConfiguration<VehicleImage>
         builder.HasOne(vi => vi.Vehicle)
             .WithMany(v => v.VehicleImages)
             .HasForeignKey(vi => vi.VehicleId);
+
+        builder.HasQueryFilter(vi => !vi.Vehicle.IsDeleted);
+
+        builder.HasData(VehicleImageSeeder.Seed());
     }
 }
 

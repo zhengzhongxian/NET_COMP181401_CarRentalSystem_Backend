@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
 
@@ -88,9 +89,22 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
             .IsRequired();
 
         builder.HasOne(b => b.Vehicle)
-            .WithMany()
+            .WithMany(v => v.Bookings)
             .HasForeignKey(b => b.VehicleId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(b => b.PickupLocation)
+            .WithMany(l => l.PickupsFromLocation)
+            .HasForeignKey(b => b.PickupLocationId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasOne(b => b.ReturnLocation)
+            .WithMany(l => l.ReturnsToLocation)
+            .HasForeignKey(b => b.ReturnLocationId)
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasData(BookingSeeder.Seed());
     }
 }
 

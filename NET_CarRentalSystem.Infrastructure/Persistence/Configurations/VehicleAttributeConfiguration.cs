@@ -33,6 +33,8 @@ public class VehicleAttributeConfiguration : IEntityTypeConfiguration<VehicleAtt
         builder.HasOne(va => va.Vehicle)
             .WithMany(v => v.VehicleAttributes)
             .HasForeignKey(va => va.VehicleId);
+
+        builder.HasQueryFilter(va => !va.Vehicle.IsDeleted);
     }
 }
 

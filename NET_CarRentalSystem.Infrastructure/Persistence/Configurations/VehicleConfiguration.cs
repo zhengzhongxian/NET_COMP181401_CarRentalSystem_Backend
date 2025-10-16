@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
 
@@ -113,5 +114,7 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
             .HasForeignKey(v => v.TransmissionId)
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
+
+        builder.HasData(VehicleSeeder.Seed());
     }
 }

@@ -21,4 +21,8 @@ public class Location : BaseEntity
     public double? Longitude { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
+
+    public virtual ICollection<Booking> PickupsFromLocation { get; set; } = [];
+
+    public virtual ICollection<Booking> ReturnsToLocation { get; set; } = [];
 }

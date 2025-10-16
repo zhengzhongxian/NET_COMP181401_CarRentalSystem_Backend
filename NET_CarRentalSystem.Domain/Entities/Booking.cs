@@ -35,4 +35,8 @@ public class Booking : BaseEntity
     public Guid? ReturnLocationId { get; set; }
 
     public virtual Vehicle Vehicle { get; set; }
+
+    public virtual Location PickupLocation { get; set; }
+
+    public virtual Location? ReturnLocation { get; set; }
 }

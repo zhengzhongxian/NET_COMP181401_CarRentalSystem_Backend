@@ -32,7 +32,7 @@ public class Vehicle : BaseEntity
 
     public string? RealTimeLocation { get; set; }
 
-    public int? LocationId { get; set; }
+    public Guid? LocationId { get; set; }
 
     public string? Metadata { get; set; }
 
@@ -51,5 +51,8 @@ public class Vehicle : BaseEntity
     public virtual Transmission? Transmission { get; set; }
 
     public virtual ICollection<VehicleImage> VehicleImages { get; set; } = [];
+
+    public virtual ICollection<Booking> Bookings { get; set; } = [];
+
     public virtual ICollection<VehicleAttribute> VehicleAttributes { get; set; } = [];
 }

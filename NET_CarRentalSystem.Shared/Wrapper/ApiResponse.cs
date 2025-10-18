@@ -1,84 +1,84 @@
-﻿using NET_CarRentalSystem.Shared.Pagination;
-using System.Net;
-using System.Text.Json.Serialization;
-
 namespace NET_CarRentalSystem.Shared.Wrapper;
 
 public class ApiResponse<T>
 {
-    [JsonPropertyName("statusCode")]
-    public int StatusCode { get; set; }
+    public bool Success { get; set; }
 
-    [JsonPropertyName("isSuccess")]
-    public bool IsSuccess { get; set; }
+    public string Message { get; set; } = string.Empty;
 
-    [JsonPropertyName("message")]
-    public string? Message { get; set; }
-
-    [JsonPropertyName("data")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public T? Data { get; set; }
 
-    [JsonPropertyName("metadata")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public object? Metadata { get; set; }
+    public List<string> Errors { get; set; } = [];
 
-    [JsonPropertyName("errors")]
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public IEnumerable<string>? Errors { get; set; }
+    public int StatusCode { get; set; }
 
-    public static ApiResponse<T> Success(T data, string message = "Request successful.")
+    public DateTime Timestamp { get; set; } = DateTime.UtcNow;
+
+    public static ApiResponse<T> SuccessResult(T data, string message = "Success", int statusCode = 200)
     {
         return new ApiResponse<T>
         {
-            IsSuccess = true,
-            StatusCode = (int)HttpStatusCode.OK,
+            Success = true,
             Message = message,
-            Data = data
+            Data = data,
+            StatusCode = statusCode
         };
     }
 
-    public static ApiResponse<IEnumerable<T>> Success(PagedList<T> pagedData, string message = "Request successful.")
+    public static ApiResponse<T> ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
     {
-        var metadata = new
+        return new ApiResponse<T>
         {
-            pagedData.TotalCount,
-            pagedData.PageSize,
-            pagedData.CurrentPage,
-            pagedData.TotalPages,
-            pagedData.HasNext,
-            pagedData.HasPrevious
-        };
-
-        return new ApiResponse<IEnumerable<T>>
-        {
-            IsSuccess = true,
-            StatusCode = (int)HttpStatusCode.OK,
+            Success = false,
             Message = message,
-            Data = pagedData.Items,
-            Metadata = metadata
+            Errors = errors ?? [],
+            StatusCode = statusCode
         };
     }
 
-    public static ApiResponse<T> Fail(string message, HttpStatusCode statusCode = HttpStatusCode.BadRequest)
+    public static ApiResponse<T> ErrorResult(string message, string error, int statusCode = 400)
     {
         return new ApiResponse<T>
         {
-            IsSuccess = false,
-            StatusCode = (int)statusCode,
-            Message = message
-        };
-    }
-
-    public static ApiResponse<T> Error(string errorMessage, HttpStatusCode statusCode = HttpStatusCode.InternalServerError, IEnumerable<string>? errors = null)
-    {
-        return new ApiResponse<T>
-        {
-            IsSuccess = false,
-            StatusCode = (int)statusCode,
-            Message = errorMessage,
-            Errors = errors
+            Success = false,
+            Message = message,
+            Errors = [error],
+            StatusCode = statusCode
         };
     }
 }
 
+public class ApiResponse : ApiResponse<object>
+{
+    public static ApiResponse SuccessResult(string message = "Success", int statusCode = 200)
+    {
+        return new ApiResponse
+        {
+            Success = true,
+            Message = message,
+            StatusCode = statusCode
+        };
+    }
+
+    public static new ApiResponse ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
+    {
+        return new ApiResponse
+        {
+            Success = false,
+            Message = message,
+            Errors = errors ?? [],
+            StatusCode = statusCode
+        };
+    }
+
+    public static new ApiResponse ErrorResult(string message, string error, int statusCode = 400)
+    {
+        return new ApiResponse
+        {
+            Success = false,
+            Message = message,
+            Errors = [error],
+            StatusCode = statusCode
+        };
+    }
+}

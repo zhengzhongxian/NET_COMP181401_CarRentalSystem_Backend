@@ -10,6 +10,8 @@ public static class InfrastructureServiceRegistration
     {
         services.AddPersistenceServices(configuration);
 
+        services.AddMediatorServices();
+
         return services;
     }
 }

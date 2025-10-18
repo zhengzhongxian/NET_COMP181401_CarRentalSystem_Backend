@@ -35,6 +35,7 @@ public static class MigrationExtensions
 
             var readDbContext = services.GetRequiredService<RenticarReadDbContext>();
             await readDbContext.Database.MigrateAsync();
+
             logger.LogInformation("[Migration Progress: 100%] Read Database migrations applied successfully.");
         }
         catch (Exception ex)

@@ -47,7 +47,6 @@ public interface IGenericRepository<T> where T : class
     Task<PagedList<T>> GetPagedAsync(
         PagingParams pagingParams,
         Expression<Func<T, bool>>? filter = null,
-        Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
         string includeProperties = "");
 }
 

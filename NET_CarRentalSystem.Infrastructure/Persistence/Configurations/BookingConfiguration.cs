@@ -104,6 +104,11 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne(b => b.Customer)
+            .WithMany(c => c.Bookings)
+            .HasForeignKey(b => b.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
+
         builder.HasData(BookingSeeder.Seed());
     }
 }

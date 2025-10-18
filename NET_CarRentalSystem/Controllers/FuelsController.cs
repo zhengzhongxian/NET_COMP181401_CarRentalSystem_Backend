@@ -1,8 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
-using NET_CarRentalSystem.Shared.Wrapper;
-
 namespace NET_CarRentalSystem.API.Controllers;
 
 [ApiController]
@@ -14,17 +12,8 @@ public class FuelsController(ISender sender) : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetAllFuels(CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await _sender.Send(new GetAllFuelsQuery(), cancellationToken);
-            var response = ApiResponse<List<FuelDto>>.Success(result);
-            return StatusCode((int) response.StatusCode, response);
-        }
-        catch (Exception ex)
-        {
-
-            var errorResponse = ApiResponse<List<FuelDto>>.Fail(ex.Message);
-            return StatusCode((int)errorResponse.StatusCode, errorResponse);
-        }
+        var query = new GetAllFuelsQuery();
+        var result =  await _sender.Send(query, cancellationToken);
+        return Ok(result);
     }
 }

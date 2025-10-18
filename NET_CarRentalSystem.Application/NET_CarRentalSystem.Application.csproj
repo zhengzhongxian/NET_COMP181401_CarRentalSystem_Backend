@@ -8,16 +8,17 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NET_CarRentalSystem.Domain\NET_CarRentalSystem.Domain.csproj" />
+    <ProjectReference Include="..\NET_CarRentalSystem.Shared\NET_CarRentalSystem.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Common\Behaviors\" />
+    <Folder Include="Common\Mappings\" />
     <Folder Include="DTOs\" />
-    <Folder Include="Features\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MediatR" Version="13.0.0" />
+    <PackageReference Include="MediatR" Version="11.0.0" />
   </ItemGroup>
 
 </Project>

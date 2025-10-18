@@ -4,6 +4,7 @@ using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using NET_CarRentalSystem.Shared.Pagination;
 using System.Linq.Expressions;
+using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 
@@ -99,10 +100,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     }
 
     public async Task<PagedList<T>> GetPagedAsync(
-    PagingParams pagingParams,
-    Expression<Func<T, bool>>? filter = null,
-    Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-    string includeProperties = "")
+        PagingParams pagingParams,
+        Expression<Func<T, bool>>? filter = null,
+        string includeProperties = "")
     {
         IQueryable<T> query = _readDbContext.Set<T>();
 
@@ -117,13 +117,15 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             query = query.Include(includeProperty);
         }
 
-        if (orderBy != null)
+        if (!string.IsNullOrWhiteSpace(pagingParams.SortBy))
         {
-            query = orderBy(query);
+            query = pagingParams.SortDirection?.ToLower() == "desc"
+                ? query.OrderByDescending(v => EF.Property<object>(v, pagingParams.SortBy))
+                : query.OrderBy(v => EF.Property<object>(v, pagingParams.SortBy));
         }
         else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
         {
-            // Áp dụng sắp xếp mặc định nếu không có orderBy cụ thể
+            // Áp dụng sắp xếp mặc định nếu không có sortBy
             query = query.Cast<BaseEntity>().OrderByDescending(e => e.CreatedAt).Cast<T>();
         }
 

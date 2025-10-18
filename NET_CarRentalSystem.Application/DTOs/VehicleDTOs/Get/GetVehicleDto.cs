@@ -1,8 +1,8 @@
 using NET_CarRentalSystem.Domain.Enums;
 
-namespace NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
+namespace NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
 
-public class VehicleDto
+public class GetVehicleDto
 {
     public Guid VehicleId { get; set; }
 

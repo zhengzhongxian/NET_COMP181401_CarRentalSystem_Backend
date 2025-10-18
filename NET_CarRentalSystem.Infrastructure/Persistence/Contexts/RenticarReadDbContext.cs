@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 
-public class RenticarReadDbContext : RenticarWriteDbContext
+public class RenticarReadDbContext : RenticarBaseDbContext
 {
-    public RenticarReadDbContext(DbContextOptions<RenticarWriteDbContext> options)
-        : base(options) => ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+    public RenticarReadDbContext(DbContextOptions<RenticarReadDbContext> options)
+        : base(options)
+    {
+        ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+    }
 }

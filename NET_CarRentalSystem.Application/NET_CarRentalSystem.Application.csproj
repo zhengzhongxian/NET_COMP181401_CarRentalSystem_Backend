@@ -14,7 +14,9 @@
   <ItemGroup>
     <Folder Include="Common\Behaviors\" />
     <Folder Include="Common\Mappings\" />
-    <Folder Include="DTOs\" />
+    <Folder Include="DTOs\VehicleDTOs\Create\" />
+    <Folder Include="DTOs\VehicleDTOs\Upsert\" />
+    <Folder Include="DTOs\VehicleDTOs\Update\" />
   </ItemGroup>
 
   <ItemGroup>

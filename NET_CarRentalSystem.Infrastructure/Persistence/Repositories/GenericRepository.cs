@@ -4,7 +4,6 @@ using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using NET_CarRentalSystem.Shared.Pagination;
 using System.Linq.Expressions;
-using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 

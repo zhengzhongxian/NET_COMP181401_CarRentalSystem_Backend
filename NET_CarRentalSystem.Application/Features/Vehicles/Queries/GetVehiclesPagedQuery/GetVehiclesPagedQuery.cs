@@ -1,5 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
+using NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Pagination;
@@ -7,14 +8,14 @@ using System.Linq.Expressions;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
 
-public class GetVehiclesPagedQuery : IQuery<PagedList<VehicleDto>>
+public class GetVehiclesPagedQuery : IQuery<PagedList<GetVehicleDto>>
 {
     public required GetVehiclesPagedQueryParams QueryParams { get; set; }
 }
 
-public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetVehiclesPagedQuery, PagedList<VehicleDto>>
+public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetVehiclesPagedQuery, PagedList<GetVehicleDto>>
 {
-    public async Task<PagedList<VehicleDto>> Handle(GetVehiclesPagedQuery request, CancellationToken cancellationToken)
+    public async Task<PagedList<GetVehicleDto>> Handle(GetVehiclesPagedQuery request, CancellationToken cancellationToken)
     {
         Expression<Func<Vehicle, bool>>? filter = null;
 
@@ -34,7 +35,7 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
             filter,
             includeProperties);
 
-        var vehicleDtos = pagedList.Items.Select(vehicle => new VehicleDto
+        var vehicleDtos = pagedList.Items.Select(vehicle => new GetVehicleDto
         {
             VehicleId = vehicle.VehicleId,
             NumberPlate = vehicle.NumberPlate,
@@ -59,7 +60,7 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork) : IRequestHand
             TransmissionName = vehicle.Transmission?.Name
         }).ToList();
 
-        return new PagedList<VehicleDto>(
+        return new PagedList<GetVehicleDto>(
             vehicleDtos,
             pagedList.TotalCount,
             pagedList.CurrentPage,

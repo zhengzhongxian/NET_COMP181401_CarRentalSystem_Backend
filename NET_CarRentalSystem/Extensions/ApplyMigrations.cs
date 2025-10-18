@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
+using NET_CarRentalSystem.Infrastructure.Persistence.Setup;
 
 namespace NET_CarRentalSystem.API.Extensions;
 
@@ -26,6 +27,8 @@ public static class MigrationExtensions
             var writeDbContext = services.GetRequiredService<RenticarWriteDbContext>();
             await writeDbContext.Database.MigrateAsync();
 
+            await ChangeTrackingSetup.EnableChangeTrackingAsync(writeDbContext, logger);
+
             var readConnectionString = configuration.GetConnectionString("RenticarReadDbContext");
             if (string.IsNullOrEmpty(readConnectionString))
             {
@@ -36,7 +39,7 @@ public static class MigrationExtensions
             var readDbContext = services.GetRequiredService<RenticarReadDbContext>();
             await readDbContext.Database.MigrateAsync();
 
-            logger.LogInformation("[Migration Progress: 100%] Read Database migrations applied successfully.");
+            logger.LogInformation("[Migration Progress: 100%] Database migrations applied successfully.");
         }
         catch (Exception ex)
         {

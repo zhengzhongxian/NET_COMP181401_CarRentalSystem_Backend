@@ -2,6 +2,7 @@
 using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
+using NET_CarRentalSystem.Shared;
 using NET_CarRentalSystem.Shared.Pagination;
 using System.Linq.Expressions;
 
@@ -28,9 +29,10 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         return query.AsQueryable();
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool useWriteConnection = false)
     {
-        return await _readDbContext.Set<T>().FindAsync([id], cancellationToken: cancellationToken);
+        var db = useWriteConnection ? (DbContext)_writeDbContext : _readDbContext;
+        return await db.Set<T>().FindAsync([id], cancellationToken);
     }
 
     public async Task<List<T>> GetAllAsync(CancellationToken cancellationToken = default)
@@ -72,32 +74,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         }
     }
 
-    public async Task<List<T>> GetAsync(
-    Expression<Func<T, bool>>? filter = null,
-    Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-    string includeProperties = "")
-    {
-        IQueryable<T> query = _readDbContext.Set<T>();
-
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
-        foreach (var includeProperty in includeProperties.Split
-            (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
-
-        if (orderBy != null)
-        {
-            return await orderBy(query).ToListAsync();
-        }
-
-        return await GetQueryable().ToListAsync();
-    }
-
     public async Task<PagedList<T>> GetPagedAsync(
         PagingParams pagingParams,
         Expression<Func<T, bool>>? filter = null,
@@ -135,6 +111,105 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             .ToListAsync();
 
         return new PagedList<T>(items, count, pagingParams.PageNumber, pagingParams.PageSize);
+    }
+
+    public async Task<T?> GetFirstOrDefaultAsync(
+        Expression<Func<T, bool>> filter, string includeProperties = "", 
+        CancellationToken cancellationToken = default,
+        bool useWriteConnection = false)
+    {
+        IQueryable<T> query = useWriteConnection ? _writeDbContext.Set<T>() : _readDbContext.Set<T>();
+        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
+        {
+            query = query.Include(includeProperty);
+        }
+        return await query.FirstOrDefaultAsync(filter, cancellationToken);
+    }
+
+    public async Task<T?> GetSingleOrDefaultAsync(
+        Expression<Func<T, bool>> filter, 
+        string includeProperties = "", 
+        CancellationToken cancellationToken = default,
+        bool useWriteConnection = false)
+    {
+        IQueryable<T> query = useWriteConnection ? _writeDbContext.Set<T>() : _readDbContext.Set<T>();
+        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
+        {
+            query = query.Include(includeProperty);
+        }
+        return await query.SingleOrDefaultAsync(filter, cancellationToken);
+    }
+
+    public async Task<List<T>> GetAsync(
+        Expression<Func<T, bool>>? filter = null, 
+        string? sortBy = null, string? sortDirection = "asc", 
+        string includeProperties = "")
+    {
+        IQueryable<T> query = _readDbContext.Set<T>();
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
+        {
+            query = query.Include(includeProperty);
+        }
+
+        if (!string.IsNullOrWhiteSpace(sortBy))
+        {
+            query = sortDirection?.ToLower() == "desc"
+                ? query.OrderByDescending(v => EF.Property<object>(v, sortBy))
+                : query.OrderBy(v => EF.Property<object>(v, sortBy));
+        }
+        else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        {
+            query = query.Cast<BaseEntity>().OrderByDescending(e => e.CreatedAt).Cast<T>();
+        }
+
+        return await query.ToListAsync();
+    }
+
+    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        return await _readDbContext.Set<T>().AnyAsync(predicate, cancellationToken);
+    }
+
+    public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+    {
+        if (predicate == null)
+        {
+            return await _readDbContext.Set<T>().CountAsync(cancellationToken);
+        }
+        return await _readDbContext.Set<T>().CountAsync(predicate, cancellationToken);
+    }
+
+    public async Task<TResult> GetAggregateValueAsync<TResult>(
+    Expression<Func<T, TResult>> selector,
+    AggregateType aggregateType,
+    Expression<Func<T, bool>>? filter = null,
+    CancellationToken cancellationToken = default)
+    {
+        IQueryable<T> query = _readDbContext.Set<T>();
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        return aggregateType switch
+        {
+            AggregateType.Min => await query.MinAsync(selector, cancellationToken),
+            AggregateType.Max => await query.MaxAsync(selector, cancellationToken),
+            _ => throw new NotSupportedException($"Aggregate type '{aggregateType}' is not supported.")
+        };
+    }
+
+    public async Task<T> FirstAsync(
+        Expression<Func<T, bool>> predicate, 
+        CancellationToken cancellationToken = default)
+    {
+        return await _readDbContext.Set<T>().FirstAsync(predicate, cancellationToken);
     }
 }
 

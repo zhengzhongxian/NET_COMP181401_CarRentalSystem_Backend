@@ -1,5 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
+using NET_CarRentalSystem.Application.Common.Utils;
 using NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -13,51 +14,57 @@ public class GetVehiclesPagedQuery : IQuery<PagedList<GetVehicleDto>>
     public required GetVehiclesPagedQueryParams QueryParams { get; set; }
 }
 
-public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetVehiclesPagedQuery, PagedList<GetVehicleDto>>
+public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork)
+    : IRequestHandler<GetVehiclesPagedQuery, PagedList<GetVehicleDto>>
 {
     public async Task<PagedList<GetVehicleDto>> Handle(GetVehiclesPagedQuery request, CancellationToken cancellationToken)
     {
-        Expression<Func<Vehicle, bool>>? filter = null;
+        var queryParam = request.QueryParams;
+        var predicate = PredicateBuilder.True<Vehicle>();
 
-        if (!string.IsNullOrWhiteSpace(request.QueryParams.SearchKeyword))
+        if (!string.IsNullOrWhiteSpace(queryParam.SearchKeyword))
         {
-            var searchKeyword = request.QueryParams.SearchKeyword.ToLower();
-            filter = v => v.NumberPlate.ToLower().Contains(searchKeyword) ||
-                         v.Manufacturer.ToLower().Contains(searchKeyword) ||
-                         v.Model.ToLower().Contains(searchKeyword) ||
-                         (v.Color != null && v.Color.ToLower().Contains(searchKeyword));
+            var keyword = queryParam.SearchKeyword.ToLower();
+            predicate = predicate.And(v =>
+                v.NumberPlate.ToLower().Contains(keyword) ||
+                v.Manufacturer.ToLower().Contains(keyword) ||
+                v.Model.ToLower().Contains(keyword));
         }
 
-        var includeProperties = "VehicleCategory,Fuel,Transmission";
-
-        var pagedList = await unitOfWork.GetRepository<Vehicle>().GetPagedAsync(
-            request.QueryParams,
-            filter,
-            includeProperties);
-
-        var vehicleDtos = pagedList.Items.Select(vehicle => new GetVehicleDto
+        if (queryParam.Filters is { Count: > 0 })
         {
-            VehicleId = vehicle.VehicleId,
-            NumberPlate = vehicle.NumberPlate,
-            Manufacturer = vehicle.Manufacturer,
-            Model = vehicle.Model,
-            Color = vehicle.Color,
-            Mileage = vehicle.Mileage,
-            PricePerHour = vehicle.PricePerHour,
-            Thumbnail = vehicle.Thumbnail,
-            LastCheckoutAt = vehicle.LastCheckoutAt,
-            Rating = vehicle.Rating,
-            Status = vehicle.Status,
-            ConditionNotes = vehicle.ConditionNotes,
-            RealTimeLocation = vehicle.RealTimeLocation,
-            LocationId = vehicle.LocationId,
-            Metadata = vehicle.Metadata,
-            VehicleCategoryId = vehicle.VehicleCategoryId,
-            FuelId = vehicle.FuelId,
-            TransmissionId = vehicle.TransmissionId,
-            VehicleCategoryCode = vehicle.VehicleCategory?.CategoryCode,
-            FuelName = vehicle.Fuel?.Name,
-            TransmissionName = vehicle.Transmission?.Name
+            var detailedFilter = ExpressionBuilder.BuildPredicate<Vehicle>(queryParam.Filters);
+            predicate = predicate.And(detailedFilter);
+        }
+
+        const string includeProperties = "VehicleCategory,Fuel,Transmission";
+
+        var pagedList = await unitOfWork.GetRepository<Vehicle>()
+            .GetPagedAsync(queryParam, predicate, includeProperties);
+
+        var vehicleDtos = pagedList.Items.Select(v => new GetVehicleDto
+        {
+            VehicleId = v.VehicleId,
+            NumberPlate = v.NumberPlate,
+            Manufacturer = v.Manufacturer,
+            Model = v.Model,
+            Color = v.Color,
+            Mileage = v.Mileage,
+            PricePerHour = v.PricePerHour,
+            Thumbnail = v.Thumbnail,
+            LastCheckoutAt = v.LastCheckoutAt,
+            Rating = v.Rating,
+            Status = v.Status,
+            ConditionNotes = v.ConditionNotes,
+            RealTimeLocation = v.RealTimeLocation,
+            LocationId = v.LocationId,
+            LocationName = v.Location?.Name,
+            VehicleCategoryId = v.VehicleCategoryId,
+            FuelId = v.FuelId,
+            TransmissionId = v.TransmissionId,
+            VehicleCategoryCode = v.VehicleCategory?.CategoryCode,
+            FuelName = v.Fuel?.Name,
+            TransmissionName = v.Transmission?.Name
         }).ToList();
 
         return new PagedList<GetVehicleDto>(

@@ -115,6 +115,12 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
             .IsRequired(false)
             .OnDelete(DeleteBehavior.SetNull);
 
+        builder.HasOne(v => v.Location) 
+            .WithMany(l => l.Vehicles)
+            .HasForeignKey(v => v.LocationId) 
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.SetNull);
+
         builder.HasData(VehicleSeeder.Seed());
     }
 }

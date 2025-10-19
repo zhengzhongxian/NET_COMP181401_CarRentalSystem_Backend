@@ -32,7 +32,7 @@ public class GetVehicleDto
 
     public Guid? LocationId { get; set; }
 
-    public string? Metadata { get; set; }
+    public string? LocationName { get; set; }
 
     public Guid? VehicleCategoryId { get; set; }
 

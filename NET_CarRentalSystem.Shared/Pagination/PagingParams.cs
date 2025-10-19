@@ -24,4 +24,7 @@ public class PagingParams
     public string? SortBy { get; set; }
 
     public string? SortDirection { get; set; } = "asc";
+
+    public List<FilterCriterion>? Filters { get; set; }
 }
+

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NET_CarRentalSystem.Application.Common.Utils;
 using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
@@ -81,15 +82,15 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     {
         IQueryable<T> query = _readDbContext.Set<T>();
 
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
-
         foreach (var includeProperty in includeProperties.Split
             ([','], StringSplitOptions.RemoveEmptyEntries))
         {
             query = query.Include(includeProperty);
+        }
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
         }
 
         if (!string.IsNullOrWhiteSpace(pagingParams.SortBy))

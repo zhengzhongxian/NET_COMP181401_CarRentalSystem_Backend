@@ -50,6 +50,8 @@ public class Vehicle : BaseEntity
 
     public virtual Transmission? Transmission { get; set; }
 
+    public virtual Location? Location { get; set; }
+
     public virtual ICollection<VehicleImage> VehicleImages { get; set; } = [];
 
     public virtual ICollection<Booking> Bookings { get; set; } = [];

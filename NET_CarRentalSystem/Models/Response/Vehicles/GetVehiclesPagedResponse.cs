@@ -1,8 +1,9 @@
-﻿using NET_CarRentalSystem.Domain.Enums;
+﻿using NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
+using NET_CarRentalSystem.Domain.Enums;
 
-namespace NET_CarRentalSystem.API.Models.Response;
+namespace NET_CarRentalSystem.API.Models.Response.Vehicles;
 
-public class VehicleResponse
+public class GetVehiclesPagedResponse
 {
     public Guid VehicleId { get; set; }
 
@@ -45,4 +46,6 @@ public class VehicleResponse
     public string? FuelName { get; set; }
 
     public string? TransmissionName { get; set; }
+
+    public List<GetVehicleAttributeDto>? AttributeDtos { get; set; } = [];
 }

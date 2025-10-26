@@ -1,15 +1,14 @@
 ﻿using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using System.Collections;
+using Microsoft.EntityFrameworkCore;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 
 public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbContext readDbContext) : IUnitOfWork
 {
-    private readonly RenticarWriteDbContext _writeDbContext = writeDbContext;
-    private readonly RenticarReadDbContext _readDbContext = readDbContext;
     private Hashtable? _repositories;
-
+    private IQueryRepository? _queryRepository;
     public IGenericRepository<T> GetRepository<T>() where T : class
     {
         _repositories ??= [];
@@ -18,7 +17,7 @@ public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbCon
         if (!_repositories.ContainsKey(type))
         {
             var repositoryType = typeof(GenericRepository<>);
-            var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), _writeDbContext, _readDbContext);
+            var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), writeDbContext, readDbContext);
 
             _repositories.Add(type, repositoryInstance);
         }
@@ -28,13 +27,19 @@ public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbCon
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        return await _writeDbContext.SaveChangesAsync(cancellationToken);
+        return await writeDbContext.SaveChangesAsync(cancellationToken);
+    }
+    
+    public IQueryRepository GetQueryRepository()
+    {
+        _queryRepository ??= new QueryRepository(readDbContext);
+        return _queryRepository;
     }
 
     public void Dispose()
     {
-        _writeDbContext.Dispose();
-        _readDbContext.Dispose();
+        writeDbContext.Dispose();
+        readDbContext.Dispose();
         GC.SuppressFinalize(this);
     }
 }

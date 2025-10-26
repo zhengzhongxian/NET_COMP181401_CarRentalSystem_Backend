@@ -11,8 +11,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Setup
         {
             return [.. context.Model.GetEntityTypes()
                 .Where(e => !e.IsOwned())
-                .Select(e => e.GetTableName()!)
-                .Where(name => name != null && (!name.StartsWith("user_") || name.StartsWith("role_")))
+                .Select(e => e.GetTableName())
+                .OfType<string>()
                 .Distinct()];
         }
 

@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
+using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Infrastructure.DependencyInjection;
 
@@ -14,14 +15,14 @@ public static class PersistenceRegistration
         IConfiguration configuration)
     {
         services.AddDbContext<RenticarWriteDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("RenticarWriteDbContext")));
+            options.UseSqlServer(configuration.GetConnectionString(KeyConstants.ConnectionStrings.RenticarWriteDbContext)));
 
         services.AddDbContext<RenticarReadDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString("RenticarReadDbContext")));
-
-        services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+            options.UseSqlServer(configuration.GetConnectionString(KeyConstants.ConnectionStrings.RenticarReadDbContext)));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        services.AddScoped<IQueryRepository, QueryRepository>();
 
         return services;
     }

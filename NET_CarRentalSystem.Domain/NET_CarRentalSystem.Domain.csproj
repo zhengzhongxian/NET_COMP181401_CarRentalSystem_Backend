@@ -7,11 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Exceptions\" />
+    <ProjectReference Include="..\NET_CarRentalSystem.Shared\NET_CarRentalSystem.Shared.csproj" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\NET_CarRentalSystem.Shared\NET_CarRentalSystem.Shared.csproj" />
+    <PackageReference Include="Quartz.Extensions.DependencyInjection" Version="3.15.1" />
   </ItemGroup>
 
 </Project>

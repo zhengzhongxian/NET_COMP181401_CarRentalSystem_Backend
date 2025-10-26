@@ -34,6 +34,40 @@ public abstract class RenticarBaseDbContext(DbContextOptions options) : DbContex
         }
     }
 
+    public override int SaveChanges()
+    {
+        UpdateTimestamps();
+        return base.SaveChanges();
+    }
+
+    public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+    {
+        UpdateTimestamps();
+        return await base.SaveChangesAsync(cancellationToken);
+    }
+
+    private void UpdateTimestamps()
+    {
+        var entries = ChangeTracker.Entries<BaseEntity>();
+        var currentTime = DateTime.UtcNow;
+
+        foreach (var entry in entries)
+        {
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    entry.Entity.CreatedAt = currentTime;
+                    entry.Entity.UpdatedAt = currentTime;
+                    break;
+
+                case EntityState.Modified:
+                    entry.Entity.UpdatedAt = currentTime;
+                    entry.Property(e => e.CreatedAt).IsModified = false;
+                    break;
+            }
+        }
+    }
+
     private static LambdaExpression CreateSoftDeleteFilter(Type type)
     {
         var parameter = Expression.Parameter(type, "e");

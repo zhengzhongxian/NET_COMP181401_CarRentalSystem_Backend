@@ -109,6 +109,8 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
             .HasForeignKey(b => b.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
+        builder.HasQueryFilter(b => !b.Vehicle.IsDeleted);
+
         builder.HasData(BookingSeeder.Seed());
     }
 }

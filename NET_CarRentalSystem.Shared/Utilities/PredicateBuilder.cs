@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace NET_CarRentalSystem.Application.Common.Utils;
+namespace NET_CarRentalSystem.Shared.Utilities;
 
 public static class PredicateBuilder
 {

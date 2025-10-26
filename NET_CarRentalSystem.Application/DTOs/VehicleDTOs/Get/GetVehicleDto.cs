@@ -1,3 +1,4 @@
+using NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
 using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
@@ -45,4 +46,6 @@ public class GetVehicleDto
     public string? FuelName { get; set; }
 
     public string? TransmissionName { get; set; }
+
+    public List<GetVehicleAttributeDto>? AttributeDtos { get; set; } = [];
 }

@@ -1,11 +1,11 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Common.Utils;
+using NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
 using NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Pagination;
-using System.Linq.Expressions;
+using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
 
@@ -37,7 +37,13 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork)
             predicate = predicate.And(detailedFilter);
         }
 
-        const string includeProperties = "VehicleCategory,Fuel,Transmission";
+        var includeBuilder = new IncludeBuilder<Vehicle>()
+            .Include(v => v.VehicleCategory)
+            .Include(v => v.Fuel)
+            .Include(v => v.Transmission)
+            .Include(v => v.VehicleAttributes);
+        
+        var includeProperties = includeBuilder.Build();
 
         var pagedList = await unitOfWork.GetRepository<Vehicle>()
             .GetPagedAsync(queryParam, predicate, includeProperties);
@@ -64,7 +70,13 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork)
             TransmissionId = v.TransmissionId,
             VehicleCategoryCode = v.VehicleCategory?.CategoryCode,
             FuelName = v.Fuel?.Name,
-            TransmissionName = v.Transmission?.Name
+            TransmissionName = v.Transmission?.Name,
+            AttributeDtos = [.. v.VehicleAttributes.Select(va => new GetVehicleAttributeDto
+            {
+                AttributeId = va.AttributeId,
+                AttributeKey = va.AttributeKey,
+                AttributeValue = va.AttributeValue
+            })],
         }).ToList();
 
         return new PagedList<GetVehicleDto>(
@@ -74,3 +86,4 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork)
             pagedList.PageSize);
     }
 }
+

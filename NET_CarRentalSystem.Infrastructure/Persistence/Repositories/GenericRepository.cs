@@ -1,38 +1,35 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using NET_CarRentalSystem.Application.Common.Utils;
 using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
-using NET_CarRentalSystem.Shared;
+using NET_CarRentalSystem.Shared.Enums;
 using NET_CarRentalSystem.Shared.Pagination;
 using System.Linq.Expressions;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 
-public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, RenticarReadDbContext readDbContext) : IGenericRepository<T> where T : class
+public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, RenticarReadDbContext readDbContext)
+    : IGenericRepository<T> where T : class
 {
-    private readonly RenticarWriteDbContext _writeDbContext = writeDbContext;
-    private readonly RenticarReadDbContext _readDbContext = readDbContext;
 
     public IQueryable<T> GetQueryable()
     {
-        IQueryable<T> query = _readDbContext.Set<T>();
+        IQueryable<T> query = readDbContext.Set<T>();
 
         if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
         {
-            var baseQuery = query.Cast<BaseEntity>();
-
-            var orderedQuery = baseQuery.OrderByDescending(e => e.CreatedAt);
-
-            query = orderedQuery.Cast<T>();
+            query = query.Cast<BaseEntity>()
+                .OrderByDescending(e => e.UpdatedAt)
+                .Cast<T>();
         }
 
         return query.AsQueryable();
     }
 
-    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default, bool useWriteConnection = false)
+    public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default,
+        bool useWriteConnection = false)
     {
-        var db = useWriteConnection ? (DbContext)_writeDbContext : _readDbContext;
+        var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
         return await db.Set<T>().FindAsync([id], cancellationToken);
     }
 
@@ -41,37 +38,38 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         return await GetQueryable().ToListAsync(cancellationToken);
     }
 
-    public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
-        return await _readDbContext.Set<T>().Where(predicate).ToListAsync(cancellationToken);
+        return await GetQueryable().Where(predicate).ToListAsync(cancellationToken);
     }
 
     public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
     {
-        await _writeDbContext.Set<T>().AddAsync(entity, cancellationToken);
+        await writeDbContext.Set<T>().AddAsync(entity, cancellationToken);
     }
 
     public void Update(T entity)
     {
-        _writeDbContext.Set<T>().Update(entity);
+        writeDbContext.Set<T>().Update(entity);
     }
 
     public void Remove(T entity, bool hardDelete = false)
     {
         if (hardDelete)
         {
-            _writeDbContext.Set<T>().Remove(entity);
+            writeDbContext.Set<T>().Remove(entity);
             return;
         }
 
         if (entity is BaseEntity baseEntity)
         {
             baseEntity.IsDeleted = true;
-            _writeDbContext.Entry(baseEntity).State = EntityState.Modified;
+            writeDbContext.Entry(baseEntity).State = EntityState.Modified;
         }
         else
         {
-            _writeDbContext.Set<T>().Remove(entity);
+            writeDbContext.Set<T>().Remove(entity);
         }
     }
 
@@ -80,10 +78,10 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         Expression<Func<T, bool>>? filter = null,
         string includeProperties = "")
     {
-        IQueryable<T> query = _readDbContext.Set<T>();
+        IQueryable<T> query = readDbContext.Set<T>();
 
         foreach (var includeProperty in includeProperties.Split
-            ([','], StringSplitOptions.RemoveEmptyEntries))
+                     ([','], StringSplitOptions.RemoveEmptyEntries))
         {
             query = query.Include(includeProperty);
         }
@@ -92,7 +90,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         {
             query = query.Where(filter);
         }
-
+        
+        var count = await query.CountAsync();
+        
         if (!string.IsNullOrWhiteSpace(pagingParams.SortBy))
         {
             query = pagingParams.SortDirection?.ToLower() == "desc"
@@ -105,7 +105,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             query = query.Cast<BaseEntity>().OrderByDescending(e => e.CreatedAt).Cast<T>();
         }
 
-        var count = await query.CountAsync();
         var items = await query
             .Skip((pagingParams.PageNumber - 1) * pagingParams.PageSize)
             .Take(pagingParams.PageSize)
@@ -115,38 +114,40 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     }
 
     public async Task<T?> GetFirstOrDefaultAsync(
-        Expression<Func<T, bool>> filter, string includeProperties = "", 
+        Expression<Func<T, bool>> filter, string includeProperties = "",
         CancellationToken cancellationToken = default,
         bool useWriteConnection = false)
     {
-        IQueryable<T> query = useWriteConnection ? _writeDbContext.Set<T>() : _readDbContext.Set<T>();
+        IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
         foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
         {
             query = query.Include(includeProperty);
         }
+
         return await query.FirstOrDefaultAsync(filter, cancellationToken);
     }
 
     public async Task<T?> GetSingleOrDefaultAsync(
-        Expression<Func<T, bool>> filter, 
-        string includeProperties = "", 
+        Expression<Func<T, bool>> filter,
+        string includeProperties = "",
         CancellationToken cancellationToken = default,
         bool useWriteConnection = false)
     {
-        IQueryable<T> query = useWriteConnection ? _writeDbContext.Set<T>() : _readDbContext.Set<T>();
+        IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
         foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
         {
             query = query.Include(includeProperty);
         }
+
         return await query.SingleOrDefaultAsync(filter, cancellationToken);
     }
 
     public async Task<List<T>> GetAsync(
-        Expression<Func<T, bool>>? filter = null, 
-        string? sortBy = null, string? sortDirection = "asc", 
+        Expression<Func<T, bool>>? filter = null,
+        string? sortBy = null, string? sortDirection = "asc",
         string includeProperties = "")
     {
-        IQueryable<T> query = _readDbContext.Set<T>();
+        IQueryable<T> query = readDbContext.Set<T>();
 
         if (filter != null)
         {
@@ -166,33 +167,36 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         }
         else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
         {
-            query = query.Cast<BaseEntity>().OrderByDescending(e => e.CreatedAt).Cast<T>();
+            query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
         return await query.ToListAsync();
     }
 
-    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
+    public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate,
+        CancellationToken cancellationToken = default)
     {
-        return await _readDbContext.Set<T>().AnyAsync(predicate, cancellationToken);
+        return await readDbContext.Set<T>().AnyAsync(predicate, cancellationToken);
     }
 
-    public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null, CancellationToken cancellationToken = default)
+    public async Task<int> CountAsync(Expression<Func<T, bool>>? predicate = null,
+        CancellationToken cancellationToken = default)
     {
         if (predicate == null)
         {
-            return await _readDbContext.Set<T>().CountAsync(cancellationToken);
+            return await readDbContext.Set<T>().CountAsync(cancellationToken);
         }
-        return await _readDbContext.Set<T>().CountAsync(predicate, cancellationToken);
+
+        return await readDbContext.Set<T>().CountAsync(predicate, cancellationToken);
     }
 
     public async Task<TResult> GetAggregateValueAsync<TResult>(
-    Expression<Func<T, TResult>> selector,
-    AggregateType aggregateType,
-    Expression<Func<T, bool>>? filter = null,
-    CancellationToken cancellationToken = default)
+        Expression<Func<T, TResult>> selector,
+        AggregateType aggregateType,
+        Expression<Func<T, bool>>? filter = null,
+        CancellationToken cancellationToken = default)
     {
-        IQueryable<T> query = _readDbContext.Set<T>();
+        IQueryable<T> query = readDbContext.Set<T>();
         if (filter != null)
         {
             query = query.Where(filter);
@@ -207,10 +211,82 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     }
 
     public async Task<T> FirstAsync(
-        Expression<Func<T, bool>> predicate, 
+        Expression<Func<T, bool>> predicate,
         CancellationToken cancellationToken = default)
     {
-        return await _readDbContext.Set<T>().FirstAsync(predicate, cancellationToken);
+        return await readDbContext.Set<T>().FirstAsync(predicate, cancellationToken);
     }
-}
 
+    public async Task<List<T>> FromSqlInterpolatedAsync(
+        FormattableString sql,
+        CancellationToken cancellationToken = default)
+    {
+        return await readDbContext.Set<T>()
+            .FromSqlInterpolated(sql)
+            .ToListAsync(cancellationToken);
+    }
+
+
+
+    public async Task<int> ExecuteSqlInterpolatedAsync(
+        FormattableString sql,
+        CancellationToken cancellationToken = default)
+    {
+        return await writeDbContext.Database.ExecuteSqlInterpolatedAsync(sql, cancellationToken);
+    }
+
+    public async Task<T?> GetFirstOrDefaultWithDeletedIncludesAsync(
+        Expression<Func<T, bool>> filter,
+        string includeProperties = "",
+        CancellationToken cancellationToken = default,
+        bool useWriteConnection = false)
+
+    {
+
+        var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
+        IQueryable<T> query = db.Set<T>().IgnoreQueryFilters();
+        
+        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
+        {
+
+            var trimmedProperty = includeProperty.Trim();
+
+            query = query.Include(trimmedProperty);
+
+        }
+        
+        var allEntities = await query.Where(filter).ToListAsync(cancellationToken);
+        var result = allEntities.FirstOrDefault(entity =>
+
+        {
+            if (entity is BaseEntity baseEntity)
+            {
+                return !baseEntity.IsDeleted;
+
+            }
+            return true;
+        });
+        
+        return result;
+    }
+    
+    public IQueryable<T> GetQueryable(
+        Expression<Func<T, bool>>? filter,
+        string includeProperties = "")
+    {
+        IQueryable<T> query = readDbContext.Set<T>();
+
+        if (filter != null)
+        {
+            query = query.Where(filter);
+        }
+
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty.Trim()));
+
+        return query.AsQueryable();
+    }
+
+
+}

@@ -9,6 +9,7 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
 {
     private readonly string _writeDbConnection = config.GetConnectionString("RenticarWriteDbContext")
             ?? throw new InvalidOperationException("Connection string 'RenticarWriteDbContext' not found in appsettings.json.");
+    
     private readonly ILogger<SyncTableMetadataCache> _logger = logger;
 
     private static readonly ConcurrentDictionary<string, string> _mergeStatementCache = new();

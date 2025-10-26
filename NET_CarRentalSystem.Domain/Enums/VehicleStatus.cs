@@ -2,7 +2,7 @@
 
 public enum VehicleStatus
 {
-    Available,      
+    Available = 1,      
     Rented,         
     InMaintenance,  
     Unavailable 

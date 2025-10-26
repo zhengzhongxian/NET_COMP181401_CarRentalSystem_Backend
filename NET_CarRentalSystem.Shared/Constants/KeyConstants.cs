@@ -2,9 +2,23 @@
 
 public static class KeyConstants
 {
-    public class Pagination
+    public static class ConnectionStrings
     {
-        public const string MaxPageSize = "Pagination:MaxPageSize";
-        public const string MinPageSize = "Pagination:MinPageSize";
+        public const string RenticarWriteDbContext = "RenticarWriteDbContext";
+        public const string RenticarReadDbContext = "RenticarReadDbContext";
+    }
+
+    public static class ConfigurationSections
+    {
+        public const string CloudinarySettings = "CloudinarySettings";
+    }
+
+    public static class Quartz
+    {
+        public static class CheckToolAlive
+        {
+            public const string JobName = "Quartz:CheckToolAlive:JobName";
+            public const string CronExpression = "Quartz:CheckToolAlive:CronExpression";
+        }
     }
 }

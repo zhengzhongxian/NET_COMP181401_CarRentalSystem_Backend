@@ -8,7 +8,7 @@ var configuration = builder.Configuration;
 builder.Host.UseSerilog((context, config) =>
     config.ReadFrom.Configuration(context.Configuration));
 
-services.AddInfrastructureServices(configuration);
+services.AddProjectServices(configuration);
 
 services.AddWebApiServices();
 

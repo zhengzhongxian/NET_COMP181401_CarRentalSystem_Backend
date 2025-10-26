@@ -6,6 +6,7 @@ public static class FuelMessage
     {
         public const string Success = "Lấy danh sách nhiên liệu thành công.";
         public const string NotFound = "Không tìm thấy loại nhiên liệu này.";
+        public const string Error = "Đã xảy ra lỗi khi lấy danh sách nhiên liệu.";
     }
 
     public static class Post

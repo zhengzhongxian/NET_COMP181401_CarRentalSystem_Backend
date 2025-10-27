@@ -1,0 +1,50 @@
+name: Deploy Renticar
+
+on:
+  push:
+    branches:
+      - main
+      - test
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    environment:
+      name: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/test' && 'test') || 'dev' }}
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+
+          script: |
+            PROJECT_PATH="${{ secrets.VPS_PROJECT_PATH }}"
+            ENV_FILE_NAME="${{ secrets.ENV_FILE_NAME }}" 
+
+            if [ ! -d "${PROJECT_PATH}" ]; then
+              git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
+            fi
+            cd ${PROJECT_PATH}
+            git pull
+            git checkout ${{ github.ref_name }}
+
+            echo "ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}" > ${ENV_FILE_NAME}
+            echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" >> ${ENV_FILE_NAME}
+
+            echo "DB_WRITE_CONNECTION_STRING=${{ secrets.DB_WRITE_CONNECTION_STRING }}" >> ${ENV_FILE_NAME}
+            echo "DB_READ_CONNECTION_STRING=${{ secrets.DB_READ_CONNECTION_STRING }}" >> ${ENV_FILE_NAME}
+            echo "CERTIFICATE_PASSWORD=${{ secrets.CERTIFICATE_PASSWORD }}" >> ${ENV_FILE_NAME}
+            echo "CERTIFICATE_PATH=${{ secrets.CERTIFICATE_PATH }}" >> ${ENV_FILE_NAME}
+            echo "ASPNETCORE_HTTPS_PORT=${{ secrets.ASPNETCORE_HTTPS_PORT }}" >> ${ENV_FILE_NAME}
+            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ${ENV_FILE_NAME}
+
+            docker-compose -f docker-compose.yml --env-file ${ENV_FILE_NAME} up --build -d
+            docker image prune -f

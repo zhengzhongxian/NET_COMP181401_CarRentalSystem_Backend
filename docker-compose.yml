@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: renticar-sqlserver-${ASPNETCORE_ENVIRONMENT}
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=${SA_PASSWORD}
+      - MSSQL_PID=Express
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
+    networks:
+      - renticar-network
+
+  # .NET API Application
+  api:
+    build:
+      context: ./NET_CarRentalSystem
+      dockerfile: Dockerfile
+    container_name: renticar-api-${ASPNETCORE_ENVIRONMENT}
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
+      - CERTIFICATE_PASSWORD=${CERTIFICATE_PASSWORD}
+      - CERTIFICATE_PATH=${CERTIFICATE_PATH}
+      - ConnectionStrings__RenticarWriteDbContext=${DB_WRITE_CONNECTION_STRING}
+      - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
+
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - sqlserver
+    volumes:
+      - ./https:/https:ro
+      - ./logs:/app/Logs
+    networks:
+      - renticar-network
+
+volumes:
+  sqlserver_data_Production:
+  sqlserver_data_Test:
+  sqlserver_data_Development:
+
+networks:
+  renticar-network:
+    driver: bridge

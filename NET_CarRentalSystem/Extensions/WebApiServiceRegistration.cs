@@ -52,25 +52,30 @@ public static class WebApiServiceRegistration
         });
         
         services.AddControllers()
-            .ConfigureApiBehaviorOptions(options =>
+        .ConfigureApiBehaviorOptions(options =>
+        {
+            options.InvalidModelStateResponseFactory = context =>
             {
-                options.InvalidModelStateResponseFactory = context =>
+                var errors = context.ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .ToList();
+                
+                var combinedErrorMessage = string.Join("; ", errors); 
+                if (string.IsNullOrEmpty(combinedErrorMessage))
                 {
-                    var errors = context.ModelState.Values
-                        .SelectMany(v => v.Errors)
-                        .Select(e => e.ErrorMessage)
-                        .ToList();
-                    var firstError = errors.FirstOrDefault() ?? "Lỗi xác thực";
-                    
-                    var errorResponse = ApiResponse<string>.ErrorResult(
-                        firstError,
-                        StatusCodes.Status400BadRequest,
-                        errors
-                    );
-                    
-                    return new BadRequestObjectResult(errorResponse);
-                };
-            });
+                    combinedErrorMessage = "Lỗi xác thực không xác định.";
+                }
+                
+                var errorResponse = ApiResponse<string>.ErrorResult(
+                    combinedErrorMessage,
+                    StatusCodes.Status400BadRequest,
+                    null
+                );
+                
+                return new BadRequestObjectResult(errorResponse);
+            };
+        });
         
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
         

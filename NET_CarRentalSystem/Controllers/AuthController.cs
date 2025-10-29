@@ -27,8 +27,7 @@ namespace NET_CarRentalSystem.API.Controllers
                 {
                     var errorResponse = ApiResponse<LoginResponse>.ErrorResult(
                         message,
-                        StatusCodes.Status401Unauthorized,
-                        [message]
+                        StatusCodes.Status401Unauthorized
                     );
                     return StatusCode(errorResponse.StatusCode, errorResponse);
                 }

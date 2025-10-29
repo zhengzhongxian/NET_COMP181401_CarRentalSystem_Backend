@@ -1,28 +1,30 @@
 ﻿using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
-using System.Collections;
-using Microsoft.EntityFrameworkCore;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 
 public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbContext readDbContext) : IUnitOfWork
 {
-    private Hashtable? _repositories;
+    private Dictionary<string, object>? _repositories; 
     private IQueryRepository? _queryRepository;
+
     public IGenericRepository<T> GetRepository<T>() where T : class
     {
-        _repositories ??= [];
+        _repositories ??= new Dictionary<string, object>(); 
         var type = typeof(T).Name;
-
-        if (!_repositories.ContainsKey(type))
+        
+        if (_repositories.TryGetValue(type, out var repo)) 
         {
-            var repositoryType = typeof(GenericRepository<>);
-            var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), writeDbContext, readDbContext);
-
-            _repositories.Add(type, repositoryInstance);
+            return (IGenericRepository<T>)repo;
         }
+        
+        var repositoryType = typeof(GenericRepository<>);
+        var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), writeDbContext, readDbContext);
 
-        return (IGenericRepository<T>)_repositories[type]!;
+        if (repositoryInstance == null)
+            throw new InvalidOperationException($"Unable to create repository for type {type}");
+        _repositories.Add(type, repositoryInstance);
+        return (IGenericRepository<T>)repositoryInstance;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -43,4 +45,3 @@ public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbCon
         GC.SuppressFinalize(this);
     }
 }
-

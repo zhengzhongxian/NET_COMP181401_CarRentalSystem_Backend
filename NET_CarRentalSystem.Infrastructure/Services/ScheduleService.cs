@@ -6,8 +6,7 @@ namespace NET_CarRentalSystem.Infrastructure.Services;
 
 public class ScheduleService<TJob>(
     ISchedulerFactory schedulerFactory,
-    ILogger<ScheduleService<TJob>> logger)
-    : IScheduleService<TJob> where TJob : IJob
+    ILogger<ScheduleService<TJob>> logger) : IScheduleService<TJob> where TJob : IJob
 {
     private async Task<IScheduler> GetScheduler(CancellationToken cancellationToken)
     {

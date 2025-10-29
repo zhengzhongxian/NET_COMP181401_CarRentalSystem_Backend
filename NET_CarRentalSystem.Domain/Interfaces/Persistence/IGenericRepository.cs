@@ -179,8 +179,6 @@ public interface IGenericRepository<T> where T : class
         FormattableString sql,
         CancellationToken cancellationToken = default);
 
-
-
     /// <summary>
     /// Lấy entity với các include properties bị soft-delete.
     /// Entity chính vẫn áp dụng query filters (như soft-delete),
@@ -200,6 +198,4 @@ public interface IGenericRepository<T> where T : class
     IQueryable<T> GetQueryable(
         Expression<Func<T, bool>>? filter,
         string includeProperties = "");
-
-
 }

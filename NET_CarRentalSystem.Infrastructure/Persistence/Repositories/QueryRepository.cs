@@ -35,7 +35,10 @@ public class QueryRepository(RenticarReadDbContext readDbContext) : IQueryReposi
     public async Task<List<TResult>> ToListAsync<TResult>(
         IQueryable<TResult> query, 
         CancellationToken cancellationToken = default)
-    {
-        return await query.ToListAsync(cancellationToken);
-    }
+        => await query.ToListAsync(cancellationToken);
+    
+    public async Task<bool> AnyAsync<TResult>(
+        IQueryable<TResult> query, 
+        CancellationToken cancellationToken = default)
+        => await query.AnyAsync(cancellationToken);
 }

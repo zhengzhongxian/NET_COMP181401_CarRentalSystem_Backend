@@ -16,6 +16,17 @@ services:
       - sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
     networks:
       - renticar-network
+  #Redis
+  redis:
+    image: redis:7.2-alpine
+    container_name: renticar-redis-${ASPNETCORE_ENVIRONMENT}
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_${ASPNETCORE_ENVIRONMENT}:/data
+    networks:
+      - renticar-network
 
   # .NET API Application
   api:
@@ -32,12 +43,14 @@ services:
       - CERTIFICATE_PATH=${CERTIFICATE_PATH}
       - ConnectionStrings__RenticarWriteDbContext=${DB_WRITE_CONNECTION_STRING}
       - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
 
     ports:
       - "8080:80"
       - "8443:443"
     depends_on:
       - sqlserver
+      - redis
     volumes:
       - ./https:/https:ro
       - ./logs:/app/Logs
@@ -48,6 +61,9 @@ volumes:
   sqlserver_data_Production:
   sqlserver_data_Test:
   sqlserver_data_Development:
+  redis_data_Production:
+  redis_data_Test:
+  redis_data_Development:
 
 networks:
   renticar-network:

@@ -6,11 +6,13 @@ public static class KeyConstants
     {
         public const string RenticarWriteDbContext = "RenticarWriteDbContext";
         public const string RenticarReadDbContext = "RenticarReadDbContext";
+        public const string Redis = "Redis";
     }
 
     public static class ConfigurationSections
     {
         public const string CloudinarySettings = "CloudinarySettings";
+        public const string JwtSettings = "JwtSettings";
     }
 
     public static class Quartz

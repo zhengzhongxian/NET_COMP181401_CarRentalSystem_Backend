@@ -36,4 +36,11 @@ public interface IQueryRepository
     Task<List<TResult>> ToListAsync<TResult>(
         IQueryable<TResult> query,
         CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Kiểm tra xem có bất kỳ phần tử nào trong IQueryable hay không.
+    /// </summary>
+    Task<bool> AnyAsync<TResult>(
+        IQueryable<TResult> query,
+        CancellationToken cancellationToken = default);
 }

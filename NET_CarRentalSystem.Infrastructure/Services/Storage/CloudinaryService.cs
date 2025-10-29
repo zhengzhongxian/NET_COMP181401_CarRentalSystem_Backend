@@ -1,11 +1,11 @@
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
-using NET_CarRentalSystem.Application.Models.Storage;
 using Microsoft.Extensions.Options;
-using NET_CarRentalSystem.Application.Interfaces.Storage;
+using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
+using NET_CarRentalSystem.Application.Models.Storage;
 using NET_CarRentalSystem.Infrastructure.Configuration;
 
-namespace NET_CarRentalSystem.Infrastructure.Services;
+namespace NET_CarRentalSystem.Infrastructure.Services.Storage;
 
 public class CloudinaryService : ICloudinaryService
 {

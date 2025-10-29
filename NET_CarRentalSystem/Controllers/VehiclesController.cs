@@ -1,9 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using NET_CarRentalSystem.API.Models.Request;
 using NET_CarRentalSystem.API.Models.Request.Vehicles;
-using NET_CarRentalSystem.API.Models.Response;
 using NET_CarRentalSystem.API.Models.Response.Vehicles;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;

@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Models.Request.Fuels;
@@ -8,7 +8,6 @@ using NET_CarRentalSystem.Application.Features.Fuels.Commands.CreateFuel;
 using NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuel;
 using NET_CarRentalSystem.Application.Features.Fuels.Commands.UpdateFuel;
 using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
-using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetFuelById;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
 namespace NET_CarRentalSystem.API.Controllers;
@@ -41,29 +40,6 @@ public class FuelsController(ISender sender, IMapper mapper) : ControllerBase
                 [ex.Message] 
             );
 
-            return StatusCode(errorResponse.StatusCode, errorResponse);
-        }
-    }
-
-    [HttpGet("{id:guid}")]
-    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
-    {
-        try
-        {
-            var query = new GetFuelByIdQuery(id);
-            var result = await sender.Send(query, cancellationToken);
-
-            if (result == null)
-            {
-                return NotFound(ApiResponse<GetFuelDto>.ErrorResult(FuelMessage.Get.NotFound, StatusCodes.Status404NotFound));
-            }
-
-            var apiResponse = ApiResponse<GetFuelDto>.SuccessResult(result, FuelMessage.Get.Success);
-            return Ok(apiResponse);
-        }
-        catch (Exception ex)
-        {
-            var errorResponse = ApiResponse<GetFuelDto>.ErrorResult(FuelMessage.Get.Error, StatusCodes.Status500InternalServerError, [ex.Message]);
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }

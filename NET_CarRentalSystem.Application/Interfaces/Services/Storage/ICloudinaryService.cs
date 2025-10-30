@@ -1,6 +1,6 @@
 using NET_CarRentalSystem.Application.Models.Storage;
 
-namespace NET_CarRentalSystem.Application.Interfaces.Storage;
+namespace NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 
 public interface ICloudinaryService
 {

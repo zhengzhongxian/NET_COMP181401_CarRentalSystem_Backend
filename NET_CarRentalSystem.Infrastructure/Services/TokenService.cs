@@ -11,10 +11,7 @@ using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 
 namespace NET_CarRentalSystem.Infrastructure.Services;
 
-public class TokenService(
-    IOptions<JwtSettings> jwtSettings,
-    IUnitOfWork unitOfWork
-    ) : ITokenService
+public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfWork) : ITokenService
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 

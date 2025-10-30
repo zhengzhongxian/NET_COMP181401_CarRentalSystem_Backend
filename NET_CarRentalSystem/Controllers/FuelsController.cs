@@ -14,7 +14,6 @@ public class FuelsController(ISender sender) : ControllerBase
 {
 
     [HttpGet]
-    [Authorize(Policy = PermissionConstants.Vehicles.Create)]
     public async Task<IActionResult> GetAllFuels(CancellationToken cancellationToken)
     {
         try

@@ -68,9 +68,7 @@ public static class WebApiServiceRegistration
                 }
                 
                 var errorResponse = ApiResponse<string>.ErrorResult(
-                    combinedErrorMessage,
-                    StatusCodes.Status400BadRequest,
-                    null
+                    combinedErrorMessage
                 );
                 
                 return new BadRequestObjectResult(errorResponse);

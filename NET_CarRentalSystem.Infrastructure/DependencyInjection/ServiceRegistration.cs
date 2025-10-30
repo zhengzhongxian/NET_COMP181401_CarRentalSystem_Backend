@@ -22,7 +22,7 @@ public static class ServiceRegistration
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IIdentityService, IdentityService>();
         
-        //http
+        //httpclient
         services.AddHttpClient<IApiClient, ApiClient>();
         
         //add singleton

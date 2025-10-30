@@ -14,15 +14,13 @@ namespace NET_CarRentalSystem.API.Controllers
     public class AuthController(IMediator mediator, IMapper mapper) : ControllerBase
     {
         [HttpPost("login")]
-        public async Task<IActionResult> Login(
-            [FromBody] LoginRequest request, 
-            CancellationToken cancellationToken)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken cancellationToken)
         {
             try
             {
                 var command = mapper.Map<LoginCommand>(request);
                 var (message, tokenData) = await mediator.Send(command, cancellationToken);
-                
+
                 if (tokenData == null)
                 {
                     var errorResponse = ApiResponse<LoginResponse>.ErrorResult(
@@ -31,12 +29,12 @@ namespace NET_CarRentalSystem.API.Controllers
                     );
                     return StatusCode(errorResponse.StatusCode, errorResponse);
                 }
-                
+
                 var response = mapper.Map<LoginResponse>(tokenData);
-                
+
                 var apiResponse = ApiResponse<LoginResponse>.SuccessResult(
                     response,
-                    message 
+                    message
                 );
 
                 return Ok(apiResponse);
@@ -48,9 +46,15 @@ namespace NET_CarRentalSystem.API.Controllers
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]
                 );
-                
+
                 return StatusCode(errorResponse.StatusCode, errorResponse);
             }
+        }
+
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+        {
+            return Ok();
         }
     }
 }

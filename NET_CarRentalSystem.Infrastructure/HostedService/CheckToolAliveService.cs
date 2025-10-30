@@ -20,11 +20,10 @@ public class CheckToolAliveService(
     {
         try
         {
-            logger.LogInformation("Bắt đầu lên lịch cho job: {JobName}", _jobName);
+            logger.LogInformation("Start scheduling jobs: {JobName}", _jobName);
 
             using var scope = serviceProvider.CreateScope();
-            var job = scope.ServiceProvider
-                .GetRequiredService<IScheduleService<CheckToolAliveJob>>();
+            var job = scope.ServiceProvider.GetRequiredService<IScheduleService<CheckToolAliveJob>>();
                 
             await job.ScheduleJobAsync(
                 _jobName,
@@ -33,11 +32,11 @@ public class CheckToolAliveService(
                 stoppingToken
             );
             
-            logger.LogInformation("Đã lên lịch thành công cho job: {JobName} với cron: {Cron}", _jobName, _cronExp);
+            logger.LogInformation("Job scheduled successfully: {JobName} với cron: {Cron}", _jobName, _cronExp);
         }
         catch (Exception ex)
         {
-            logger.LogError("Lỗi nghiêm trọng khi lên lịch cho job: {JobName}. Error: {ex}", _jobName, ex);
+            logger.LogError("Fatal error while scheduling job: {JobName}. Error: {ex}", _jobName, ex);
         }
     }
 }

@@ -10,33 +10,31 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
     private readonly string _writeDbConnection = config.GetConnectionString("RenticarWriteDbContext")
             ?? throw new InvalidOperationException("Connection string 'RenticarWriteDbContext' not found in appsettings.json.");
     
-    private readonly ILogger<SyncTableMetadataCache> _logger = logger;
+    private static readonly ConcurrentDictionary<string, string> MergeStatementCache = new();
 
-    private static readonly ConcurrentDictionary<string, string> _mergeStatementCache = new();
-
-    private static readonly ConcurrentDictionary<string, List<string>> _columnCache = new();
+    private static readonly ConcurrentDictionary<string, List<string>> ColumnCache = new();
 
     public async Task<string> GetMergeStatementAsync(string tableName, string pkColumn, CancellationToken token)
     {
-        if (_mergeStatementCache.TryGetValue(tableName, out var cachedStatement))
+        if (MergeStatementCache.TryGetValue(tableName, out var cachedStatement))
         {
             return cachedStatement;
         }
 
-        _logger.LogInformation("First run for table {TableName}. Generating MERGE statement...", tableName);
+        logger.LogInformation("First run for table {TableName}. Generating MERGE statement...", tableName);
 
         var columns = await GetTableColumnsAsync(tableName, token);
         var statement = BuildMergeStatement(tableName, pkColumn, columns);
 
-        _mergeStatementCache[tableName] = statement;
+        MergeStatementCache[tableName] = statement;
 
-        _logger.LogInformation("Successfully generated and cached MERGE statement for table {TableName}.", tableName);
+        logger.LogInformation("Successfully generated and cached MERGE statement for table {TableName}.", tableName);
         return statement;
     }
 
     private async Task<List<string>> GetTableColumnsAsync(string tableName, CancellationToken token)
     {
-        if (_columnCache.TryGetValue(tableName, out var cachedCols))
+        if (ColumnCache.TryGetValue(tableName, out var cachedCols))
         {
             return cachedCols;
         }
@@ -52,7 +50,7 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
             throw new InvalidOperationException($"No columns found for table: {tableName}. Please check if the table exists in the Write DB.");
         }
 
-        _columnCache[tableName] = columns;
+        ColumnCache[tableName] = columns;
         return columns;
     }
 

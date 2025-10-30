@@ -4,7 +4,7 @@ namespace NET_CarRentalSystem.Domain.Entities;
 
 public class RoleClaim
 {
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     public Guid RoleId { get; set; }
 

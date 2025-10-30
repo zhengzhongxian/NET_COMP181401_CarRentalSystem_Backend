@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
 
@@ -12,7 +13,9 @@ public class RoleClaimConfiguration : IEntityTypeConfiguration<RoleClaim>
         builder.HasKey(rc => rc.Id);
 
         builder.Property(rc => rc.Id)
-            .HasColumnName("id");
+            .HasColumnName("id")
+            .HasColumnType("uniqueidentifier")
+            .ValueGeneratedOnAdd();
 
         builder.Property(rc => rc.RoleId)
             .HasColumnName("role_id")
@@ -25,5 +28,7 @@ public class RoleClaimConfiguration : IEntityTypeConfiguration<RoleClaim>
             .HasColumnName("claim_value");
 
         builder.HasQueryFilter(rc => !rc.Role.IsDeleted);
+
+        builder.HasData(RoleClaimSeeder.Seed());
     }
 }

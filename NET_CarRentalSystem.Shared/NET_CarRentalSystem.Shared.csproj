@@ -7,9 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="CoreHelpers\" />
-    <Folder Include="Extensions\" />
-    <Folder Include="Interfaces\" />
     <Folder Include="Wrapper\" />
   </ItemGroup>
 

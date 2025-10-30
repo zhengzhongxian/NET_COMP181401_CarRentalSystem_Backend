@@ -80,11 +80,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     {
         IQueryable<T> query = readDbContext.Set<T>();
 
-        foreach (var includeProperty in includeProperties.Split
-                     ([','], StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
         if (filter != null)
         {
@@ -102,7 +100,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
         {
             // Áp dụng sắp xếp mặc định nếu không có sortBy
-            query = query.Cast<BaseEntity>().OrderByDescending(e => e.CreatedAt).Cast<T>();
+            query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
         var items = await query
@@ -119,10 +117,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         bool useWriteConnection = false)
     {
         IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
-        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
         return await query.FirstOrDefaultAsync(filter, cancellationToken);
     }
@@ -134,10 +131,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         bool useWriteConnection = false)
     {
         IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
-        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
         return await query.SingleOrDefaultAsync(filter, cancellationToken);
     }
@@ -154,10 +150,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             query = query.Where(filter);
         }
 
-        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-        {
-            query = query.Include(includeProperty);
-        }
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
         if (!string.IsNullOrWhiteSpace(sortBy))
         {
@@ -244,20 +239,14 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     {
 
         var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
-        IQueryable<T> query = db.Set<T>().IgnoreQueryFilters();
-        
-        foreach (var includeProperty in includeProperties.Split([','], StringSplitOptions.RemoveEmptyEntries))
-        {
+        var query = db.Set<T>().IgnoreQueryFilters();
 
-            var trimmedProperty = includeProperty.Trim();
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Select(includeProperty => includeProperty.Trim()).Aggregate(query, (current, trimmedProperty) => current.Include(trimmedProperty));
 
-            query = query.Include(trimmedProperty);
-
-        }
-        
         var allEntities = await query.Where(filter).ToListAsync(cancellationToken);
         var result = allEntities.FirstOrDefault(entity =>
-
         {
             if (entity is BaseEntity baseEntity)
             {

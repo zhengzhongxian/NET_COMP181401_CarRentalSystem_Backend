@@ -55,7 +55,7 @@ public static class ExpressionBuilder
                             catch (Exception ex)
                             {
                                 throw new InvalidOperationException(
-                                    $"❌ Cannot convert value '{val}' to type '{targetType.Name}' for field '{filter.Field}'.",
+                                    $"Cannot convert value '{val}' to type '{targetType.Name}' for field '{filter.Field}'.",
                                     ex);
                             }
 
@@ -87,7 +87,7 @@ public static class ExpressionBuilder
 
             if (prop == null)
                 throw new InvalidOperationException(
-                    $"❌ Property '{member}' not found on type '{type.Name}'. " +
+                    $"Property '{member}' not found on type '{type.Name}'. " +
                     $"Check your filter field name: '{field}'.");
 
             property = Expression.Property(property, prop);

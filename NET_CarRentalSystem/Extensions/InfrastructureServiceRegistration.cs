@@ -12,6 +12,7 @@ public static class InfrastructureServiceRegistration
         services.AddMediatorServices();
         services.AddInfrastructureServices(configuration);
         services.AddJobServices();
+        services.AddCacheServices(configuration);
         
         return services;
     }

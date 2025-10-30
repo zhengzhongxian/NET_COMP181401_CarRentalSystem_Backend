@@ -35,12 +35,7 @@ public class CloudinaryService : ICloudinaryService
 
         var uploadResult = await _cloudinary.UploadAsync(uploadParams);
 
-        if (uploadResult.Error != null)
-        {
-            throw new Exception(uploadResult.Error.Message);
-        }
-
-        return uploadResult.SecureUrl.ToString();
+        return uploadResult.Error != null ? uploadResult.Error.Message : uploadResult.SecureUrl.ToString();
     }
 
     public async Task<List<string>> UploadMultipleImagesAsync(IList<FileModel> files, string? folder = null)
@@ -70,7 +65,7 @@ public class CloudinaryService : ICloudinaryService
     public async Task<CloudinaryFileInfo?> GetImageInfoAsync(string publicId)
     {
         var result = await _cloudinary.GetResourceAsync(publicId);
-        if (result == null || result.StatusCode != System.Net.HttpStatusCode.OK)
+        if (result is not { StatusCode: System.Net.HttpStatusCode.OK })
         {
             return null;
         }

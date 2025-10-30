@@ -22,7 +22,10 @@ namespace NET_CarRentalSystem.SyncService
             new("vehicle_attributes", "attribute_id", typeof(Guid)),
             new("vehicle_categories", "CategoryId", typeof(Guid)),
             new("vehicle_images", "image_id", typeof(Guid)),
-            new("vehicles", "vehicle_id", typeof(Guid))
+            new("vehicles", "vehicle_id", typeof(Guid)),
+            new("users", "user_id", typeof(Guid)),
+            new("role_claims", "id", typeof(Guid)),
+            new("roles", "role_id", typeof(Guid))
         ];
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

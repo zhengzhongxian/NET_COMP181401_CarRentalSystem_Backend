@@ -10,21 +10,20 @@ builder.Host.UseSerilog((context, config) =>
 
 services.AddProjectServices(configuration);
 
-services.AddWebApiServices();
+services.AddWebApiServices(configuration);
 
-services.AddControllers();
 services.AddEndpointsApiExplorer();
-services.AddSwaggerGen();
 
 var app = builder.Build();
 
-Task task = app.ApplyMigrationsAsync();
+_ = app.ApplyMigrationsAsync();
 
 app.UseSwagger();
 app.UseSwaggerUI();
-
+app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseHttpsRedirection();
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 

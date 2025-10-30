@@ -14,6 +14,6 @@ public static class AppConstants
         public const string DomainLayer = "NET_CarRentalSystem.Domain";
         public const string InfrastructureLayer = "NET_CarRentalSystem.Infrastructure";
         public const string SharedLayer = "NET_CarRentalSystem.Shared";
-        public const string APILayer = "NET_CarRentalSystem.API";
+        public const string Apiayer = "NET_CarRentalSystem.API";
     }
 }

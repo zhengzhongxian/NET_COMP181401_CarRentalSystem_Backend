@@ -1,7 +1,9 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.Application.DTOs.FuelDTOs.Get;
 using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
+using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
 namespace NET_CarRentalSystem.API.Controllers;

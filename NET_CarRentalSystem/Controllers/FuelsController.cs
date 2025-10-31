@@ -8,7 +8,6 @@ using NET_CarRentalSystem.Application.Features.Fuels.Commands.CreateFuel;
 using NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuel;
 using NET_CarRentalSystem.Application.Features.Fuels.Commands.UpdateFuel;
 using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
-using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
 namespace NET_CarRentalSystem.API.Controllers;

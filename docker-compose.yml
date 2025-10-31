@@ -51,8 +51,33 @@ services:
     depends_on:
       - sqlserver
       - redis
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
     volumes:
       - ./https:/https:ro
+      - ./logs:/app/Logs
+    networks:
+      - renticar-network
+
+  # .NET Sync Service
+  syncservice:
+    build:
+      context: .
+      dockerfile: ./NET_CarRentalSystem.SyncService/Dockerfile
+    container_name: renticar-syncservice-${ASPNETCORE_ENVIRONMENT}
+    restart: always
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ConnectionStrings__RenticarWriteDbContext=${DB_WRITE_CONNECTION_STRING}
+      - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
+    depends_on:
+      - sqlserver
+    volumes:
       - ./logs:/app/Logs
     networks:
       - renticar-network

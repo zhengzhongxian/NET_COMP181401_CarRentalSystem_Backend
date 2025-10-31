@@ -19,15 +19,15 @@ services:
   # Redis
   redis:
     image: redis:7.2-alpine
-    container_name: renticar-redis 
+    container_name: renticar-redis
     ports:
-      - "6379:6379" 
+      - "6379:6379"
     volumes:
-      - redis_data:/data 
+      - redis_data:/data
     networks:
       - renticar-network
     restart: unless-stopped
-    
+
   # .NET API Application
   api:
     build:
@@ -35,7 +35,7 @@ services:
       dockerfile: Dockerfile
     container_name: renticar-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:80;https://+:443
       - ASPNETCORE_HTTPS_PORT=2807
       - ASPNETCORE_Kestrel__Certificates__Default__Password=password
@@ -48,9 +48,19 @@ services:
       - "2807:443"
     depends_on:
       - sqlserver
-    volumes:
-      - ./https:/https:ro
-      - ./logs:/app/Logs
+    restart: unless-stopped
+  syncservice:
+    build:
+      context: ./NET_CarRentalSystem.SyncService
+      dockerfile: Dockerfile
+    container_name: renticar-syncservice
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__RenticarWriteDbContext=Data Source=host.docker.internal;Database=Renticar_WriteDB;User ID=sa;Password=Password123!;Trusted_Connection=False;Encrypt=False;TrustServerCertificate=True;
+      - ConnectionStrings__RenticarReadDbContext=Data Source=host.docker.internal;Database=Renticar_ReadDB;User ID=sa;Password=Password123!;Trusted_Connection=False;Encrypt=False;TrustServerCertificate=True;
+    depends_on:
+      - sqlserver
+      - api
     networks:
       - renticar-network
     restart: unless-stopped

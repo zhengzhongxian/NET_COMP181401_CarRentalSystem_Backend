@@ -31,80 +31,105 @@ namespace NET_CarRentalSystem.SyncService
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("1:1 Sync Service is starting...");
-
+            _logger.LogInformation("Sync Service is starting...");
+            _logger.LogInformation("Waiting for database (Renticar_WriteDB) to be ready...");
+            
+            var dbIsReady = false;
+            while (!dbIsReady && !stoppingToken.IsCancellationRequested)
+            {
+                try
+                {
+                    await using var connection = new SqlConnection(_writeDbConnection);
+                    await connection.OpenAsync(stoppingToken);
+                    await connection.CloseAsync();
+                    dbIsReady = true;
+                    _logger.LogInformation("Database is ready. Starting main sync loop.");
+                }
+                catch (SqlException ex)
+                {
+                    _logger.LogWarning("Database is not ready yet. Retrying in 5 seconds... Error: {ex}", ex.Message);
+                    await Task.Delay(5000, stoppingToken);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError("Fatal error during database connection check. Stopping service. Error: {ex}", ex.Message);
+                    return; 
+                }
+            }
+            
+            _logger.LogInformation("1:1 Sync Service is running.");
+            
             while (!stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    foreach (var tableConfig in _tablesToSync)
-                    {
-                        if (stoppingToken.IsCancellationRequested) break;
-                        await SyncTableAsync(tableConfig, stoppingToken);
-                    }
+                    var syncTasks = _tablesToSync.Select(tableConfig => SyncTableAsync(tableConfig, stoppingToken));
+                    await Task.WhenAll(syncTasks);
                 }
                 catch (Exception ex) 
                 { 
                     _logger.LogError("Fatal error in main sync loop. Error: {ex}", ex); 
                 }
 
-                await Task.Delay(TimeSpan.FromSeconds(10), stoppingToken);
+                await Task.Delay(TimeSpan.FromSeconds(2), stoppingToken);
             }
         }
 
         private async Task SyncTableAsync(SyncTableConfig config, CancellationToken token)
         {
-            using var writeConnection = new SqlConnection(_writeDbConnection);
-            using var readConnection = new SqlConnection(_readDbConnection);
+            await using var writeConnection = new SqlConnection(_writeDbConnection);
+            await using var readConnection = new SqlConnection(_readDbConnection);
             try
             {
                 await writeConnection.OpenAsync(token);
                 await readConnection.OpenAsync(token);
 
-                long lastSyncVersion = await writeConnection.QuerySingleOrDefaultAsync<long>("SELECT LastSyncVersion FROM dbo.SyncControl WHERE TableName = @TableName", new { config.TableName });
-                long currentSyncVersion = await writeConnection.QuerySingleAsync<long>(new CommandDefinition("SELECT CHANGE_TRACKING_CURRENT_VERSION()", cancellationToken: token));
+                var lastSyncVersion = await writeConnection.QuerySingleOrDefaultAsync<long>("SELECT LastSyncVersion FROM dbo.SyncControl WHERE TableName = @TableName", new { config.TableName });
+                var currentSyncVersion = await writeConnection.QuerySingleAsync<long>(new CommandDefinition("SELECT CHANGE_TRACKING_CURRENT_VERSION()", cancellationToken: token));
                 if (lastSyncVersion >= currentSyncVersion) return;
 
                 var changesQuery = $"SELECT ct.[{config.PrimaryKeyColumn}] AS Id, ct.SYS_CHANGE_OPERATION AS Operation FROM CHANGETABLE(CHANGES dbo.[{config.TableName}], @lastSyncVersion) AS ct";
                 var changes = (await writeConnection.QueryAsync(changesQuery, new { lastSyncVersion })).AsList();
-                if (!changes.Any())
+                if (changes.Count == 0)
                 {
                     await UpdateSyncVersion(writeConnection, config.TableName, currentSyncVersion, token);
                     return;
                 }
 
-                _logger.LogInformation("{0} Detected {1} changes. Processing...", config.TableName, changes.Count);
-                string mergeSql = await _metadataCache.GetMergeStatementAsync(config.TableName, config.PrimaryKeyColumn, token);
+                _logger.LogInformation("{TableName} Detected {ChangeCount} changes. Processing...", config.TableName, changes.Count);
 
-                foreach (var change in changes)
+                var deleteIds = changes.Where(c => c.Operation == "D").Select(c => (object)c.Id).ToList();
+                if (deleteIds.Count > 0)
                 {
-                    if (token.IsCancellationRequested) break;
+                    var deleteSql = $"DELETE FROM dbo.[{config.TableName}] WHERE [{config.PrimaryKeyColumn}] IN @Ids";
+                    await readConnection.ExecuteAsync(new CommandDefinition(deleteSql, new { Ids = deleteIds }, cancellationToken: token));
+                    _logger.LogInformation("Deleted {DeleteCount} records from {TableName}", deleteIds.Count, config.TableName);
+                }
 
-                    if (change.Operation == "D")
+                var upsertIds = changes.Where(c => c.Operation != "D").Select(c => (object)c.Id).ToList();
+                if (upsertIds.Count > 0)
+                {
+                    var mergeSql = await _metadataCache.GetMergeStatementAsync(config.TableName, config.PrimaryKeyColumn, token);
+                    var sourceDataQuery = $"SELECT * FROM dbo.[{config.TableName}] WHERE [{config.PrimaryKeyColumn}] IN @Ids";
+                    var sourceData = (await writeConnection.QueryAsync(new CommandDefinition(sourceDataQuery, new { Ids = upsertIds }, cancellationToken: token))).ToList();
+
+                    if (sourceData.Count > 0)
                     {
-                        var deleteSql = $"DELETE FROM dbo.[{config.TableName}] WHERE [{config.PrimaryKeyColumn}] = @Id";
-                        await readConnection.ExecuteAsync(new CommandDefinition(deleteSql, new { Id = change.Id }, cancellationToken: token));
-                    }
-                    else
-                    {
-                        var sourceData = await writeConnection.QuerySingleOrDefaultAsync(
-                            new CommandDefinition($"SELECT * FROM dbo.[{config.TableName}] WHERE [{config.PrimaryKeyColumn}] = @Id", new { Id = change.Id }, cancellationToken: token));
-                        if (sourceData != null)
-                        {
-                            await readConnection.ExecuteAsync(new CommandDefinition(mergeSql, sourceData, cancellationToken: token));
-                        }
+                        await readConnection.ExecuteAsync(new CommandDefinition(mergeSql, sourceData, cancellationToken: token));
+                        _logger.LogInformation("Upserted {UpsertCount} records to {TableName}", sourceData.Count, config.TableName);
                     }
                 }
                 await UpdateSyncVersion(writeConnection, config.TableName, currentSyncVersion, token);
             }
             catch (Exception ex) 
             { 
-                _logger.LogError("Error while synchronizing table: {0}. Error {1}", config.TableName, ex); 
+                _logger.LogError("Error while synchronizing table: {TableName}. Error {Exception}", config.TableName, ex);
             }
         }
 
-        private async Task UpdateSyncVersion(SqlConnection connection, string tableName, long version, CancellationToken token)
+        private static async Task UpdateSyncVersion(SqlConnection connection, string tableName, long version, CancellationToken token)
         {
-            var sql = "UPDATE dbo.SyncControl SET LastSyncVersion = @Version WHERE TableName = @TableName";
+            const string sql = "UPDATE dbo.SyncControl SET SyncControl.LastSyncVersion = @Version WHERE TableName = @TableName";
             await connection.ExecuteAsync(new CommandDefinition(sql, new { Version = version, TableName = tableName }, cancellationToken: token));
         }
     }

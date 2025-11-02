@@ -50,11 +50,5 @@ namespace NET_CarRentalSystem.API.Controllers
                 return StatusCode(errorResponse.StatusCode, errorResponse);
             }
         }
-
-        [HttpPost("refresh")]
-        public async Task<IActionResult> Refresh([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
-        {
-            return Ok();
-        }
     }
 }

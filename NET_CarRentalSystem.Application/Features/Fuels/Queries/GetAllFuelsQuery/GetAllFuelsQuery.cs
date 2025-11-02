@@ -7,13 +7,12 @@ using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 namespace NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
 
 public class GetAllFuelsQuery : IQuery<List<GetFuelDto>>;
+
 public class GetAllFuelsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetAllFuelsQuery, List<GetFuelDto>>
 {
-    private readonly IUnitOfWork _unitOfWork = unitOfWork;
-
     public async Task<List<GetFuelDto>> Handle(GetAllFuelsQuery request, CancellationToken cancellationToken)
     {
-        var fuels = await _unitOfWork.GetRepository<Fuel>().GetAllAsync(cancellationToken);
+        var fuels = await unitOfWork.GetRepository<Fuel>().GetAllAsync(cancellationToken);
         
         return [.. fuels.Select(fuel => new GetFuelDto
         {

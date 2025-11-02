@@ -4,9 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Models.Request.Fuels;
 using NET_CarRentalSystem.API.Models.Response.Fuels;
 using NET_CarRentalSystem.Application.DTOs.FuelDTOs.Get;
-using NET_CarRentalSystem.Application.Features.Fuels.Commands.CreateFuel;
-using NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuel;
-using NET_CarRentalSystem.Application.Features.Fuels.Commands.UpdateFuel;
+using NET_CarRentalSystem.Application.Features.Fuels.Commands.CreateFuelCommand;
+using NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuelCommand;
+using NET_CarRentalSystem.Application.Features.Fuels.Commands.UpdateFuelCommand;
 using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
@@ -49,7 +49,11 @@ public class FuelsController(ISender sender, IMapper mapper) : ControllerBase
     {
         try
         {
-            var command = new CreateFuelCommand(request.Name, request.Description);
+            var command = new CreateFuelCommand
+            {
+                Name = request.Name,
+                Description = request.Description
+            };
             var newId = await sender.Send(command, cancellationToken);
 
             var apiResponse = ApiResponse<Guid>.SuccessResult(newId, FuelMessage.Post.Success);
@@ -57,7 +61,10 @@ public class FuelsController(ISender sender, IMapper mapper) : ControllerBase
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<Guid>.ErrorResult(FuelMessage.Post.Error, StatusCodes.Status500InternalServerError, [ex.Message]);
+            var errorResponse = ApiResponse<Guid>.ErrorResult(
+                FuelMessage.Post.Error, 
+                StatusCodes.Status500InternalServerError, 
+                [ex.Message]);
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }

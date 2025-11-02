@@ -44,20 +44,12 @@ services:
       - ConnectionStrings__RenticarWriteDbContext=${DB_WRITE_CONNECTION_STRING}
       - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
       - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
-
     ports:
       - "8080:80"
       - "8443:443"
     depends_on:
       - sqlserver
       - redis
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/healthz"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-      start_period: 30s
-
     volumes:
       - ./https:/https:ro
       - ./logs:/app/Logs

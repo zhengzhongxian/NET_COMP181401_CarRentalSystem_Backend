@@ -3,12 +3,12 @@ using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 
-namespace NET_CarRentalSystem.Application.Features.Fuels.Commands.CreateFuel;
+namespace NET_CarRentalSystem.Application.Features.Fuels.Commands.CreateFuelCommand;
 
-public class CreateFuelCommand(string name, string? description) : ICommand<Guid>
+public class CreateFuelCommand : ICommand<Guid>
 {
-    public string Name { get; } = name;
-    public string? Description { get; } = description;
+    public required string Name { get; init; }
+    public string? Description { get; init; }
 }
 
 public class CreateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<CreateFuelCommand, Guid>

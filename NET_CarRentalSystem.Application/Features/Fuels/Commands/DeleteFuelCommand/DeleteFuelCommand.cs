@@ -4,7 +4,7 @@ using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 
-namespace NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuel;
+namespace NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuelCommand;
 
 public class DeleteFuelCommand(Guid id) : ICommand<(string, bool)>
 {

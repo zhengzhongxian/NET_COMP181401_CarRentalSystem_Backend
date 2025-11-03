@@ -1,13 +1,21 @@
 using MediatR;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 
 namespace NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.CreateVehicleCategory;
 
-public class CreateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) 
-    : IRequestHandler<CreateVehicleCategoryCommand, Guid>
+public class CreateVehicleCategoryCommand : IRequest<(string, Guid?)>
 {
-    public async Task<Guid> Handle(
+    public required string CategoryCode { get; set; }
+
+    public required int Seat { get; set; }
+}
+
+public class CreateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) 
+    : IRequestHandler<CreateVehicleCategoryCommand, (string, Guid?)>
+{
+    public async Task<(string, Guid?)> Handle(
         CreateVehicleCategoryCommand request, 
         CancellationToken cancellationToken)
     {
@@ -21,6 +29,6 @@ public class CreateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork)
         await unitOfWork.GetRepository<VehicleCategory>().AddAsync(newCategory, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return newCategory.CategoryId;
+        return (VehicleCategoryMessage.Post.Success, newCategory.CategoryId);
     }
 }

@@ -1,79 +1,182 @@
+using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using NET_CarRentalSystem.API.Models.Request.VehicleCategories;
+using NET_CarRentalSystem.API.Models.Response.VehicleCategories;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.CreateVehicleCategory;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.DeleteVehicleCategory;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.UpdateVehicleCategory;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Queries.GetAllVehicleCategories;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Queries.GetVehicleCategoryById;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Wrapper;
 
 namespace NET_CarRentalSystem.API.Controllers;
 
-[Route("api/[controller]")]
 [ApiController]
-public class VehicleCategoriesController(IMediator mediator) : ControllerBase
+[Route("api/[controller]")]
+public class VehicleCategoriesController : ControllerBase
 {
-    [HttpGet]
-    public async Task<IActionResult> GetVehicleCategories()
+    private readonly ISender _sender;
+    private readonly IMapper _mapper;
+
+    public VehicleCategoriesController(ISender sender, IMapper mapper)
     {
-        var query = new GetAllVehicleCategoriesQuery();
-        var result = await mediator.Send(query);
-        return Ok(new { message = VehicleCategoryMessage.Get.Success, data = result });
+        _sender = sender;
+        _mapper = mapper;
     }
 
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetVehicleCategory(Guid id)
+    [HttpGet]
+    public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
-        var query = new GetVehicleCategoryByIdQuery { Id = id };
-        var result = await mediator.Send(query);
-
-        if (result == null)
+        try
         {
-            return NotFound(new { message = VehicleCategoryMessage.Get.NotFound });
-        }
+            var query = new GetAllVehicleCategoriesQuery();
+            var result = await _sender.Send(query, cancellationToken);
+            var mappedResult = _mapper.Map<IEnumerable<GetVehicleCategoryResponse>>(result);
 
-        return Ok(new { message = VehicleCategoryMessage.Get.Success, data = result });
+            var apiResponse = ApiResponse<IEnumerable<GetVehicleCategoryResponse>>.SuccessResult(
+                mappedResult,
+                VehicleCategoryMessage.Get.Success
+            );
+
+            return Ok(apiResponse);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = ApiResponse<IEnumerable<GetVehicleCategoryResponse>>.ErrorResult(
+                VehicleCategoryMessage.Get.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]
+            );
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    [HttpGet("{id:guid}")]
+    public async Task<IActionResult> GetById(Guid id, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = new GetVehicleCategoryByIdQuery { Id = id };
+            var result = await _sender.Send(query, cancellationToken);
+
+            if (result == null)
+            {
+                var notFoundResponse = ApiResponse<GetVehicleCategoryResponse>.ErrorResult(
+                    VehicleCategoryMessage.Get.NotFound,
+                    StatusCodes.Status404NotFound
+                );
+                return NotFound(notFoundResponse);
+            }
+
+            var mappedResult = _mapper.Map<GetVehicleCategoryResponse>(result);
+            var apiResponse = ApiResponse<GetVehicleCategoryResponse>.SuccessResult(mappedResult, VehicleCategoryMessage.Get.Success);
+            return Ok(apiResponse);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = ApiResponse<GetVehicleCategoryResponse>.ErrorResult(
+                VehicleCategoryMessage.Get.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]
+            );
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateVehicleCategory([FromBody] CreateVehicleCategoryCommand command)
+    public async Task<IActionResult> Create([FromBody] CreateVehicleCategoryRequest request, CancellationToken cancellationToken)
     {
-        var categoryId = await mediator.Send(command);
-        return CreatedAtAction(
-            nameof(GetVehicleCategory), 
-            new { id = categoryId }, 
-            new { message = VehicleCategoryMessage.Post.Success, id = categoryId });
+        try
+        {
+            var command = new CreateVehicleCategoryCommand
+            {
+                CategoryCode = request.CategoryCode,
+                Seat = request.Seat
+            };
+            var (message, newId) = await _sender.Send(command, cancellationToken);
+
+            if (!newId.HasValue)
+            {
+                var badRequestResponse = ApiResponse<CreateVehicleCategoryResponse>.ErrorResult(VehicleCategoryMessage.Post.Failed);
+                return BadRequest(badRequestResponse);
+            }
+
+            var response = new CreateVehicleCategoryResponse { CategoryId = newId.Value };
+            var apiResponse = ApiResponse<CreateVehicleCategoryResponse>.SuccessResult(response, message);
+            
+            return CreatedAtAction(nameof(GetById), new { id = newId.Value }, apiResponse);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = ApiResponse<CreateVehicleCategoryResponse>.ErrorResult(
+                VehicleCategoryMessage.Post.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
     }
 
-    [HttpPut("{id}")]
-    public async Task<IActionResult> UpdateVehicleCategory(Guid id, [FromBody] UpdateVehicleCategoryCommand command)
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleCategoryRequest request, CancellationToken cancellationToken)
     {
-        if (id != command.Id)
+        try
         {
-            return BadRequest();
+            var command = new UpdateVehicleCategoryCommand
+            {
+                Id = id,
+                CategoryCode = request.CategoryCode,
+                Seat = request.Seat
+            };
+
+            var (message, updatedDto) = await _sender.Send(command, cancellationToken);
+
+            if (updatedDto == null)
+            {
+                var errorResponse = ApiResponse.ErrorResult(message, StatusCodes.Status404NotFound);
+                return NotFound(errorResponse);
+            }
+
+            var response = _mapper.Map<UpdateVehicleCategoryResponse>(updatedDto);
+            var apiResponse = ApiResponse<UpdateVehicleCategoryResponse>.SuccessResult(response, message);
+
+            return Ok(apiResponse);
         }
-
-        var result = await mediator.Send(command);
-
-        if (!result)
+        catch (Exception ex)
         {
-            return NotFound(new { message = VehicleCategoryMessage.Update.NotFound });
+            var errorResponse = ApiResponse<UpdateVehicleCategoryResponse>.ErrorResult(VehicleCategoryMessage.Update.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+            return StatusCode(errorResponse.StatusCode, errorResponse);
         }
-
-        return Ok(new { message = VehicleCategoryMessage.Update.Success });
     }
 
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteVehicleCategory(Guid id)
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
-        var command = new DeleteVehicleCategoryCommand { Id = id };
-        var result = await mediator.Send(command);
-
-        if (!result)
+        try
         {
-            return NotFound(new { message = VehicleCategoryMessage.Delete.NotFound });
-        }
+            var command = new DeleteVehicleCategoryCommand { Id = id };
+            var (message, result) = await _sender.Send(command, cancellationToken);
 
-        return Ok(new { message = VehicleCategoryMessage.Delete.Success });
+            if (!result)
+            {
+                var errorResponse = ApiResponse.ErrorResult(message, StatusCodes.Status404NotFound);
+                return NotFound(errorResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(message);
+            return Ok(apiResponse);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleCategoryMessage.Delete.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
     }
 }

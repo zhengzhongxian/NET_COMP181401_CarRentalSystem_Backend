@@ -60,7 +60,7 @@ public class ApiResponse : ApiResponse<object>
         };
     }
 
-    public static new ApiResponse ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
+    public new static ApiResponse ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
     {
         return new ApiResponse
         {
@@ -71,7 +71,7 @@ public class ApiResponse : ApiResponse<object>
         };
     }
 
-    public static new ApiResponse ErrorResult(string message, string error, int statusCode = 400)
+    public new static ApiResponse ErrorResult(string message, string error, int statusCode = 400)
     {
         return new ApiResponse
         {

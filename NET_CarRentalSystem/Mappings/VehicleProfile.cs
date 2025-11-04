@@ -1,5 +1,4 @@
 using AutoMapper;
-using NET_CarRentalSystem.API.Models.Request;
 using NET_CarRentalSystem.API.Models.Request.Vehicles;
 using NET_CarRentalSystem.API.Models.Response.Vehicles;
 using NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;

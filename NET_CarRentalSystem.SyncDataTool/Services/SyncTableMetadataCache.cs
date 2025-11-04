@@ -1,14 +1,15 @@
-﻿using Dapper;
-using Microsoft.Data.SqlClient;
-using System.Collections.Concurrent;
+﻿using System.Collections.Concurrent;
 using System.Text;
+using Dapper;
+using Microsoft.Data.SqlClient;
+using NET_CarRentalSystem.Shared.Constants;
 
-namespace NET_CarRentalSystem.SyncService.Services;
+namespace NET_CarRentalSystem.SyncDataTool.Services;
 
 public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMetadataCache> logger)
 {
-    private readonly string _writeDbConnection = config.GetConnectionString("RenticarWriteDbContext")
-            ?? throw new InvalidOperationException("Connection string 'RenticarWriteDbContext' not found in appsettings.json.");
+    private readonly string _writeDbConnection = config.GetConnectionString(KeyConstants.ConnectionStrings.RenticarWriteDbContext)
+            ?? throw new InvalidOperationException("Connection string 'RenticarWriteDbContext' not found");
     
     private static readonly ConcurrentDictionary<string, string> MergeStatementCache = new();
 
@@ -39,10 +40,10 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
             return cachedCols;
         }
 
-        using var connection = new SqlConnection(_writeDbConnection);
+        await using var connection = new SqlConnection(_writeDbConnection);
         await connection.OpenAsync(token);
 
-        var query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = @TableName";
+        const string query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = @TableName";
         var columns = (await connection.QueryAsync<string>(new CommandDefinition(query, new { TableName = tableName }, cancellationToken: token))).AsList();
 
         if (columns.Count == 0)
@@ -54,7 +55,7 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
         return columns;
     }
 
-    private string BuildMergeStatement(string tableName, string pkColumn, List<string> columns)
+    private static string BuildMergeStatement(string tableName, string pkColumn, List<string> columns)
     {
         var sb = new StringBuilder();
 

@@ -4,6 +4,12 @@ using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Models.Request.Auth;
 using NET_CarRentalSystem.API.Models.Response.Auth;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.RefreshTokenCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutSession;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutAllOtherSessions;
+using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.Shared.Wrapper;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 
@@ -19,11 +25,81 @@ namespace NET_CarRentalSystem.API.Controllers
             try
             {
                 var command = mapper.Map<LoginCommand>(request);
+                command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
+                command.DeviceName = Request.Headers.UserAgent.ToString();
+                
                 var (message, tokenData) = await mediator.Send(command, cancellationToken);
 
                 if (tokenData == null)
                 {
-                    var errorResponse = ApiResponse<LoginResponse>.ErrorResult(
+                    var errorResponse = ApiResponse.ErrorResult(
+                        message,
+                        StatusCodes.Status401Unauthorized
+                    );
+                    
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = mapper.Map<LoginResponse>(tokenData);
+                var apiResponse = ApiResponse.SuccessResult(
+                    response,
+                    message
+                );
+
+                return StatusCode(apiResponse.StatusCode, apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.Login.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]
+                );
+
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+        }
+
+        [HttpPost("logout")]
+        public async Task<IActionResult> Logout([FromBody] LogoutRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new LogoutCommand { RefreshToken = request.RefreshToken };
+                
+                await mediator.Send(command, cancellationToken);
+
+                var apiResponse = ApiResponse.SuccessResult(AuthMessage.Login.LogoutSuccess);
+                
+                return StatusCode(apiResponse.StatusCode, apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.Login.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new RefreshTokenCommand
+                {
+                    AccessToken = request.AccessToken,
+                    RefreshToken = request.RefreshToken
+                };
+                
+                var (message, tokenData) = await mediator.Send(command, cancellationToken);
+
+                if (tokenData == null)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(
                         message,
                         StatusCodes.Status401Unauthorized
                     );
@@ -31,23 +107,97 @@ namespace NET_CarRentalSystem.API.Controllers
                 }
 
                 var response = mapper.Map<LoginResponse>(tokenData);
-
-                var apiResponse = ApiResponse<LoginResponse>.SuccessResult(
+                var apiResponse = ApiResponse.SuccessResult(
                     response,
                     message
                 );
 
-                return Ok(apiResponse);
+                return StatusCode(apiResponse.StatusCode, apiResponse);
             }
             catch (Exception ex)
             {
-                var errorResponse = ApiResponse<LoginResponse>.ErrorResult(
-                    AuthMessage.Login.Error,
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.RefreshToken.Error,
                     StatusCodes.Status500InternalServerError,
-                    [ex.Message]
-                );
+                    [ex.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
 
-                return StatusCode(errorResponse.StatusCode, errorResponse);
+        [HttpGet("sessions")]
+        [ValidateUserExists]
+        public async Task<IActionResult> GetActiveSessions(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var sessions = await mediator.Send(new GetActiveSessionsQuery(), cancellationToken);
+                
+                var apiResponse = ApiResponse.SuccessResult(
+                    mapper.Map<List<GetUserSessionResponse>>(sessions),
+                    AuthMessage.GetSessions.Success);
+                
+                return StatusCode(apiResponse.StatusCode, apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.GetSessions.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpDelete("sessions/{sessionId:guid}")]
+        [ValidateUserExists]
+        public async Task<IActionResult> LogoutSession(Guid sessionId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new LogoutSessionCommand { SessionId = sessionId };
+                var (message, success) = await mediator.Send(command, cancellationToken);
+
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message, StatusCodes.Status404NotFound);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.LogoutSession.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("sessions/logout-all-others")]
+        [ValidateUserExists]
+        public async Task<IActionResult> LogoutAllOtherSessions([FromBody] LogoutAllOtherSessionsRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new LogoutAllOtherSessionsCommand { CurrentRefreshToken = request.CurrentRefreshToken };
+                await mediator.Send(command, cancellationToken);
+
+                return Ok(ApiResponse.SuccessResult(AuthMessage.LogoutAllOtherSessions.Success));
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.LogoutAllOtherSessions.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
     }

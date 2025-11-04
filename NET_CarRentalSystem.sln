@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET_CarRentalSystem.Shared", "NET_CarRentalSystem.Shared\NET_CarRentalSystem.Shared.csproj", "{6BE903A3-CD2A-4892-AD44-64FBB65FE087}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET_CarRentalSystem.SyncService", "NET_CarRentalSystem.SyncService\NET_CarRentalSystem.SyncService.csproj", "{BD83D0A5-D8B3-46F0-9087-F5C86BB51D9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NET_CarRentalSystem.SyncDataTool", "NET_CarRentalSystem.SyncDataTool\NET_CarRentalSystem.SyncDataTool.csproj", "{BD83D0A5-D8B3-46F0-9087-F5C86BB51D9E}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{81DDED9D-158B-E303-5F62-77A2896D2A5A}"
 EndProject

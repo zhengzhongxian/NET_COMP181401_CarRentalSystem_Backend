@@ -1,6 +1,6 @@
 using NET_CarRentalSystem.Shared.Constants;
 
-namespace NET_CarRentalSystem.Infrastructure.Configuration;
+namespace NET_CarRentalSystem.Infrastructure.Configurations;
 
 public class JwtSettings
 {

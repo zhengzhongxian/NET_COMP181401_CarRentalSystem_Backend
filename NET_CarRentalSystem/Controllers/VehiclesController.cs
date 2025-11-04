@@ -32,17 +32,16 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
             );
 
             var pagedResponse = mapper.Map<PagedResponse<GetVehiclesPagedResponse>>(pagedList);
-
-            var apiResponse = ApiResponse<PagedResponse<GetVehiclesPagedResponse>>.SuccessResult(
+            var apiResponse = ApiResponse.SuccessResult(
                 pagedResponse,
                 VehicleMessage.Get.Success
             );
 
-            return Ok(apiResponse);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<PagedResponse<GetVehiclesPagedResponse>>.ErrorResult(
+            var errorResponse = ApiResponse.ErrorResult(
                 VehicleMessage.Get.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]

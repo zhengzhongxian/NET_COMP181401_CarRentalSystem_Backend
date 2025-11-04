@@ -5,6 +5,10 @@ namespace NET_CarRentalSystem.Application.Interfaces.Services;
 public interface IIdentityService
 {
     Task<User?> FindUserAsync(string usernameOrEmail);
-    
+
+    Task<User?> FindUserByIdAsync(string userId);
+
+    Task<bool> UserExistsAsync(string userId);
+
     Task<bool> CheckPasswordSignInAsync(User user, string password);
 }

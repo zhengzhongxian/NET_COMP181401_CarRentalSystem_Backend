@@ -18,17 +18,22 @@ public class PaymentsController(ISender sender, IMapper mapper) : ControllerBase
         try
         {
             var mediatR = await sender.Send(new GetAllPaymentMethod(), cancellationToken);
+            
             var response = mapper.Map<List<GetPaymentMethodResponse>>(mediatR);
-            var apiResponse = ApiResponse<List<GetPaymentMethodResponse>>.SuccessResult(response, PaymentMessage.Get.Success);
-            return Ok(apiResponse);
+            var apiResponse = ApiResponse.SuccessResult(
+                response, 
+                PaymentMessage.Get.Success);
+            
+            return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<List<GetPaymentMethodResponse>>.ErrorResult(
+            var errorResponse = ApiResponse.ErrorResult(
                 PaymentMessage.Get.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]
             );
+            
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }

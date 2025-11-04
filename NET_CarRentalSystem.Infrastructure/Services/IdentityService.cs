@@ -12,7 +12,7 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
         var user = await unitOfWork.GetRepository<User>().GetFirstOrDefaultAsync(
             u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail
         );
-        
+
         return user;
     }
 
@@ -20,5 +20,25 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
     {
         var result = BC.Verify(password, user.Password);
         return Task.FromResult(result);
+    }
+
+
+    public async Task<User?> FindUserByIdAsync(string userId)
+    {
+        if (Guid.TryParse(userId, out var userGuid))
+        {
+            return await unitOfWork.GetRepository<User>().GetByIdAsync(userGuid);
+        }
+        return null;
+    }
+
+    public async Task<bool> UserExistsAsync(string userId)
+    {
+        if (Guid.TryParse(userId, out var userGuid))
+        {
+            return await unitOfWork.GetRepository<User>().ExistsAsync(u => u.UserId == userGuid);
+        }
+
+        return false;
     }
 }

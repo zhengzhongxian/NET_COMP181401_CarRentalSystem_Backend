@@ -41,9 +41,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.Property(u => u.OtpExpires)
             .HasColumnName("otp_expires");
 
-        builder.Property(u => u.ResetPasswordToken)
-            .HasColumnName("reset_password_token");
-
         builder.Property(u => u.IsVerified)
             .HasColumnName("is_verified");
 
@@ -69,9 +66,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasForeignKey<Customer>(c => c.UserId);
 
         builder.HasMany(u => u.UserRoles)
-        .WithOne(ur => ur.User)
-        .HasForeignKey(ur => ur.UserId)
-        .IsRequired();
+            .WithOne(ur => ur.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
 
         builder.HasMany(u => u.UserClaims)
             .WithOne(uc => uc.User)

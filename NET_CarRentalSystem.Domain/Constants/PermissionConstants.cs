@@ -19,6 +19,14 @@ public static class PermissionConstants
         public const string Edit = "Permissions.Bookings.Edit";
         public const string Delete = "Permissions.Bookings.Delete";
     }
+
+    public static class Fuels
+    {
+        public const string View = "Permissions.Fuels.View";
+        public const string Create = "Permissions.Fuels.Create";
+        public const string Edit = "Permissions.Fuels.Edit";
+        public const string Delete = "Permissions.Fuels.Delete";
+    }
     
     public static List<string> GetAllPermissions()
     {

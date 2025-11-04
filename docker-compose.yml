@@ -57,11 +57,11 @@ services:
       - renticar-network
 
   # .NET Sync Service
-  syncservice:
+  syncdatatool:
     build:
-      context: .
-      dockerfile: ./NET_CarRentalSystem.SyncService/Dockerfile
-    container_name: renticar-syncservice-${ASPNETCORE_ENVIRONMENT}
+      context: ./NET_CarRentalSystem.SyncDataTool
+      dockerfile: Dockerfile
+    container_name: renticar-syncdatatool-${ASPNETCORE_ENVIRONMENT}
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
@@ -69,6 +69,7 @@ services:
       - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
     depends_on:
       - sqlserver
+      - api
     volumes:
       - ./logs:/app/Logs
     networks:
@@ -85,3 +86,4 @@ volumes:
 networks:
   renticar-network:
     driver: bridge
+

@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using NET_CarRentalSystem.Domain.Entities;
 
 namespace NET_CarRentalSystem.Application.Interfaces.Services;
@@ -16,6 +17,8 @@ public class TokenResponse
 public interface ITokenService
 {
     Task<TokenResponse> GenerateTokensAsync(User user);
-    
+
     string GenerateRefreshToken();
+    
+    ClaimsPrincipal? GetPrincipalFromExpiredToken(string token);
 }

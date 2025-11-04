@@ -23,9 +23,13 @@ public class UpdateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         var fuelToUpdate = await repository.GetByIdAsync(request.FuelId, cancellationToken, useWriteConnection: true);
 
         if (fuelToUpdate == null) return (FuelMessage.Update.NotFound, null);
-
+        
         fuelToUpdate.Name = request.Name;
-        fuelToUpdate.Description = request.Description;
+        
+        if (request.Description != null)
+        {
+            fuelToUpdate.Description = request.Description;
+        }
         
         repository.Update(fuelToUpdate);
         await unitOfWork.SaveChangesAsync(cancellationToken);

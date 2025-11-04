@@ -13,6 +13,7 @@ public static class KeyConstants
     {
         public const string CloudinarySettings = "CloudinarySettings";
         public const string JwtSettings = "JwtSettings";
+        public const string SyncDataToolSettings = "SyncDataToolSettings";
     }
 
     public static class Quartz
@@ -22,5 +23,11 @@ public static class KeyConstants
             public const string JobName = "Quartz:CheckToolAlive:JobName";
             public const string CronExpression = "Quartz:CheckToolAlive:CronExpression";
         }
+    }
+
+    public static class DatabaseInitializationSettings
+    {
+        public const string MaxRetries = "DatabaseInitializationSettings:MaxRetries";
+        public const string RetryInterval = "DatabaseInitializationSettings:DbRetryDelayInSeconds";
     }
 }

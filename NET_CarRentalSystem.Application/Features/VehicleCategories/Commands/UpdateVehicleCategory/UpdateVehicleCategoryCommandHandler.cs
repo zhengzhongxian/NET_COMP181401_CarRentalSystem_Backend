@@ -1,13 +1,13 @@
 using MediatR;
+using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.DTOs.VehicleCategoryDTOs.Update;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using System.ComponentModel.DataAnnotations;
 
 namespace NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.UpdateVehicleCategory;
 
-public class UpdateVehicleCategoryCommand : IRequest<(string, UpdateVehicleCategoryDto?)>
+public class UpdateVehicleCategoryCommand : ICommand<UpdateVehicleCategoryDto?>
 {
     [Required]
     public Guid Id { get; set; }
@@ -18,9 +18,9 @@ public class UpdateVehicleCategoryCommand : IRequest<(string, UpdateVehicleCateg
 }
 
 public class UpdateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) 
-    : IRequestHandler<UpdateVehicleCategoryCommand, (string, UpdateVehicleCategoryDto?)>
+    : IRequestHandler<UpdateVehicleCategoryCommand, UpdateVehicleCategoryDto?>
 {
-    public async Task<(string, UpdateVehicleCategoryDto?)> Handle(
+    public async Task<UpdateVehicleCategoryDto?> Handle(
         UpdateVehicleCategoryCommand request, 
         CancellationToken cancellationToken)
     {
@@ -29,7 +29,7 @@ public class UpdateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork)
 
         if (categoryToUpdate == null)
         {
-            return (VehicleCategoryMessage.Update.NotFound, null);
+            return null;
         }
 
         if (request.CategoryCode != null)
@@ -52,6 +52,6 @@ public class UpdateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork)
             Seat = categoryToUpdate.Seat
         };
 
-        return (VehicleCategoryMessage.Update.Success, updatedDto);
+        return updatedDto;
     }
 }

@@ -96,18 +96,12 @@ public class VehicleCategoriesController : ControllerBase
                 CategoryCode = request.CategoryCode,
                 Seat = request.Seat
             };
-            var (message, newId) = await _sender.Send(command, cancellationToken);
+            var newId = await _sender.Send(command, cancellationToken);
 
-            if (!newId.HasValue)
-            {
-                var badRequestResponse = ApiResponse<CreateVehicleCategoryResponse>.ErrorResult(VehicleCategoryMessage.Post.Failed);
-                return BadRequest(badRequestResponse);
-            }
-
-            var response = new CreateVehicleCategoryResponse { CategoryId = newId.Value };
-            var apiResponse = ApiResponse<CreateVehicleCategoryResponse>.SuccessResult(response, message);
+            var response = new CreateVehicleCategoryResponse { CategoryId = newId };
+            var apiResponse = ApiResponse<CreateVehicleCategoryResponse>.SuccessResult(response, VehicleCategoryMessage.Post.Success);
             
-            return CreatedAtAction(nameof(GetById), new { id = newId.Value }, apiResponse);
+            return CreatedAtAction(nameof(GetById), new { id = newId }, apiResponse);
         }
         catch (Exception ex)
         {
@@ -131,16 +125,16 @@ public class VehicleCategoriesController : ControllerBase
                 Seat = request.Seat
             };
 
-            var (message, updatedDto) = await _sender.Send(command, cancellationToken);
+            var updatedDto = await _sender.Send(command, cancellationToken);
 
             if (updatedDto == null)
             {
-                var errorResponse = ApiResponse.ErrorResult(message, StatusCodes.Status404NotFound);
+                var errorResponse = ApiResponse.ErrorResult(VehicleCategoryMessage.Update.NotFound, StatusCodes.Status404NotFound);
                 return NotFound(errorResponse);
             }
 
             var response = _mapper.Map<UpdateVehicleCategoryResponse>(updatedDto);
-            var apiResponse = ApiResponse<UpdateVehicleCategoryResponse>.SuccessResult(response, message);
+            var apiResponse = ApiResponse<UpdateVehicleCategoryResponse>.SuccessResult(response, VehicleCategoryMessage.Update.Success);
 
             return Ok(apiResponse);
         }
@@ -159,15 +153,15 @@ public class VehicleCategoriesController : ControllerBase
         try
         {
             var command = new DeleteVehicleCategoryCommand { Id = id };
-            var (message, result) = await _sender.Send(command, cancellationToken);
+            var result = await _sender.Send(command, cancellationToken);
 
             if (!result)
             {
-                var errorResponse = ApiResponse.ErrorResult(message, StatusCodes.Status404NotFound);
+                var errorResponse = ApiResponse.ErrorResult(VehicleCategoryMessage.Delete.NotFound, StatusCodes.Status404NotFound);
                 return NotFound(errorResponse);
             }
 
-            var apiResponse = ApiResponse.SuccessResult(message);
+            var apiResponse = ApiResponse.SuccessResult(VehicleCategoryMessage.Delete.Success);
             return Ok(apiResponse);
         }
         catch (Exception ex)

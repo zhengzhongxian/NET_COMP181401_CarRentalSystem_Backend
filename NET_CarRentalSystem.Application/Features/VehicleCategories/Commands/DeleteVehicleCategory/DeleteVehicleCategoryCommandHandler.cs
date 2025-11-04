@@ -1,21 +1,21 @@
 using MediatR;
+using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using System.ComponentModel.DataAnnotations;
 
 namespace NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.DeleteVehicleCategory;
 
-public class DeleteVehicleCategoryCommand : IRequest<(string, bool)>
+public class DeleteVehicleCategoryCommand : ICommand<bool>
 {
     [Required]
     public Guid Id { get; set; }
 }
 
 public class DeleteVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) 
-    : IRequestHandler<DeleteVehicleCategoryCommand, (string, bool)>
+    : IRequestHandler<DeleteVehicleCategoryCommand, bool>
 {
-    public async Task<(string, bool)> Handle(
+    public async Task<bool> Handle(
         DeleteVehicleCategoryCommand request, 
         CancellationToken cancellationToken)
     {
@@ -24,12 +24,12 @@ public class DeleteVehicleCategoryCommandHandler(IUnitOfWork unitOfWork)
 
         if (categoryToDelete == null)
         {
-            return (VehicleCategoryMessage.Delete.NotFound, false);
+            return false;
         }
 
         unitOfWork.GetRepository<VehicleCategory>().Remove(categoryToDelete);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return (VehicleCategoryMessage.Delete.Success, true);
+        return true;
     }
 }

@@ -9,6 +9,4 @@ public interface IIdentityService
     Task<User?> FindUserByIdAsync(string userId);
 
     Task<bool> UserExistsAsync(string userId);
-
-    Task<bool> CheckPasswordSignInAsync(User user, string password);
 }

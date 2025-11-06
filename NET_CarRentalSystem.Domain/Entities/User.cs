@@ -13,12 +13,6 @@ public class User : BaseEntity
 
     public string Email { get; set; }
 
-    public string? Otp { get; set; }
-
-    public int OtpAttempts { get; set; }
-
-    public DateTime? OtpExpires { get; set; }
-
     public bool IsVerified { get; set; }
 
     public UserStatus Status { get; set; }

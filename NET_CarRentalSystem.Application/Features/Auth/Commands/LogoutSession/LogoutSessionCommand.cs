@@ -37,12 +37,9 @@ public class LogoutSessionCommandHandler(
         if (remainingSessions <= 1)
         {
             var userRepository = unitOfWork.GetRepository<User>();
-            var user = await userRepository.GetByIdAsync(currentUserId, cancellationToken, useWriteConnection: true);
-            if (user != null)
-            {
-                user.Status = UserStatus.LoggedOut;
-                userRepository.Update(user);
-            }
+            var user = await userRepository.GetFirstAsync(u => u.UserId == currentUserId, cancellationToken: cancellationToken, useWriteConnection: true);
+            user.Status = UserStatus.LoggedOut;
+            userRepository.Update(user);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

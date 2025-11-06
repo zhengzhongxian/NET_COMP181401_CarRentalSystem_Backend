@@ -16,13 +16,6 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
         return user;
     }
 
-    public Task<bool> CheckPasswordSignInAsync(User user, string password)
-    {
-        var result = BC.Verify(password, user.Password);
-        return Task.FromResult(result);
-    }
-
-
     public async Task<User?> FindUserByIdAsync(string userId)
     {
         if (Guid.TryParse(userId, out var userGuid))

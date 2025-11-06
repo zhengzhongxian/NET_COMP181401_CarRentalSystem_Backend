@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using NET_CarRentalSystem.API.Attributes;
 
 namespace NET_CarRentalSystem.API.Models.Request.Auth;
 
 public class LoginRequest
 {
-    [Required(ErrorMessage = "Tên đăng nhập hoặc Email là bắt buộc.")]
-    [StringLength(50, MinimumLength = 5, ErrorMessage = "Tên đăng nhập phải từ 5 đến 50 ký tự.")]
-    [RegularExpression(@"^[a-zA-Z0-9_.]+$", 
-        ErrorMessage = "Tên đăng nhập chỉ được chứa chữ cái, số, dấu gạch dưới và dấu chấm.")]
+    [UsernameOrEmail]
     public required string UsernameOrEmail { get; set; }
     
     [Required(ErrorMessage = "Mật khẩu là bắt buộc.")]

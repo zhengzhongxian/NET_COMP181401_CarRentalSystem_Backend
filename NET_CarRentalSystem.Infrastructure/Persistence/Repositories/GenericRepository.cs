@@ -29,7 +29,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default,
         bool useWriteConnection = false)
     {
-        var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
+        DbContext db = useWriteConnection ? writeDbContext : readDbContext;
         return await db.Set<T>().FindAsync([id], cancellationToken);
     }
 
@@ -124,6 +124,17 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         return await query.FirstOrDefaultAsync(filter, cancellationToken);
     }
 
+    public async Task<T> GetFirstAsync(Expression<Func<T, bool>> filter, string includeProperties = "", CancellationToken cancellationToken = default,
+        bool useWriteConnection = false)
+    {
+        IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
+        query = includeProperties
+            .Split([','], StringSplitOptions.RemoveEmptyEntries)
+            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
+
+        return await query.FirstAsync(filter, cancellationToken);
+    }
+
     public async Task<T?> GetSingleOrDefaultAsync(
         Expression<Func<T, bool>> filter,
         string includeProperties = "",
@@ -141,7 +152,8 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     public async Task<List<T>> GetAsync(
         Expression<Func<T, bool>>? filter = null,
         string? sortBy = null, string? sortDirection = "asc",
-        string includeProperties = "")
+        string includeProperties = "",
+        CancellationToken  cancellationToken = default)
     {
         IQueryable<T> query = readDbContext.Set<T>();
 
@@ -165,7 +177,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate,
@@ -205,13 +217,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         };
     }
 
-    public async Task<T> FirstAsync(
-        Expression<Func<T, bool>> predicate,
-        CancellationToken cancellationToken = default)
-    {
-        return await readDbContext.Set<T>().FirstAsync(predicate, cancellationToken);
-    }
-
     public async Task<List<T>> FromSqlInterpolatedAsync(
         FormattableString sql,
         CancellationToken cancellationToken = default)
@@ -220,8 +225,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             .FromSqlInterpolated(sql)
             .ToListAsync(cancellationToken);
     }
-
-
 
     public async Task<int> ExecuteSqlInterpolatedAsync(
         FormattableString sql,
@@ -238,7 +241,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
 
     {
 
-        var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
+        DbContext db = useWriteConnection ? writeDbContext : readDbContext;
         var query = db.Set<T>().IgnoreQueryFilters();
 
         query = includeProperties

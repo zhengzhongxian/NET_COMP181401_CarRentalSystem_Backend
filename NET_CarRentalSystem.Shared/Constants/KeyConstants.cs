@@ -14,6 +14,8 @@ public static class KeyConstants
         public const string CloudinarySettings = "CloudinarySettings";
         public const string JwtSettings = "JwtSettings";
         public const string SyncDataToolSettings = "SyncDataToolSettings";
+        public const string EmailSettings = "EmailSettings";
+        public const string OtpSettings = "OtpSettings";
     }
 
     public static class Quartz

@@ -10,8 +10,13 @@ public class UserRoleConfiguration : IEntityTypeConfiguration<UserRole>
     public void Configure(EntityTypeBuilder<UserRole> builder)
     {
         builder.ToTable("user_roles");
-        builder.HasKey(ur => new { ur.UserId, ur.RoleId });
+        builder.HasKey(ur => ur.UserRoleId);
 
+        builder.Property(ur => ur.UserRoleId)
+            .HasColumnName("user_role_id")
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
+        
         builder.Property(ur => ur.UserId)
             .HasColumnName("user_id");
 

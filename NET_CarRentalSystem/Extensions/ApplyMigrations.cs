@@ -24,9 +24,12 @@ public static class ApplyMigrations
         }
 
         logger.LogInformation("API: Waiting for database (Renticar_WriteDB) to be ready...");
+        
         var dbIsReady = false;
         var retryCount = 0;
-        const int maxRetries = 12; 
+        var maxRetries = configuration.GetValue<int>(KeyConstants.DatabaseInitializationSettings.MaxRetries);
+        var retryDeplayTime =
+            configuration.GetValue<int>(KeyConstants.DatabaseInitializationSettings.RetryInterval) * 1000;
 
         while (!dbIsReady && retryCount < maxRetries)
         {
@@ -37,17 +40,20 @@ public static class ApplyMigrations
                 await connection.CloseAsync();
                 
                 dbIsReady = true;
+                
                 logger.LogInformation("API: Database is ready. Applying migrations...");
             }
             catch (SqlException ex)
             {
                 retryCount++;
-                logger.LogWarning("API: Database is not ready yet (Attempt {RetryCount}/{MaxRetries}). Retrying in 5 seconds... Error: {ErrorMessage}", retryCount, maxRetries, ex.Message);
-                await Task.Delay(5000);
+                
+                logger.LogWarning("API: Database is not ready yet (Attempt {RetryCount}/{MaxRetries}).Retrying in 5 seconds... Error: {ErrorMessage}", retryCount, maxRetries, ex.Message);
+                
+                await Task.Delay(retryDeplayTime);
             }
             catch (Exception ex)
             {
-                logger.LogError(ex, "API: Fatal error during database connection check. Stopping startup.");
+                logger.LogError("API: Fatal error during database connection check. Stopping startup. Error {ex}", ex.Message);
                 throw;
             }
         }

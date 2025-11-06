@@ -3,7 +3,7 @@ using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Application.Models.Storage;
-using NET_CarRentalSystem.Infrastructure.Configuration;
+using NET_CarRentalSystem.Infrastructure.Configurations;
 
 namespace NET_CarRentalSystem.Infrastructure.Services.Storage;
 

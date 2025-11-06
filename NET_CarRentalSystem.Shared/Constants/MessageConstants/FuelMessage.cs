@@ -13,7 +13,6 @@ public static class FuelMessage
     public static class Post
     {
         public const string Success = "Tạo mới loại nhiên liệu thành công.";
-        public const string Failed = "Tạo mới loại nhiên liệu thất bại.";
         public const string Error = "Lỗi trong quá trình tạo mới nhiên liệu.";
     }
 

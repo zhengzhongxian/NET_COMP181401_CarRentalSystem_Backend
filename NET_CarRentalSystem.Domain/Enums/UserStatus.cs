@@ -2,9 +2,11 @@
 
 public enum UserStatus
 {
-    Pending = 1,
-    Active,
-    Banned,
-    Inactive
+    Pending = 1, 
+    Active,         
+    Inactive,       
+    Banned,        
+    LoggedIn,       
+    LoggedOut       
 }
 

@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NET_CarRentalSystem.Domain.Constants;
-using NET_CarRentalSystem.Infrastructure.Configuration;
+using NET_CarRentalSystem.Infrastructure.Configurations;
 using NET_CarRentalSystem.Shared.Constants;
 using NET_CarRentalSystem.Shared.Wrapper;
 
@@ -19,11 +19,11 @@ public static class WebApiServiceRegistration
         {
             cfg.AddMaps(Assembly.GetExecutingAssembly());
         });
-        
+
         services.AddSwaggerGen(c =>
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "Renticar API", Version = "v1" });
-            
+
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -31,8 +31,8 @@ public static class WebApiServiceRegistration
                 Scheme = "bearer",
                 BearerFormat = "JWT",
                 In = ParameterLocation.Header,
-                Description = @"Enter JWT Access Token here to authenticate. <br/> 
-                        Exp: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." 
+                Description = @"Enter JWT Access Token here to authenticate. <br/>
+                        Exp: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
             });
 
             c.AddSecurityRequirement(new OpenApiSecurityRequirement()
@@ -43,14 +43,14 @@ public static class WebApiServiceRegistration
                         Reference = new OpenApiReference
                         {
                             Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer" 
+                            Id = "Bearer"
                         },
                     },
-                    new List<string>() 
+                    new List<string>()
                 }
             });
         });
-        
+
         services.AddControllers()
         .ConfigureApiBehaviorOptions(options =>
         {
@@ -60,29 +60,29 @@ public static class WebApiServiceRegistration
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .ToList();
-                
-                var combinedErrorMessage = string.Join("; ", errors); 
+
+                var combinedErrorMessage = string.Join("; ", errors);
                 if (string.IsNullOrEmpty(combinedErrorMessage))
                 {
                     combinedErrorMessage = "Lỗi xác thực không xác định.";
                 }
-                
+
                 var errorResponse = ApiResponse<string>.ErrorResult(
                     combinedErrorMessage
                 );
-                
+
                 return new BadRequestObjectResult(errorResponse);
             };
         });
-        
+
         var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
-        
+
         using var serviceProvider = services.BuildServiceProvider();
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
-        
+
         if (jwtSettings == null)
         {
-            logger.LogError("JWT settings not found in configuration section: {Section}", 
+            logger.LogError("JWT settings not found in configuration section: {Section}",
                 KeyConstants.ConfigurationSections.JwtSettings);
             throw new InvalidOperationException(
                 $"Missing configuration section: {KeyConstants.ConfigurationSections.JwtSettings}");
@@ -106,7 +106,7 @@ public static class WebApiServiceRegistration
                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key))
             };
         });
-        
+
         services.AddAuthorization(options =>
         {
             foreach (var permission in PermissionConstants.GetAllPermissions())
@@ -115,7 +115,7 @@ public static class WebApiServiceRegistration
                     policy.RequireClaim("Permission", permission));
             }
         });
-
+        
         return services;
     }
 }

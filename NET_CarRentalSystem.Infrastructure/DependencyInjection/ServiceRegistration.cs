@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
-using NET_CarRentalSystem.Infrastructure.Configuration;
+using NET_CarRentalSystem.Infrastructure.Configurations;
 using NET_CarRentalSystem.Infrastructure.HostedService;
 using NET_CarRentalSystem.Infrastructure.Interfaces;
 using NET_CarRentalSystem.Infrastructure.Services;
@@ -21,9 +21,11 @@ public static class ServiceRegistration
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IIdentityService, IdentityService>();
+        services.AddScoped<ICurrentUserService, CurrentUserService>();
         
-        //httpclient
+        //http
         services.AddHttpClient<IApiClient, ApiClient>();
+        services.AddHttpContextAccessor();
         
         //add singleton
         services.AddSingleton(typeof(IScheduleService<>), typeof(ScheduleService<>));

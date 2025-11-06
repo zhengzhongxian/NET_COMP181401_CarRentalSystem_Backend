@@ -1,11 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using NET_CarRentalSystem.Application.Interfaces.Services;
+
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 
-public class RenticarWriteDbContext : RenticarBaseDbContext
+public sealed class RenticarWriteDbContext : RenticarBaseDbContext
 {
-    public RenticarWriteDbContext(DbContextOptions<RenticarWriteDbContext> options)
-        : base(options)
+    public RenticarWriteDbContext(
+        DbContextOptions<RenticarWriteDbContext> options, 
+        ICurrentUserService currentUserService) : base(options, currentUserService)
     {
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.TrackAll;
     }

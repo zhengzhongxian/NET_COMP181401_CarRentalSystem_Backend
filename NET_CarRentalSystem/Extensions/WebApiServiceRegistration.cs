@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Domain.Constants;
-using NET_CarRentalSystem.Infrastructure.Configurations;
 using NET_CarRentalSystem.Shared.Constants;
 using NET_CarRentalSystem.Shared.Wrapper;
 

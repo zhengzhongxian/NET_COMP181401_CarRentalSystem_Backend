@@ -32,15 +32,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .IsRequired()
             .HasMaxLength(255);
 
-        builder.Property(u => u.Otp)
-            .HasColumnName("otp");
-
-        builder.Property(u => u.OtpAttempts)
-            .HasColumnName("otp_attempts");
-
-        builder.Property(u => u.OtpExpires)
-            .HasColumnName("otp_expires");
-
         builder.Property(u => u.IsVerified)
             .HasColumnName("is_verified");
 

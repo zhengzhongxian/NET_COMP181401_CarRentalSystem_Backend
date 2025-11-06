@@ -3,6 +3,9 @@ using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
+using NET_CarRentalSystem.Application.Features.Auth.Common;
+using NET_CarRentalSystem.Domain.Enums;
+using NET_CarRentalSystem.Shared.Utilities;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 
 namespace NET_CarRentalSystem.Application.Features.Auth.Commands.RefreshTokenCommand;
@@ -26,41 +29,112 @@ public class RefreshTokenCommandHandler(
             return (AuthMessage.RefreshToken.Invalid, null);
         }
 
-        var userId= principal.Identity.Name;
+        var userId = principal.Identity.Name;
 
-        var userIdFromCache = await cacheService.GetStringAsync(request.RefreshToken, cancellationToken);
-
-        if (userIdFromCache is null || userIdFromCache != userId)
+        var sessionRepository = unitOfWork.GetRepository<UserSession>();
+        var sessionCacheJson = await cacheService.GetStringAsync(request.RefreshToken, cancellationToken);
+        if (sessionCacheJson is null)
         {
-            return (AuthMessage.RefreshToken.Invalid, null);
+            var sessionInDb = await sessionRepository.GetFirstOrDefaultAsync(
+                s => s.RefreshToken == request.RefreshToken, 
+                cancellationToken: cancellationToken);
+            
+            if (sessionInDb != null && sessionInDb.UserId.ToString() == userId)
+            {
+                var remainingSessions = await sessionRepository.CountAsync(s => s.UserId == sessionInDb.UserId, cancellationToken);
+                sessionRepository.Remove(sessionInDb, true);
+
+                if (remainingSessions <= 1)
+                {
+                    var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(
+                        u => u.UserId == sessionInDb.UserId, 
+                        useWriteConnection: true, 
+                        cancellationToken: cancellationToken);
+                    
+                    userToUpdate.Status = UserStatus.LoggedOut;
+                    unitOfWork.GetRepository<User>().Update(userToUpdate);
+
+                }
+
+                await unitOfWork.SaveChangesAsync(cancellationToken);
+                
+                return (AuthMessage.RefreshToken.Invalid, null);
+            }
+            
+            var allUserSessions = await sessionRepository.GetAsync(
+                s => s.UserId.ToString() == userId,
+                cancellationToken: cancellationToken);
+
+            if (allUserSessions.Count > 0)
+            {
+                foreach (var session in allUserSessions)
+                {
+                    sessionRepository.Remove(session, true);
+                    await cacheService.RemoveAsync(session.RefreshToken, cancellationToken);
+                }
+
+                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.UserId == Guid.Parse(userId), useWriteConnection: true, cancellationToken: cancellationToken);
+                userToUpdate.Status = UserStatus.LoggedOut;
+                unitOfWork.GetRepository<User>().Update(userToUpdate);
+
+            }
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return (AuthMessage.RefreshToken.Breach, null);
         }
-
-        var session = await unitOfWork.GetRepository<UserSession>().GetFirstOrDefaultAsync(
-            s => s.UserId.ToString() == userId && s.RefreshToken == request.RefreshToken,
-            cancellationToken: cancellationToken, useWriteConnection: true);
-
-        if (session == null)
-        {
-            return (AuthMessage.RefreshToken.Invalid, null);
-        }
-
-        var user = await unitOfWork.GetRepository<User>().GetByIdAsync(session.UserId, cancellationToken);
-        if (user == null)
-        {
-            return (AuthMessage.RefreshToken.Invalid, null);
-        }
-
-        var newTokens = await tokenService.GenerateTokensAsync(user);
         
-        session.RefreshToken = newTokens.RefreshToken;
-        session.RefreshTokenExpiryTime = newTokens.RefreshTokenExpiry;
-        unitOfWork.GetRepository<UserSession>().Update(session);
+        var sessionCache = sessionCacheJson.FromJson<UserSessionCacheDto>()!;
         
-        await cacheService.RemoveAsync(request.RefreshToken, cancellationToken);
-        await cacheService.SetStringAsync(newTokens.RefreshToken, user.UserId.ToString(), newTokens.RefreshTokenExpiry, cancellationToken);
+        if (sessionCache.IsRevoked)
+        {
+            var allUserSessions = await sessionRepository.GetAsync(s => s.UserId == sessionCache.UserId, cancellationToken: cancellationToken);
+            if (allUserSessions.Count > 0)
+            {
+                foreach (var session in allUserSessions)
+                {
+                    sessionRepository.Remove(session, true);
+                    await cacheService.RemoveAsync(session.RefreshToken, cancellationToken);
+                }
 
+                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.UserId == sessionCache.UserId, useWriteConnection: true, cancellationToken: cancellationToken);
+                userToUpdate.Status = UserStatus.LoggedOut;
+                unitOfWork.GetRepository<User>().Update(userToUpdate);
+
+            }
+
+            await unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return (AuthMessage.RefreshToken.Breach, null);
+        }
+        
+        if (sessionCache.UserId.ToString() != userId)
+        {
+            return (AuthMessage.RefreshToken.Invalid, null);
+        }
+
+        var currentDbSession = await sessionRepository.GetFirstAsync(s => s.RefreshToken == request.RefreshToken, useWriteConnection: true);
+        var originalExpiryTime = currentDbSession.RefreshTokenExpiryTime;
+
+        var user = await unitOfWork.GetRepository<User>().GetByIdAsync(sessionCache.UserId, cancellationToken);
+
+        var newTokens = await tokenService.GenerateTokensAsync(user!);
+        currentDbSession.RefreshToken = newTokens.RefreshToken;
+        currentDbSession.RefreshTokenExpiryTime = newTokens.RefreshTokenExpiry;
+        sessionRepository.Update(currentDbSession);
+        
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
+        sessionCache.IsRevoked = true;
+        await cacheService.SetStringAsync(request.RefreshToken, sessionCache.ToJson(), originalExpiryTime, cancellationToken);
+        
+        var newSessionCache = new UserSessionCacheDto
+        {
+            UserId = user!.UserId, 
+            IsRevoked = false
+        };
+        await cacheService.SetStringAsync(newTokens.RefreshToken, newSessionCache.ToJson(), newTokens.RefreshTokenExpiry, cancellationToken);
+        
         return (AuthMessage.RefreshToken.Success, newTokens);
     }
 }

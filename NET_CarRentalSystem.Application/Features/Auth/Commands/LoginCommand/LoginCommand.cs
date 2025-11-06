@@ -5,6 +5,8 @@ using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Application.Features.Auth.Common;
+using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
 
@@ -20,6 +22,7 @@ public class LoginCommandHandler(
         IIdentityService identityService,
         ITokenService tokenService,
         ICacheService cacheService,
+        ISecurityService  securityService,
         IUnitOfWork unitOfWork) : IRequestHandler<LoginCommand, (string, TokenResponse?)>
 {
     public async Task<(string, TokenResponse?)> Handle(LoginCommand request, CancellationToken cancellationToken)
@@ -30,7 +33,7 @@ public class LoginCommandHandler(
             return (AuthMessage.Login.Failed, null);
         }
 
-        var succeeded = await identityService.CheckPasswordSignInAsync(user, request.Password);
+        var succeeded = securityService.VerifyPassword(request.Password, user.Password);
 
         if (!succeeded || !user.IsVerified)
         {
@@ -52,19 +55,25 @@ public class LoginCommandHandler(
             IpAddress = request.IpAddress,
             DeviceName = request.DeviceName
         };
-        await unitOfWork.GetRepository<UserSession>().AddAsync(userSession, cancellationToken);
         
+        await unitOfWork.GetRepository<UserSession>().AddAsync(userSession, cancellationToken);
         user.Status = UserStatus.LoggedIn;
-        unitOfWork.GetRepository<User>().Update(user);
+        unitOfWork.GetRepository<User>().Update(user); 
+        await unitOfWork.SaveChangesAsync(cancellationToken);
+        
+        var sessionCacheDto = new UserSessionCacheDto
+        {
+            UserId = user.UserId,
+            IsRevoked = false
+        };
+        var sessionCacheJson = sessionCacheDto.ToJson();
         
         await cacheService.SetStringAsync(
             tokens.RefreshToken,
-            user.UserId.ToString(),
+            sessionCacheJson,
             tokens.RefreshTokenExpiry,
             cancellationToken);
-
-        await unitOfWork.SaveChangesAsync(cancellationToken);
-
+        
         return (AuthMessage.Login.Success, tokens);
     }
 }

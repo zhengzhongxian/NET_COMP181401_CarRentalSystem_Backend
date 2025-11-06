@@ -2,6 +2,11 @@
 
 public static class AppConstants
 {
+    public static class EmailTemplates
+    {
+        public const string Otp = "OtpEmail.html";
+    }
+
     public static class Pagination
     {
         public const int MinPageSize = 10;

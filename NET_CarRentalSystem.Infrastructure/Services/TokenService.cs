@@ -5,9 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Infrastructure.Configurations;
 
 namespace NET_CarRentalSystem.Infrastructure.Services;
 

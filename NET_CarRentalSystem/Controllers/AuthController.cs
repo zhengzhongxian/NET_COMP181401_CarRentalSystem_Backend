@@ -12,6 +12,8 @@ using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutAllOtherSessi
 using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.Shared.Wrapper;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtp;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.Logup;
 
 namespace NET_CarRentalSystem.API.Controllers
 {
@@ -27,7 +29,7 @@ namespace NET_CarRentalSystem.API.Controllers
                 var command = mapper.Map<LoginCommand>(request);
                 command.IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString();
                 command.DeviceName = Request.Headers.UserAgent.ToString();
-                
+
                 var (message, tokenData) = await mediator.Send(command, cancellationToken);
 
                 if (tokenData == null)
@@ -36,7 +38,7 @@ namespace NET_CarRentalSystem.API.Controllers
                         message,
                         StatusCodes.Status401Unauthorized
                     );
-                    
+
                     return StatusCode(errorResponse.StatusCode, errorResponse);
                 }
 
@@ -66,20 +68,20 @@ namespace NET_CarRentalSystem.API.Controllers
             try
             {
                 var command = new LogoutCommand { RefreshToken = request.RefreshToken };
-                
+
                 await mediator.Send(command, cancellationToken);
 
-                var apiResponse = ApiResponse.SuccessResult(AuthMessage.Login.LogoutSuccess);
-                
+                var apiResponse = ApiResponse.SuccessResult(AuthMessage.Logout.Success);
+
                 return StatusCode(apiResponse.StatusCode, apiResponse);
             }
             catch (Exception ex)
             {
                 var errorResponse = ApiResponse.ErrorResult(
-                    AuthMessage.Login.Error,
+                    AuthMessage.Logout.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -94,7 +96,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AccessToken = request.AccessToken,
                     RefreshToken = request.RefreshToken
                 };
-                
+
                 var (message, tokenData) = await mediator.Send(command, cancellationToken);
 
                 if (tokenData == null)
@@ -120,7 +122,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.RefreshToken.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -132,11 +134,11 @@ namespace NET_CarRentalSystem.API.Controllers
             try
             {
                 var sessions = await mediator.Send(new GetActiveSessionsQuery(), cancellationToken);
-                
+
                 var apiResponse = ApiResponse.SuccessResult(
                     mapper.Map<List<GetUserSessionResponse>>(sessions),
                     AuthMessage.GetSessions.Success);
-                
+
                 return StatusCode(apiResponse.StatusCode, apiResponse);
             }
             catch (Exception ex)
@@ -145,7 +147,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.GetSessions.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -166,7 +168,7 @@ namespace NET_CarRentalSystem.API.Controllers
                 }
 
                 var response = ApiResponse.SuccessResult(message);
-                
+
                 return StatusCode(response.StatusCode, response);
             }
             catch (Exception ex)
@@ -175,7 +177,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.LogoutSession.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -195,6 +197,68 @@ namespace NET_CarRentalSystem.API.Controllers
             {
                 var errorResponse = ApiResponse.ErrorResult(
                     AuthMessage.LogoutAllOtherSessions.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("send-otp")]
+        public async Task<IActionResult> SendOtp([FromBody] SendOtpRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new SendOtpCommand
+                {
+                    SendOtpDto = mapper.Map<SendOtpDto>(request),
+                };
+
+                var (message, success) = await mediator.Send(command, cancellationToken);
+
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.Otp.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("logup")]
+        public async Task<IActionResult> Logup([FromBody] LogupRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new LogupCommand
+                {
+                    LogupDto = mapper.Map<LogupDto>(request)
+                };
+
+                var (message, success) = await mediator.Send(command, cancellationToken);
+
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.Logup.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);

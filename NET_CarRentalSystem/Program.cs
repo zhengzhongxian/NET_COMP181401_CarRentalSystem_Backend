@@ -22,7 +22,6 @@ app.UseSwagger();
 app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
-
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();

@@ -80,10 +80,16 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
 
             return principal;
         }
-        catch
+        catch(Exception ex)
         {
+            Console.WriteLine($"[TOKEN VALIDATION ERROR]: {ex.Message}");
             return null;
         }
+    }
+
+    public string? FindFirst(ClaimsPrincipal claimsPrincipal)
+    {
+        return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
     private async Task<List<Claim>> GetClaimsAsync(User user)

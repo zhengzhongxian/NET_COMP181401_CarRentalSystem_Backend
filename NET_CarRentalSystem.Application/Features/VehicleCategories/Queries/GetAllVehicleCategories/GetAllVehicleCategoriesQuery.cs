@@ -1,6 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.DTOs.VehicleCategoryDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleCategoryDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 

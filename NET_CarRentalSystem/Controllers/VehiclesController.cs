@@ -12,17 +12,8 @@ namespace NET_CarRentalSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class VehiclesController : ControllerBase
+public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
 {
-    private readonly ISender _sender;
-    private readonly IMapper _mapper;
-
-    public VehiclesController(ISender sender, IMapper mapper)
-    {
-        _sender = sender;
-        _mapper = mapper;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetVehicles(
     [FromQuery] GetVehiclesPagedRequest request,
@@ -30,9 +21,9 @@ public class VehiclesController : ControllerBase
     {
         try
         {
-            var queryParams = _mapper.Map<GetVehiclesPagedQueryParams>(request);
+            var queryParams = mapper.Map<GetVehiclesPagedQueryParams>(request);
 
-            var pagedList = await _sender.Send(
+            var pagedList = await sender.Send(
                 new GetVehiclesPagedQuery
                 {
                     QueryParams = queryParams

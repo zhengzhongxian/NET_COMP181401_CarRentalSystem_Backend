@@ -115,7 +115,18 @@ public static class WebApiServiceRegistration
                     policy.RequireClaim("Permission", permission));
             }
         });
-        
+
+        services.AddCors(options =>
+        {
+            options.AddPolicy("AllowAll",
+                builder =>
+                {
+                    builder.AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                });
+        });
+
         return services;
     }
 }

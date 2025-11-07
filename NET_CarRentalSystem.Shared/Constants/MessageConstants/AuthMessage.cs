@@ -53,6 +53,8 @@ public static class AuthMessage
     public static class User
     {
         public const string NotValid = "Thông tin người dùng không hợp lệ";
+        public const string Sucess = "Lấy thông tin người dùng thành công";
+        public const string Error = "Có lỗi xảy ra trong quá trình lấy thông tin người dùng";
     }
 
     public static class Otp

@@ -1,4 +1,4 @@
-namespace NET_CarRentalSystem.Application.DTOs.VehicleCategoryDTOs.Update;
+namespace NET_CarRentalSystem.Application.Models.DTOs.VehicleCategoryDTOs.Update;
 
 public class UpdateVehicleCategoryDto
 {

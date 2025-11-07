@@ -1,7 +1,6 @@
 using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using BC = BCrypt.Net.BCrypt;
 
 namespace NET_CarRentalSystem.Infrastructure.Services;
 

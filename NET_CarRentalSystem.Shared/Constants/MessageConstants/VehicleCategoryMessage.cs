@@ -9,7 +9,7 @@ public static class VehicleCategoryMessage
         public const string Error = "Đã xảy ra lỗi khi lấy danh sách loại xe.";
     }
 
-    public static class Post
+    public static class Create
     {
         public const string Success = "Tạo mới loại xe thành công.";
         public const string Failed = "Tạo mới loại xe thất bại.";

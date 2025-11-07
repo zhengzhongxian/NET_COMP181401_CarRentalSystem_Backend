@@ -1,9 +1,9 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.DTOs.VehicleCategoryDTOs.Update;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using System.ComponentModel.DataAnnotations;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleCategoryDTOs.Update;
 
 namespace NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.UpdateVehicleCategory;
 

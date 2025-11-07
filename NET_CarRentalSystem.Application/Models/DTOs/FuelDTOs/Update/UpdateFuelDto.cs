@@ -1,4 +1,4 @@
-namespace NET_CarRentalSystem.Application.DTOs.FuelDTOs.Update;
+namespace NET_CarRentalSystem.Application.Models.DTOs.FuelDTOs.Update;
 
 public class UpdateFuelDto
 {

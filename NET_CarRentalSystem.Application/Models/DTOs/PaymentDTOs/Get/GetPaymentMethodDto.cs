@@ -1,4 +1,4 @@
-namespace NET_CarRentalSystem.Application.DTOs.PaymentDTOs.Get;
+namespace NET_CarRentalSystem.Application.Models.DTOs.PaymentDTOs.Get;
 
 public class GetPaymentMethodDto
 {

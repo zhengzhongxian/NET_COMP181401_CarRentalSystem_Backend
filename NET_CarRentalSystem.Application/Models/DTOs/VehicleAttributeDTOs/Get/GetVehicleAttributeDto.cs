@@ -1,4 +1,4 @@
-﻿namespace NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
+﻿namespace NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
 
 public class GetVehicleAttributeDto
 {

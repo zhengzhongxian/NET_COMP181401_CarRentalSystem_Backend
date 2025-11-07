@@ -1,4 +1,4 @@
-﻿namespace NET_CarRentalSystem.Application.DTOs.FuelDTOs.Get;
+﻿namespace NET_CarRentalSystem.Application.Models.DTOs.FuelDTOs.Get;
 
 public class GetFuelDto
 {

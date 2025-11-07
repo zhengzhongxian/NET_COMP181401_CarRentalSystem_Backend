@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.DTOs.FuelDTOs.Update;
+using NET_CarRentalSystem.Application.Models.DTOs.FuelDTOs.Update;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;

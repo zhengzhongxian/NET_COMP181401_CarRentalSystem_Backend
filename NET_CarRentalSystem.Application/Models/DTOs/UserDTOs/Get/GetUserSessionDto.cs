@@ -1,4 +1,4 @@
-namespace NET_CarRentalSystem.Application.DTOs.UserDTOs.Get;
+namespace NET_CarRentalSystem.Application.Models.DTOs.UserDTOs.Get;
 
 public class GetUserSessionDto
 {

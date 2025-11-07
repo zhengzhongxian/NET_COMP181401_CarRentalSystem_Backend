@@ -1,6 +1,5 @@
 using AutoMapper;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Models.Request.Fuels;

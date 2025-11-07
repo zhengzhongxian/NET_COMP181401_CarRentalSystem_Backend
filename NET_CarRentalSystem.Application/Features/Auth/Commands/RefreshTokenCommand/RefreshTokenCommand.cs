@@ -24,12 +24,18 @@ public class RefreshTokenCommandHandler(
     public async Task<(string, TokenResponse?)> Handle(RefreshTokenCommand request, CancellationToken cancellationToken)
     {
         var principal = tokenService.GetPrincipalFromExpiredToken(request.AccessToken);
-        if (principal?.Identity?.Name is null)
+        
+        if (principal is null)
         {
             return (AuthMessage.RefreshToken.Invalid, null);
         }
-
-        var userId = principal.Identity.Name;
+        
+        var userIdString = tokenService.FindFirst(principal);
+        
+        if (!Guid.TryParse(userIdString, out var userId))
+        {
+            return (AuthMessage.RefreshToken.Invalid, null);
+        }
 
         var sessionRepository = unitOfWork.GetRepository<UserSession>();
         var sessionCacheJson = await cacheService.GetStringAsync(request.RefreshToken, cancellationToken);
@@ -39,7 +45,7 @@ public class RefreshTokenCommandHandler(
                 s => s.RefreshToken == request.RefreshToken, 
                 cancellationToken: cancellationToken);
             
-            if (sessionInDb != null && sessionInDb.UserId.ToString() == userId)
+            if (sessionInDb != null && sessionInDb.UserId == userId)
             {
                 var remainingSessions = await sessionRepository.CountAsync(s => s.UserId == sessionInDb.UserId, cancellationToken);
                 sessionRepository.Remove(sessionInDb, true);
@@ -62,7 +68,7 @@ public class RefreshTokenCommandHandler(
             }
             
             var allUserSessions = await sessionRepository.GetAsync(
-                s => s.UserId.ToString() == userId,
+                s => s.UserId == userId,
                 cancellationToken: cancellationToken);
 
             if (allUserSessions.Count > 0)
@@ -73,7 +79,8 @@ public class RefreshTokenCommandHandler(
                     await cacheService.RemoveAsync(session.RefreshToken, cancellationToken);
                 }
 
-                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.UserId == Guid.Parse(userId), useWriteConnection: true, cancellationToken: cancellationToken);
+                // FIX 3: 'userId' đã là Guid, không cần Parse
+                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.UserId == userId, useWriteConnection: true, cancellationToken: cancellationToken);
                 userToUpdate.Status = UserStatus.LoggedOut;
                 unitOfWork.GetRepository<User>().Update(userToUpdate);
 
@@ -108,7 +115,7 @@ public class RefreshTokenCommandHandler(
             return (AuthMessage.RefreshToken.Breach, null);
         }
         
-        if (sessionCache.UserId.ToString() != userId)
+        if (sessionCache.UserId != userId)
         {
             return (AuthMessage.RefreshToken.Invalid, null);
         }
@@ -138,4 +145,3 @@ public class RefreshTokenCommandHandler(
         return (AuthMessage.RefreshToken.Success, newTokens);
     }
 }
-

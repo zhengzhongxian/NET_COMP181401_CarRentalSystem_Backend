@@ -1,4 +1,4 @@
-namespace NET_CarRentalSystem.Application.Features.Auth.Commands.Logup;
+namespace NET_CarRentalSystem.Application.Features.Auth.Commands.LogupCommand;
 
 public class LogupDto
 {

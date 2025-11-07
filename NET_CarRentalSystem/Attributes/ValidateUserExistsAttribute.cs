@@ -32,7 +32,7 @@ namespace NET_CarRentalSystem.API.Attributes
                 context.Result = new ObjectResult(response) { StatusCode = response.StatusCode };
                 return;
             }
-
+            
             if (user.Status == UserStatus.Banned)
             {
                 var response = ApiResponse.ErrorResult(AuthMessage.Login.Banned, StatusCodes.Status403Forbidden);

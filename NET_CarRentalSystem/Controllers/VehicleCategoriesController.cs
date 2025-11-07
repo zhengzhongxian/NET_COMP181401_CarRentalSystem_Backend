@@ -15,25 +15,16 @@ namespace NET_CarRentalSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class VehicleCategoriesController : ControllerBase
+public class VehicleCategoriesController(ISender sender, IMapper mapper) : ControllerBase
 {
-    private readonly ISender _sender;
-    private readonly IMapper _mapper;
-
-    public VehicleCategoriesController(ISender sender, IMapper mapper)
-    {
-        _sender = sender;
-        _mapper = mapper;
-    }
-
     [HttpGet]
     public async Task<IActionResult> GetAll(CancellationToken cancellationToken)
     {
         try
         {
             var query = new GetAllVehicleCategoriesQuery();
-            var result = await _sender.Send(query, cancellationToken);
-            var mappedResult = _mapper.Map<IEnumerable<GetVehicleCategoryResponse>>(result);
+            var result = await sender.Send(query, cancellationToken);
+            var mappedResult = mapper.Map<IEnumerable<GetVehicleCategoryResponse>>(result);
 
             var apiResponse = ApiResponse<IEnumerable<GetVehicleCategoryResponse>>.SuccessResult(
                 mappedResult,
@@ -60,7 +51,7 @@ public class VehicleCategoriesController : ControllerBase
         try
         {
             var query = new GetVehicleCategoryByIdQuery { Id = id };
-            var result = await _sender.Send(query, cancellationToken);
+            var result = await sender.Send(query, cancellationToken);
 
             if (result == null)
             {
@@ -71,7 +62,7 @@ public class VehicleCategoriesController : ControllerBase
                 return NotFound(notFoundResponse);
             }
 
-            var mappedResult = _mapper.Map<GetVehicleCategoryResponse>(result);
+            var mappedResult = mapper.Map<GetVehicleCategoryResponse>(result);
             var apiResponse = ApiResponse<GetVehicleCategoryResponse>.SuccessResult(mappedResult, VehicleCategoryMessage.Get.Success);
             return Ok(apiResponse);
         }
@@ -96,19 +87,20 @@ public class VehicleCategoriesController : ControllerBase
                 CategoryCode = request.CategoryCode,
                 Seat = request.Seat
             };
-            var newId = await _sender.Send(command, cancellationToken);
+            var newId = await sender.Send(command, cancellationToken);
 
             var response = new CreateVehicleCategoryResponse { CategoryId = newId };
-            var apiResponse = ApiResponse<CreateVehicleCategoryResponse>.SuccessResult(response, VehicleCategoryMessage.Post.Success);
+            var apiResponse = ApiResponse.SuccessResult(response, VehicleCategoryMessage.Create.Success);
             
-            return CreatedAtAction(nameof(GetById), new { id = newId }, apiResponse);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<CreateVehicleCategoryResponse>.ErrorResult(
-                VehicleCategoryMessage.Post.Error,
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleCategoryMessage.Create.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]);
+            
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }
@@ -125,24 +117,25 @@ public class VehicleCategoriesController : ControllerBase
                 Seat = request.Seat
             };
 
-            var updatedDto = await _sender.Send(command, cancellationToken);
+            var updatedDto = await sender.Send(command, cancellationToken);
 
             if (updatedDto == null)
             {
-                var errorResponse = ApiResponse.ErrorResult(VehicleCategoryMessage.Update.NotFound, StatusCodes.Status404NotFound);
-                return NotFound(errorResponse);
+                var errorResponse = ApiResponse.ErrorResult(VehicleCategoryMessage.Update.NotFound);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
             }
 
-            var response = _mapper.Map<UpdateVehicleCategoryResponse>(updatedDto);
-            var apiResponse = ApiResponse<UpdateVehicleCategoryResponse>.SuccessResult(response, VehicleCategoryMessage.Update.Success);
+            var response = mapper.Map<UpdateVehicleCategoryResponse>(updatedDto);
+            var apiResponse = ApiResponse.SuccessResult(response, VehicleCategoryMessage.Update.Success);
 
-            return Ok(apiResponse);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<UpdateVehicleCategoryResponse>.ErrorResult(VehicleCategoryMessage.Update.Error,
+            var errorResponse = ApiResponse.ErrorResult(VehicleCategoryMessage.Update.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]);
+            
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }
@@ -152,8 +145,7 @@ public class VehicleCategoriesController : ControllerBase
     {
         try
         {
-            var command = new DeleteVehicleCategoryCommand { Id = id };
-            var result = await _sender.Send(command, cancellationToken);
+            var result = await sender.Send(new DeleteVehicleCategoryCommand { Id = id }, cancellationToken);
 
             if (!result)
             {
@@ -162,7 +154,8 @@ public class VehicleCategoriesController : ControllerBase
             }
 
             var apiResponse = ApiResponse.SuccessResult(VehicleCategoryMessage.Delete.Success);
-            return Ok(apiResponse);
+            
+            return StatusCode(apiResponse.StatusCode,  apiResponse);
         }
         catch (Exception ex)
         {
@@ -170,6 +163,7 @@ public class VehicleCategoriesController : ControllerBase
                 VehicleCategoryMessage.Delete.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]);
+            
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }

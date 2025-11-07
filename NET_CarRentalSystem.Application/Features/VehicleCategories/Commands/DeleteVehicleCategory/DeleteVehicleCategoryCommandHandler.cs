@@ -12,8 +12,7 @@ public class DeleteVehicleCategoryCommand : ICommand<bool>
     public Guid Id { get; set; }
 }
 
-public class DeleteVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) 
-    : IRequestHandler<DeleteVehicleCategoryCommand, bool>
+public class DeleteVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<DeleteVehicleCategoryCommand, bool>
 {
     public async Task<bool> Handle(
         DeleteVehicleCategoryCommand request, 

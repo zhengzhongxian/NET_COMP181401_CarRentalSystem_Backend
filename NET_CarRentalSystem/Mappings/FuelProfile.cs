@@ -1,6 +1,6 @@
 using AutoMapper;
 using NET_CarRentalSystem.API.Models.Response.Fuels;
-using NET_CarRentalSystem.Application.DTOs.FuelDTOs.Update;
+using NET_CarRentalSystem.Application.Models.DTOs.FuelDTOs.Update;
 
 namespace NET_CarRentalSystem.API.Mappings;
 

@@ -1,19 +1,20 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Models.Request.Auth;
 using NET_CarRentalSystem.API.Models.Response.Auth;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
-using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutCommand;
-using NET_CarRentalSystem.Application.Features.Auth.Commands.RefreshTokenCommand;
-using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
-using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutSession;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutAllOtherSessions;
-using NET_CarRentalSystem.API.Attributes;
-using NET_CarRentalSystem.Shared.Wrapper;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
-using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtp;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutSession;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.Logup;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.RefreshTokenCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtp;
+using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
+using NET_CarRentalSystem.Application.Features.Users.Queries.GetUser;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Wrapper;
 
 namespace NET_CarRentalSystem.API.Controllers
 {
@@ -259,6 +260,27 @@ namespace NET_CarRentalSystem.API.Controllers
             {
                 var errorResponse = ApiResponse.ErrorResult(
                     AuthMessage.Logup.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpGet("profile")]
+        [ValidateUserExists]
+        public async Task<IActionResult> GetUserProfile(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var userDto = await mediator.Send(new GetUserProfileQuery(), cancellationToken);
+                var response = mapper.Map<GetUserResponse>(userDto);
+                var apiResponse = ApiResponse.SuccessResult(response, AuthMessage.User.Sucess);
+                return StatusCode(apiResponse.StatusCode, apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.User.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);

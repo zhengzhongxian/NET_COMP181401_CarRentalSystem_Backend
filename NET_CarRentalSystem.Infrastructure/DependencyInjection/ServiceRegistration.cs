@@ -17,7 +17,9 @@ public static class ServiceRegistration
         services.Configure<CloudinarySettings>(configuration.GetSection(CloudinarySettings.SectionName));
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
-        services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
+                services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
+                services.Configure<RsaSettings>(configuration.GetSection(RsaSettings.SectionName));
+        services.Configure<AesSettings>(configuration.GetSection(AesSettings.SectionName));
         
         //add scope
         services.AddScoped<ICloudinaryService, CloudinaryService>();

@@ -1,7 +1,7 @@
-using NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
 using NET_CarRentalSystem.Domain.Enums;
 
-namespace NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
+namespace NET_CarRentalSystem.Application.Models.DTOs.VehicleDTOs.Get;
 
 public class GetVehicleDto
 {

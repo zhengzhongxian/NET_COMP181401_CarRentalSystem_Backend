@@ -16,6 +16,8 @@ public static class KeyConstants
         public const string SyncDataToolSettings = "SyncDataToolSettings";
         public const string EmailSettings = "EmailSettings";
         public const string OtpSettings = "OtpSettings";
+                public const string RsaSettings = "RsaSettings";
+        public const string AesSettings = "AesSettings";
     }
 
     public static class Quartz

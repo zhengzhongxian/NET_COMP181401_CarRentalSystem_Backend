@@ -25,8 +25,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Setup
 
                 //kích hoạt Theo dõi Thay đổi cho toàn bộ db
                 logger.LogInformation("Checking and enabling Change Tracking for the database...");
-                var enableDbCtSql = "IF NOT EXISTS (SELECT 1 FROM sys.change_tracking_databases WHERE database_id = DB_ID()) " +
-                                    "BEGIN ALTER DATABASE CURRENT SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON); END";
+                const string enableDbCtSql = "IF NOT EXISTS (SELECT 1 FROM sys.change_tracking_databases WHERE database_id = DB_ID()) " +
+                                             "BEGIN ALTER DATABASE CURRENT SET CHANGE_TRACKING = ON (CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON); END";
                 await context.Database.ExecuteSqlRawAsync(enableDbCtSql);
 
                 logger.LogInformation("{0}", "Change Tracking enabled for the database.") ;
@@ -46,7 +46,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Setup
                 logger.LogInformation("{0}", "Change Tracking enabled for tables.");
 
                 // tạo bảng track nếu không tồn tại
-                var createControlTableSql = @"
+                const string createControlTableSql = @"
                     IF NOT EXISTS (SELECT * FROM sys.objects WHERE object_id = OBJECT_ID(N'[dbo].[SyncControl]') AND type in (N'U'))
                     BEGIN
                         CREATE TABLE [dbo].[SyncControl](

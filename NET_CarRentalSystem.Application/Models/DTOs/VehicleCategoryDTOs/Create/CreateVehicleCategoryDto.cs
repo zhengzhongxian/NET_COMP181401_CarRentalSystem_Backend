@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace NET_CarRentalSystem.Application.DTOs.VehicleCategoryDTOs.Create;
+namespace NET_CarRentalSystem.Application.Models.DTOs.VehicleCategoryDTOs.Create;
 
 public class CreateVehicleCategoryDto
 {

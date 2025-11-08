@@ -3,7 +3,9 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Models.Request.Vehicles;
 using NET_CarRentalSystem.API.Models.Response.Vehicles;
+using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleDetailQuery;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleDTOs.Get;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Pagination;
 using NET_CarRentalSystem.Shared.Wrapper;
@@ -47,6 +49,44 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 [ex.Message]
             );
 
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    [HttpGet("detail")]
+    public async Task<IActionResult> GetVehicleDetail(
+        [FromQuery] string key, 
+        [FromQuery] string value, 
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = new GetVehicleDetailQuery
+            {
+                AttributeKey = key,
+                AttributeValue = value
+            };
+            var result = await sender.Send(query, cancellationToken);
+
+            if (result == null)
+            {
+                var notFoundResponse = ApiResponse<GetVehicleDetailDto>.ErrorResult(
+                    VehicleMessage.Get.NotFound,
+                    StatusCodes.Status404NotFound
+                );
+                return NotFound(notFoundResponse);
+            }
+
+            var apiResponse = ApiResponse<GetVehicleDetailDto>.SuccessResult(result, VehicleMessage.Get.Success);
+            return Ok(apiResponse);
+        }
+        catch (Exception ex)
+        {
+            var errorResponse = ApiResponse<GetVehicleDetailDto>.ErrorResult(
+                VehicleMessage.Get.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]
+            );
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }

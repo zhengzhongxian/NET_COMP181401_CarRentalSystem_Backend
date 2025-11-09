@@ -64,23 +64,24 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
             {
                 VehicleId = vehicleId
             };
-            var result = await sender.Send(query, cancellationToken);
+            var resultDto = await sender.Send(query, cancellationToken);
 
-            if (result == null)
+            if (resultDto == null)
             {
-                var notFoundResponse = ApiResponse<GetVehicleDetailDto>.ErrorResult(
+                var notFoundResponse = ApiResponse.ErrorResult(
                     VehicleMessage.Get.NotFound,
                     StatusCodes.Status404NotFound
                 );
-                return NotFound(notFoundResponse);
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
             }
 
-            var apiResponse = ApiResponse<GetVehicleDetailDto>.SuccessResult(result, VehicleMessage.Get.Success);
-            return Ok(apiResponse);
+            var response = mapper.Map<GetVehicleDetailResponse>(resultDto);
+            var apiResponse = ApiResponse.SuccessResult(response, VehicleMessage.Get.Success);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<GetVehicleDetailDto>.ErrorResult(
+            var errorResponse = ApiResponse.ErrorResult(
                 VehicleMessage.Get.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]

@@ -12,5 +12,6 @@ public class VehicleProfile : Profile
     {
         CreateMap<GetVehiclesPagedRequest, GetVehiclesPagedQueryParams>();
         CreateMap<GetVehicleDto, GetVehiclesPagedResponse>();
+        CreateMap<GetVehicleDetailDto, GetVehicleDetailResponse>();
     }
 }

@@ -10,8 +10,7 @@ namespace NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleDe
 
 public class GetVehicleDetailQuery : IQuery<GetVehicleDetailDto?>
 {
-    public required string AttributeKey { get; set; }
-    public required string AttributeValue { get; set; }
+    public Guid VehicleId { get; set; }
 }
 
 public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
@@ -29,7 +28,7 @@ public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
 
         var vehicle = await unitOfWork.GetRepository<Vehicle>()
             .GetFirstOrDefaultAsync(
-                v => v.VehicleAttributes.Any(att => att.AttributeKey == request.AttributeKey && att.AttributeValue == request.AttributeValue),
+                v => v.VehicleId == request.VehicleId,
                 includeBuilder.Build(),
                 cancellationToken);
 

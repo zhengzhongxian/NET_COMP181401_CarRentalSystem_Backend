@@ -53,18 +53,16 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
         }
     }
 
-    [HttpGet("detail")]
+    [HttpGet("detail/{vehicleId:guid}")]
     public async Task<IActionResult> GetVehicleDetail(
-        [FromQuery] string key, 
-        [FromQuery] string value, 
+        Guid vehicleId, 
         CancellationToken cancellationToken)
     {
         try
         {
             var query = new GetVehicleDetailQuery
             {
-                AttributeKey = key,
-                AttributeValue = value
+                VehicleId = vehicleId
             };
             var result = await sender.Send(query, cancellationToken);
 

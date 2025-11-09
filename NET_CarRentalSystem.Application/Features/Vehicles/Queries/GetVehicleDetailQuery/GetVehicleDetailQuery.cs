@@ -24,7 +24,8 @@ public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
             .Include(v => v.VehicleCategory)
             .Include(v => v.Fuel)
             .Include(v => v.Transmission)
-            .Include(v => v.VehicleAttributes);
+            .Include(v => v.VehicleAttributes)
+            .Include(v => v.VehicleImages);
 
         var vehicle = await unitOfWork.GetRepository<Vehicle>()
             .GetFirstOrDefaultAsync(
@@ -47,7 +48,8 @@ public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
             VehicleCategoryCode = vehicle.VehicleCategory?.CategoryCode,
             FuelName = vehicle.Fuel?.Name,
             TransmissionName = vehicle.Transmission?.Name,
-            Attributes = vehicle.VehicleAttributes.Select(att => new GetVehicleAttributeDto { AttributeId = att.AttributeId, AttributeKey = att.AttributeKey, AttributeValue = att.AttributeValue }).ToList()
+            Attributes = vehicle.VehicleAttributes.Select(att => new GetVehicleAttributeDto { AttributeId = att.AttributeId, AttributeKey = att.AttributeKey, AttributeValue = att.AttributeValue }).ToList(),
+            Images = vehicle.VehicleImages.Select(img => img.ImageUrl).ToList()
         };
     }
 }

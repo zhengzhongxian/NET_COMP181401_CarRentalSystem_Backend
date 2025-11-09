@@ -19,4 +19,5 @@ public class GetVehicleDetailDto
     public string? LocationName { get; set; }
 
     public List<GetVehicleAttributeDto> Attributes { get; set; } = [];
+    public List<string> Images { get; set; } = [];
 }

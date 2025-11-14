@@ -96,21 +96,21 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
     {
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.UserId.ToString()),
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             new(JwtRegisteredClaimNames.Email, user.Email),
             new(JwtRegisteredClaimNames.Name, user.UserName)
         };
 
         var roleIds = unitOfWork.GetRepository<UserRole>()
-            .GetQueryable(ur => ur.UserId == user.UserId)
+            .GetQueryable(ur => ur.UserId == user.Id)
             .Select(ur => ur.RoleId);
 
         var existRoleIds = await unitOfWork.GetQueryRepository().AnyAsync(roleIds);
         if (!existRoleIds) return claims.Distinct().ToList();
 
         var roles = unitOfWork.GetRepository<Role>()
-            .GetQueryable(r => roleIds.Contains(r.RoleId))
+            .GetQueryable(r => roleIds.Contains(r.Id))
             .Select(r => r.Name);
 
         var roleNames = await unitOfWork.GetQueryRepository().ToListAsync(roles);

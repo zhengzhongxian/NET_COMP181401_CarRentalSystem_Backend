@@ -47,6 +47,31 @@ public class Worker(
             }
         }
 
+        logger.LogInformation("Waiting for database (Renticar_ReadDB) to be ready...");
+
+        dbIsReady = false;
+        while (!dbIsReady && !stoppingToken.IsCancellationRequested)
+        {
+            try
+            {
+                await using var connection = new SqlConnection(_readDbConnection);
+                await connection.OpenAsync(stoppingToken);
+                await connection.CloseAsync();
+                dbIsReady = true;
+                logger.LogInformation("Read Database is ready. Starting main sync loop.");
+            }
+            catch (SqlException ex)
+            {
+                logger.LogWarning("Read Database is not ready yet. Retrying in {delay} seconds... Error: {ex}", _settings.DbRetryDelayInSeconds, ex.Message);
+                await Task.Delay(TimeSpan.FromSeconds(_settings.DbRetryDelayInSeconds), stoppingToken);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Fatal error during read database connection check. Stopping service.");
+                return;
+            }
+        }
+
         logger.LogInformation("1:1 Sync Service is running.");
 
         while (!stoppingToken.IsCancellationRequested)
@@ -106,18 +131,20 @@ public class Worker(
                 if (sourceData.Count > 0)
                 {
                     var validSqlDateTimeMinValue = new DateTime(1753, 1, 1);
-                    foreach (var row in sourceData)
+                    foreach (var dict in sourceData.Select(row => (IDictionary<string, object>)row))
                     {
-                        var dict = (IDictionary<string, object>)row;
                         if (dict.TryGetValue("CreatedAt", out var createdAtObj) && createdAtObj is DateTime createdAt && createdAt < validSqlDateTimeMinValue)
                         {
                             dict["CreatedAt"] = DateTime.UtcNow;
                         }
                         if (dict.TryGetValue("UpdatedAt", out var updatedAtObj))
                         {
-                            if (updatedAtObj == null || (updatedAtObj is DateTime updatedAt && updatedAt < validSqlDateTimeMinValue))
+                            switch (updatedAtObj)
                             {
-                                dict["UpdatedAt"] = DateTime.UtcNow;
+                                case DateTime updatedAt when updatedAt < validSqlDateTimeMinValue:
+                                case null:
+                                    dict["UpdatedAt"] = DateTime.UtcNow;
+                                    break;
                             }
                         }
                     }

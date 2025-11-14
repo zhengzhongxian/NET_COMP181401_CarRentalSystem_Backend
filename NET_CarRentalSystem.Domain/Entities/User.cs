@@ -3,10 +3,8 @@ using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class User : BaseEntity
+public class User : BaseEntity<Guid>
 {
-    public Guid UserId { get; set; }
-
     public string UserName { get; set; }
 
     public string Password { get; set; }

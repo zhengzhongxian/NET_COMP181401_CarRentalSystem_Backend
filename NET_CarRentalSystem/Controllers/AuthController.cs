@@ -1,18 +1,23 @@
 using AutoMapper;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Models.Request.Auth;
 using NET_CarRentalSystem.API.Models.Response.Auth;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.ForgetPasswordCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLoginCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLogupCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutAllOtherSessionsCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutSessionCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogupCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.RefreshTokenCommand;
-using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtp;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.ResetPasswordCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtpCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
-using NET_CarRentalSystem.Application.Features.Users.Queries.GetUser;
+using NET_CarRentalSystem.Application.Features.Users.Queries.GetUserProfileQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
 
@@ -211,7 +216,7 @@ namespace NET_CarRentalSystem.API.Controllers
             {
                 var command = new SendOtpCommand
                 {
-                    SendOtpDto = mapper.Map<SendOtpDto>(request),
+                    SendOtpParams = mapper.Map<SendOtpParams>(request),
                 };
 
                 var (message, success) = await mediator.Send(command, cancellationToken);
@@ -242,7 +247,7 @@ namespace NET_CarRentalSystem.API.Controllers
             {
                 var command = new LogupCommand
                 {
-                    LogupDto = mapper.Map<LogupDto>(request)
+                    LogupCommandParams = mapper.Map<LogupCommandParams>(request)
                 };
 
                 var (message, success) = await mediator.Send(command, cancellationToken);
@@ -283,6 +288,147 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.User.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("login-google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleLoginRequest request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new GoogleLoginCommand
+                {
+                    IdToken = request.IdToken,
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    DeviceName = Request.Headers.UserAgent.ToString()
+                };
+                var (message, ggloginDto) = await mediator.Send(command, cancellationToken);
+
+                switch (message)
+                {
+                    case AuthMessage.GoogleLogin.Banned:
+                    {
+                        var errorResponse = ApiResponse.ErrorResult(message, 401);
+                        return StatusCode(errorResponse.StatusCode, errorResponse);
+                    }
+                    case AuthMessage.GoogleLogin.NotFound:
+                    {
+                        var ggInfo = mapper.Map<GoogleLoginResponse>(ggloginDto);
+                        var ggInfoResponse = ApiResponse.ErrorResult(message, ggInfo, 404);
+                        
+                        return StatusCode(ggInfoResponse.StatusCode, ggInfoResponse);
+                    }
+                }
+
+                var response = mapper.Map<LoginResponse>(ggloginDto!.TokenResponse);
+                var apiResponse = ApiResponse.SuccessResult(
+                    response,
+                    message
+                );
+
+                return StatusCode(apiResponse.StatusCode, apiResponse);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.GoogleLogin.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]
+                );
+
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+        }
+
+        [HttpPost("logup-google")]
+        [AllowAnonymous]
+        public async Task<IActionResult> GoogleLogup([FromBody] GoogleLogupRequest request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new GoogleLogupCommand
+                {
+                    GoogleLogupCommandParams = mapper.Map<GoogleLogupCommandParams>(request)
+                };
+
+                var (message, success) = await mediator.Send(command, cancellationToken);
+
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.GoogleLogup.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("forget-password")]
+        public async Task<IActionResult> ForgetPassword([FromBody] ForgetPasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new ForgetPasswordCommand { Email = request.Email };
+                var (message, success) = await mediator.Send(command, cancellationToken);
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception e)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.ForgetPassword.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [e.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new ResetPasswordCommand { Token = request.Token, Password = request.Password };
+                var (message, success) = await mediator.Send(command, cancellationToken);
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception e)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.ResetPassword.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [e.Message]);
+                
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }

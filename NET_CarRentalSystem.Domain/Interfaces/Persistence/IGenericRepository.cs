@@ -88,26 +88,13 @@ public interface IGenericRepository<T> where T : class
         bool useWriteConnection = false);
 
     /// <summary>
-    /// Lấy ra entity duy nhất khớp với điều kiện. Ném ra exception nếu có nhiều hơn một kết quả.
-    /// </summary>
-    /// <param name="filter">Biểu thức điều kiện để lọc.</param>
-    /// <param name="includeProperties">Chuỗi các thuộc tính liên quan cần tải (comma-separated).</param>
-    /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
-    /// <param name="useWriteConnection">Nếu là true, sử dụng kết nối ghi.</param>
-    /// <returns>Entity duy nhất thỏa mãn điều kiện hoặc null.</returns>
-    Task<T?> GetSingleOrDefaultAsync(
-        Expression<Func<T, bool>> filter,
-        string includeProperties = "",
-        CancellationToken cancellationToken = default,
-        bool useWriteConnection = false);
-
-    /// <summary>
     /// Lấy danh sách các entity một cách linh hoạt với các tùy chọn lọc, sắp xếp động và include.
     /// </summary>
     /// <param name="filter">Biểu thức điều kiện để lọc (có thể là null để lấy tất cả).</param>
     /// <param name="sortBy">Tên thuộc tính để sắp xếp (ví dụ: "CreatedDate", "Name").</param>
     /// <param name="sortDirection">Hướng sắp xếp ("asc" cho tăng dần, "desc" cho giảm dần).</param>
     /// <param name="includeProperties">Chuỗi các thuộc tính liên quan cần tải (comma-separated).</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>Danh sách các entity đã được lọc, sắp xếp và tải các thuộc tính liên quan.</returns>
     Task<List<T>> GetAsync(
         Expression<Func<T, bool>>? filter = null,

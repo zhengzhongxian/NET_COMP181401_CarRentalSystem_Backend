@@ -2,7 +2,7 @@
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class Customer : BaseEntity
+public class Customer : BaseEntity<Guid>
 {
     public Guid CustomerId { get; set; }
 

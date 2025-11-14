@@ -31,7 +31,7 @@ public static class BookingSeeder
 			var end = start.AddDays(1 + (i % 7));
 			list.Add(new Booking
 			{
-				BookingId = bookingId,
+				Id = bookingId,
 				CustomerId = customers[i % customers.Length],
 				VehicleId = vehicleId,
 				StartDate = start,

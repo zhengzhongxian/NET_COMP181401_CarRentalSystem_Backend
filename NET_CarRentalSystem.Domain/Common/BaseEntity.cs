@@ -1,18 +1,16 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace NET_CarRentalSystem.Domain.Common;
 
-namespace NET_CarRentalSystem.Domain.Common;
-
-public abstract class BaseEntity
+public abstract class BaseEntity<TKey> : IAuditable, ISoftDelete
 {
-    public string? Description { get; set; }
-
-    public DateTime CreatedAt { get; set; }
-
+    public TKey Id { get; set; } = default!;
+    
+    public DateTime? CreatedAt { get; set; }
+    
     public string? CreatedBy { get; set; }
-
+    
     public DateTime? UpdatedAt { get; set; }
-
+    
     public string? UpdatedBy { get; set; }
-
-    public bool IsDeleted { get; set; } = false;
+    
+    public bool IsDeleted { get; set; }
 }

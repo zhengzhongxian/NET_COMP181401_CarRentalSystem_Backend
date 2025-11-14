@@ -16,9 +16,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     {
         IQueryable<T> query = readDbContext.Set<T>();
 
-        if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        if (typeof(IAuditable).IsAssignableFrom(typeof(T)))
         {
-            query = query.Cast<BaseEntity>()
+            query = query.Cast<IAuditable>()
                 .OrderByDescending(e => e.UpdatedAt)
                 .Cast<T>();
         }
@@ -62,10 +62,10 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             return;
         }
 
-        if (entity is BaseEntity baseEntity)
+        if (entity is ISoftDelete softDelete)
         {
-            baseEntity.IsDeleted = true;
-            writeDbContext.Entry(baseEntity).State = EntityState.Modified;
+            softDelete.IsDeleted = true;
+            writeDbContext.Entry(softDelete).State = EntityState.Modified;
         }
         else
         {
@@ -97,10 +97,10 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
                 ? query.OrderByDescending(v => EF.Property<object>(v, pagingParams.SortBy))
                 : query.OrderBy(v => EF.Property<object>(v, pagingParams.SortBy));
         }
-        else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        else if (typeof(IAuditable).IsAssignableFrom(typeof(T)))
         {
             // Áp dụng sắp xếp mặc định nếu không có sortBy
-            query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
+            query = query.Cast<IAuditable>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
         var items = await query
@@ -135,20 +135,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         return await query.FirstAsync(filter, cancellationToken);
     }
 
-    public async Task<T?> GetSingleOrDefaultAsync(
-        Expression<Func<T, bool>> filter,
-        string includeProperties = "",
-        CancellationToken cancellationToken = default,
-        bool useWriteConnection = false)
-    {
-        IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
-        query = includeProperties
-            .Split([','], StringSplitOptions.RemoveEmptyEntries)
-            .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
-
-        return await query.SingleOrDefaultAsync(filter, cancellationToken);
-    }
-
     public async Task<List<T>> GetAsync(
         Expression<Func<T, bool>>? filter = null,
         string? sortBy = null, string? sortDirection = "asc",
@@ -172,9 +158,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
                 ? query.OrderByDescending(v => EF.Property<object>(v, sortBy))
                 : query.OrderBy(v => EF.Property<object>(v, sortBy));
         }
-        else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        else if (typeof(IAuditable).IsAssignableFrom(typeof(T)))
         {
-            query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
+            query = query.Cast<IAuditable>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
         return await query.ToListAsync(cancellationToken);
@@ -251,9 +237,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         var allEntities = await query.Where(filter).ToListAsync(cancellationToken);
         var result = allEntities.FirstOrDefault(entity =>
         {
-            if (entity is BaseEntity baseEntity)
+            if (entity is ISoftDelete softDelete)
             {
-                return !baseEntity.IsDeleted;
+                return !softDelete.IsDeleted;
 
             }
             return true;
@@ -279,6 +265,4 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
 
         return query.AsQueryable();
     }
-
-
 }

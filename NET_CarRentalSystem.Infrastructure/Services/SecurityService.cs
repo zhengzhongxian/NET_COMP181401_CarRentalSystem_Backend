@@ -43,8 +43,8 @@ public class SecurityService(IOptions<RsaSettings> rsaSettings, IOptions<AesSett
     public string EncryptAes(string plainText)
     {
         using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(_aesSettings.Key);
-        aes.IV = Encoding.UTF8.GetBytes(_aesSettings.IV);
+        aes.Key = Convert.FromBase64String(_aesSettings.Key);
+        aes.IV = Convert.FromBase64String(_aesSettings.IV);
 
         var encryptor = aes.CreateEncryptor(aes.Key, aes.IV);
 
@@ -62,8 +62,8 @@ public class SecurityService(IOptions<RsaSettings> rsaSettings, IOptions<AesSett
     public string DecryptAes(string cipherText)
     {
         using var aes = Aes.Create();
-        aes.Key = Encoding.UTF8.GetBytes(_aesSettings.Key);
-        aes.IV = Encoding.UTF8.GetBytes(_aesSettings.IV);
+        aes.Key = Convert.FromBase64String(_aesSettings.Key);
+        aes.IV = Convert.FromBase64String(_aesSettings.IV);
 
         var decryptor = aes.CreateDecryptor(aes.Key, aes.IV);
 

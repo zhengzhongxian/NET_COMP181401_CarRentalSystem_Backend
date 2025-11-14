@@ -13,8 +13,7 @@ public class GetVehicleDetailQuery : IQuery<GetVehicleDetailDto?>
     public Guid VehicleId { get; set; }
 }
 
-public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
-    : IRequestHandler<GetVehicleDetailQuery, GetVehicleDetailDto?>
+public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<GetVehicleDetailQuery, GetVehicleDetailDto?>
 {
     public async Task<GetVehicleDetailDto?> Handle(GetVehicleDetailQuery request, CancellationToken cancellationToken)
     {
@@ -28,7 +27,7 @@ public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
 
         var vehicle = await unitOfWork.GetRepository<Vehicle>()
             .GetFirstOrDefaultAsync(
-                v => v.VehicleId == request.VehicleId,
+                v => v.Id == request.VehicleId,
                 includeBuilder.Build(),
                 cancellationToken);
 
@@ -36,7 +35,7 @@ public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
 
         return new GetVehicleDetailDto
         {
-            VehicleId = vehicle.VehicleId,
+            VehicleId = vehicle.Id,
             NumberPlate = vehicle.NumberPlate,
             Manufacturer = vehicle.Manufacturer,
             Model = vehicle.Model,
@@ -47,7 +46,14 @@ public class GetVehicleDetailQueryHandler(IUnitOfWork unitOfWork)
             VehicleCategoryCode = vehicle.VehicleCategory?.CategoryCode,
             FuelName = vehicle.Fuel?.Name,
             TransmissionName = vehicle.Transmission?.Name,
-            Attributes = vehicle.VehicleAttributes.Select(att => new GetVehicleAttributeDto { AttributeId = att.AttributeId, AttributeKey = att.AttributeKey, AttributeValue = att.AttributeValue }).ToList(),
+            Attributes = vehicle.VehicleAttributes
+                .Select(att => new GetVehicleAttributeDto
+                {
+                    AttributeId = att.AttributeId, 
+                    AttributeKey = att.AttributeKey, 
+                    AttributeValue = att.AttributeValue
+                })
+                .ToList(),
             Images = vehicle.VehicleImages.Select(img => img.ImageUrl).ToList()
         };
     }

@@ -50,7 +50,7 @@ public class LogoutCommandHandler(
         {
             var userRepository = unitOfWork.GetRepository<User>();
             var user = await userRepository.GetFirstAsync(
-                s=> s.UserId == session.UserId, 
+                s=> s.Id == session.UserId, 
                 cancellationToken: cancellationToken, 
                 useWriteConnection: true);
             

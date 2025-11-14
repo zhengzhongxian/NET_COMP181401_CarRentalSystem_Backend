@@ -53,7 +53,7 @@ public class RefreshTokenCommandHandler(
                 if (remainingSessions <= 1)
                 {
                     var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(
-                        u => u.UserId == sessionInDb.UserId, 
+                        u => u.Id == sessionInDb.UserId, 
                         useWriteConnection: true, 
                         cancellationToken: cancellationToken);
                     
@@ -78,9 +78,10 @@ public class RefreshTokenCommandHandler(
                     sessionRepository.Remove(session, true);
                     await cacheService.RemoveAsync(session.RefreshToken, cancellationToken);
                 }
-
-                // FIX 3: 'userId' đã là Guid, không cần Parse
-                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.UserId == userId, useWriteConnection: true, cancellationToken: cancellationToken);
+                
+                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => 
+                    u.Id == userId, useWriteConnection: true, 
+                    cancellationToken: cancellationToken);
                 userToUpdate.Status = UserStatus.LoggedOut;
                 unitOfWork.GetRepository<User>().Update(userToUpdate);
 
@@ -104,7 +105,9 @@ public class RefreshTokenCommandHandler(
                     await cacheService.RemoveAsync(session.RefreshToken, cancellationToken);
                 }
 
-                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.UserId == sessionCache.UserId, useWriteConnection: true, cancellationToken: cancellationToken);
+                var userToUpdate = await unitOfWork.GetRepository<User>().GetFirstAsync(u => 
+                    u.Id == sessionCache.UserId, useWriteConnection: true, 
+                    cancellationToken: cancellationToken);
                 userToUpdate.Status = UserStatus.LoggedOut;
                 unitOfWork.GetRepository<User>().Update(userToUpdate);
 
@@ -137,7 +140,7 @@ public class RefreshTokenCommandHandler(
         
         var newSessionCache = new UserSessionCacheDto
         {
-            UserId = user!.UserId, 
+            UserId = user!.Id, 
             IsRevoked = false
         };
         await cacheService.SetStringAsync(newTokens.RefreshToken, newSessionCache.ToJson(), newTokens.RefreshTokenExpiry, cancellationToken);

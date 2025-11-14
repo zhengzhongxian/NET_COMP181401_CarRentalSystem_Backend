@@ -41,7 +41,7 @@ public static class VehicleSeeder
 			var id = new Guid($"00000000-0000-0000-0000-{i.ToString("D12")}");
 			vehicles.Add(new Vehicle
 			{
-				VehicleId = id,
+				Id = id,
 				NumberPlate = $"{(10 + (i % 50)):D2}A-{(100 + i):D3}.{(i % 90) + 10:D2}",
 				Manufacturer = (i % 4) switch { 0 => "Toyota", 1 => "Ford", 2 => "Hyundai", _ => "Kia" },
 				Model = (i % 4) switch { 0 => "Vios", 1 => "Everest", 2 => "Accent", _ => "Seltos" },

@@ -11,9 +11,9 @@ public class FuelConfiguration : IEntityTypeConfiguration<Fuel>
     {
         builder.ToTable("fuels");
 
-        builder.HasKey(f => f.FuelId);
+        builder.HasKey(f => f.Id);
 
-        builder.Property(f => f.FuelId)
+        builder.Property(f => f.Id)
             .HasColumnName("fuel_id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");

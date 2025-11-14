@@ -11,7 +11,10 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
         builder.ToTable("customers");
         builder.HasKey(c => c.CustomerId);
-
+        
+        builder.HasIndex(customer => customer.UserId)
+            .IsUnique();
+        
         builder.Property(c => c.CustomerId)
             .HasColumnName("customer_id")
             .ValueGeneratedOnAdd()
@@ -34,7 +37,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.PhoneNumber)
             .HasColumnName("phone_number")
             .IsRequired()
-            .HasMaxLength(20);
+            .HasMaxLength(150);
 
         builder.Property(c => c.Address)
             .HasColumnName("address")
@@ -42,7 +45,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.Property(c => c.CccdNumber)
             .HasColumnName("cccd_number")
-            .HasMaxLength(20);
+            .HasMaxLength(150);
 
         builder.Property(c => c.CccdIssueDate)
             .HasColumnName("cccd_issue_date")
@@ -75,14 +78,11 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.AvatarUrl)
             .HasColumnName("avatar_url");
 
-        builder.Property(c => c.UserId)
-            .HasColumnName("user_id");
-
         builder.HasIndex(c => c.PhoneNumber).IsUnique();
         builder.HasIndex(c => c.CccdNumber).IsUnique();
         builder.HasIndex(c => c.DriverLicenseId).IsUnique();
 
-        builder.HasQueryFilter(c => !c.User.IsDeleted);
+        builder.HasQueryFilter(c => c.User == null || !c.User.IsDeleted);
 
         builder.HasData(CustomerSeeder.Seed());
     }

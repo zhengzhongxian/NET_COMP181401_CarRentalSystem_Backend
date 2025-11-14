@@ -6,6 +6,7 @@ using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
@@ -49,7 +50,7 @@ public class LoginCommandHandler(
         
         var userSession = new UserSession
         {
-            UserId = user.UserId,
+            UserId = user.Id,
             RefreshToken = tokens.RefreshToken,
             RefreshTokenExpiryTime = tokens.RefreshTokenExpiry,
             IpAddress = request.IpAddress,
@@ -63,7 +64,7 @@ public class LoginCommandHandler(
         
         var sessionCacheDto = new UserSessionCacheDto
         {
-            UserId = user.UserId,
+            UserId = user.Id,
             IsRevoked = false
         };
         var sessionCacheJson = sessionCacheDto.ToJson();

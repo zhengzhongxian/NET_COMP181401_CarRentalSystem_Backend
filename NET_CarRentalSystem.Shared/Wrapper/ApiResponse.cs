@@ -35,17 +35,6 @@ public class ApiResponse<T>
             StatusCode = statusCode
         };
     }
-
-    public static ApiResponse<T> ErrorResult(string message, string error, int statusCode = 400)
-    {
-        return new ApiResponse<T>
-        {
-            Success = false,
-            Message = message,
-            Errors = [error],
-            StatusCode = statusCode
-        };
-    }
 }
 
 public class ApiResponse : ApiResponse<object>
@@ -59,26 +48,15 @@ public class ApiResponse : ApiResponse<object>
             StatusCode = statusCode
         };
     }
-
-    public new static ApiResponse ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
+    
+    public static ApiResponse ErrorResult(string message, object? data = null, int statusCode = 400)
     {
         return new ApiResponse
         {
             Success = false,
             Message = message,
-            Errors = errors ?? [],
-            StatusCode = statusCode
-        };
-    }
-
-    public new static ApiResponse ErrorResult(string message, string error, int statusCode = 400)
-    {
-        return new ApiResponse
-        {
-            Success = false,
-            Message = message,
-            Errors = [error],
-            StatusCode = statusCode
+            StatusCode = statusCode,
+            Data = data
         };
     }
 }

@@ -2,10 +2,12 @@
 using Microsoft.Extensions.DependencyInjection;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Infrastructure.HostedService;
 using NET_CarRentalSystem.Infrastructure.Interfaces;
 using NET_CarRentalSystem.Infrastructure.Services;
+using NET_CarRentalSystem.Infrastructure.Services.Authentication;
 using NET_CarRentalSystem.Infrastructure.Services.Storage;
 
 namespace NET_CarRentalSystem.Infrastructure.DependencyInjection;
@@ -20,6 +22,9 @@ public static class ServiceRegistration
         services.Configure<OtpSettings>(configuration.GetSection(OtpSettings.SectionName));
         services.Configure<RsaSettings>(configuration.GetSection(RsaSettings.SectionName));
         services.Configure<AesSettings>(configuration.GetSection(AesSettings.SectionName));
+        services.Configure<CorsSettings>(configuration.GetSection(CorsSettings.SectionName));
+        services.Configure<GoogleSettings>(configuration.GetSection(GoogleSettings.SectionName));
+        services.Configure<ResetPasswordSettings>(configuration.GetSection(ResetPasswordSettings.SectionName));
         
         //add scope
         services.AddScoped<ICloudinaryService, CloudinaryService>();
@@ -29,6 +34,7 @@ public static class ServiceRegistration
         services.AddScoped<IIdentityService, IdentityService>();
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IEmailService, EmailService>();
+        services.AddScoped<IGoogleService, GoogleService>();
 
         //http
         services.AddHttpClient<IApiClient, ApiClient>();

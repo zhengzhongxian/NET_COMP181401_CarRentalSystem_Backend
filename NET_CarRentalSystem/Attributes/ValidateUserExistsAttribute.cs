@@ -4,6 +4,7 @@ using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
 using Microsoft.AspNetCore.Authorization;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.API.Attributes

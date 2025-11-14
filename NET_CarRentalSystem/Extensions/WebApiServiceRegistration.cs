@@ -2,6 +2,7 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NET_CarRentalSystem.Application.Configurations;
@@ -74,10 +75,11 @@ public static class WebApiServiceRegistration
                 return new BadRequestObjectResult(errorResponse);
             };
         });
-
-        var jwtSettings = configuration.GetSection(JwtSettings.SectionName).Get<JwtSettings>();
-
+        
         using var serviceProvider = services.BuildServiceProvider();
+
+        var jwtSettings = serviceProvider.GetRequiredService<IOptions<JwtSettings>>().Value;
+        
         var logger = serviceProvider.GetRequiredService<ILogger<Program>>();
 
         if (jwtSettings == null)
@@ -87,15 +89,22 @@ public static class WebApiServiceRegistration
             throw new InvalidOperationException(
                 $"Missing configuration section: {KeyConstants.ConfigurationSections.JwtSettings}");
         }
-
+        
+        var googleSettings = serviceProvider.GetRequiredService<IOptions<GoogleSettings>>().Value;
+        
         services.AddAuthentication(options =>
         {
             options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         })
-        .AddJwtBearer(o =>
+        .AddGoogle(options =>
         {
-            o.TokenValidationParameters = new TokenValidationParameters
+            options.ClientId = googleSettings.ClientId;
+            options.ClientSecret = googleSettings.ClientSecret;
+        })
+        .AddJwtBearer(options =>
+        {
+            options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuer = true,
                 ValidateAudience = true,
@@ -115,18 +124,71 @@ public static class WebApiServiceRegistration
                     policy.RequireClaim("Permission", permission));
             }
         });
+        
+        var corsSettings = serviceProvider.GetRequiredService<IOptions<CorsSettings>>().Value;
 
         services.AddCors(options =>
         {
-            options.AddPolicy("AllowAll",
-                builder =>
+            const string defaultPolicyName = AppConstants.CorsPolicy.DefaultCorsPolicy;
+            
+            if (corsSettings.Policies.Count > 0)
+            {
+                var allOrigins = corsSettings.Policies.Values
+                    .Where(p => p.Origins != null)
+                    .SelectMany(p => p.Origins!)
+                    .Where(o => !string.IsNullOrEmpty(o))
+                    .Distinct()
+                    .ToArray();
+                
+                var allMethods = corsSettings.Policies.Values
+                    .Where(p => p.Methods != null)
+                    .SelectMany(p => p.Methods!)
+                    .Where(m => !string.IsNullOrEmpty(m))
+                    .Distinct()
+                    .ToArray();
+                
+                var allHeaders = corsSettings.Policies.Values
+                    .Where(p => p.Headers != null)
+                    .SelectMany(p => p.Headers!)
+                    .Where(h => !string.IsNullOrEmpty(h))
+                    .Distinct()
+                    .ToArray();
+                
+                var allowCredentials = corsSettings.Policies.Values.Any(p => p.AllowCredentials);
+                
+                options.AddPolicy(defaultPolicyName, builder =>
                 {
-                    builder.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                });
-        });
+                    if (allOrigins.Contains("*"))
+                        builder.AllowAnyOrigin();
+                    else if (allOrigins.Length > 0)
+                        builder.WithOrigins(allOrigins);
 
+                    if (allMethods.Contains("*"))
+                        builder.AllowAnyMethod();
+                    else if (allMethods.Length > 0)
+                        builder.WithMethods(allMethods);
+
+                    if (allHeaders.Contains("*"))
+                        builder.AllowAnyHeader();
+                    else if (allHeaders.Length > 0)
+                        builder.WithHeaders(allHeaders);
+
+                    if (allowCredentials && !allOrigins.Contains("*"))
+                        builder.AllowCredentials();
+                });
+            }
+            else
+            {
+                options.AddPolicy(defaultPolicyName, builder =>
+                {
+                    builder.WithOrigins("http://localhost:5173", "https://localhost:5173")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+            }
+        });
+        
         return services;
     }
 }

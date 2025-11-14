@@ -2,11 +2,11 @@
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class Fuel : BaseEntity
+public class Fuel : BaseEntity<Guid>
 {
-    public Guid FuelId { get; set; }
-
     public string Name { get; set; }
-
+    
+    public string? Description { get; set; }
+    
     public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
 }

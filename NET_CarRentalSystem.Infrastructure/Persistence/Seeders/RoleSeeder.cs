@@ -17,25 +17,25 @@ public static class RoleSeeder
 		[
 			new Role
 			{
-				RoleId = AdminRoleId,
+				Id = AdminRoleId,
 				Name = RoleConstants.Admin,
 				NormalizedName = RoleConstants.Admin.ToUpper()
 			},
 			new Role
 			{
-				RoleId = ManagerRoleId,
+				Id = ManagerRoleId,
 				Name = RoleConstants.Manager,
 				NormalizedName = RoleConstants.Manager.ToUpper()
 			},
 			new Role
 			{
-				RoleId = StaffRoleId,
+				Id = StaffRoleId,
 				Name = RoleConstants.Staff,
 				NormalizedName = RoleConstants.Staff.ToUpper()
 			},
 			new Role
 			{
-				RoleId = CustomerRoleId,
+				Id = CustomerRoleId,
 				Name = RoleConstants.Customer,
 				NormalizedName = RoleConstants.Customer.ToUpper()
 			}

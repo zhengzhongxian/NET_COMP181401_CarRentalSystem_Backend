@@ -2,10 +2,8 @@ using NET_CarRentalSystem.Domain.Common;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class UserSession : BaseEntity
+public class UserSession : BaseEntity<Guid>
 {
-    public Guid UserSessionId { get; set; }
-
     public Guid UserId { get; set; }
 
     public string RefreshToken { get; set; }

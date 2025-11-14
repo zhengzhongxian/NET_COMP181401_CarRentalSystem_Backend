@@ -11,7 +11,7 @@ public static class FuelSeeder
 		[
 			new()
 			{
-				FuelId = Guid.Parse("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
+				Id = Guid.Parse("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
 				Name = "Gasoline",
 				Description = "Sử dụng xăng",
 				CreatedAt = now,
@@ -19,7 +19,7 @@ public static class FuelSeeder
 			},
 			new()
 			{
-				FuelId = Guid.Parse("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
+				Id = Guid.Parse("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
 				Name = "Diesel",
 				Description = "Sử dụng dầu Diesel",
 				CreatedAt = now,
@@ -27,7 +27,7 @@ public static class FuelSeeder
 			},
 			new()
 			{
-				FuelId = Guid.Parse("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
+				Id = Guid.Parse("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
 				Name = "Electric",
 				Description = "Sử dụng năng lượng điện",
 				CreatedAt = now,

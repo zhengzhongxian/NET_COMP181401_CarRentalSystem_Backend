@@ -10,9 +10,9 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
     public void Configure(EntityTypeBuilder<Role> builder)
     {
         builder.ToTable("roles");
-        builder.HasKey(r => r.RoleId);
+        builder.HasKey(r => r.Id);
 
-        builder.Property(r => r.RoleId)
+        builder.Property(r => r.Id)
             .HasColumnName("role_id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");

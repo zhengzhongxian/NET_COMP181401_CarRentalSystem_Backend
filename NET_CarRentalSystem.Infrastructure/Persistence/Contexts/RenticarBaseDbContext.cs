@@ -31,7 +31,7 @@ public abstract class RenticarBaseDbContext(
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
-            if (typeof(BaseEntity).IsAssignableFrom(entityType.ClrType))
+            if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
             {
                 modelBuilder.Entity(entityType.ClrType)
                     .HasQueryFilter(CreateSoftDeleteFilter(entityType.ClrType));
@@ -56,7 +56,7 @@ public abstract class RenticarBaseDbContext(
         var userId = currentUserService.GetUserId()?.ToString();
         var currentTime = DateTime.UtcNow;
 
-        foreach (var entry in ChangeTracker.Entries<BaseEntity>())
+        foreach (var entry in ChangeTracker.Entries<IAuditable>())
         {
             switch (entry.State)
             {
@@ -80,7 +80,7 @@ public abstract class RenticarBaseDbContext(
     private static LambdaExpression CreateSoftDeleteFilter(Type type)
     {
         var parameter = Expression.Parameter(type, "e");
-        var property = Expression.Property(parameter, nameof(BaseEntity.IsDeleted));
+        var property = Expression.Property(parameter, nameof(ISoftDelete.IsDeleted));
         var constant = Expression.Constant(false);
         var equality = Expression.Equal(property, constant);
         return Expression.Lambda(equality, parameter);

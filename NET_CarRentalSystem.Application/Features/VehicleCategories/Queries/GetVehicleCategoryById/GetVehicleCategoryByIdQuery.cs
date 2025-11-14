@@ -28,7 +28,7 @@ public class GetVehicleCategoryByIdQueryHandler(IUnitOfWork unitOfWork)
 
         return new GetVehicleCategoryDto
         {
-            CategoryId = category.CategoryId,
+            CategoryId = category.Id,
             CategoryCode = category.CategoryCode,
             Seat = category.Seat
         };

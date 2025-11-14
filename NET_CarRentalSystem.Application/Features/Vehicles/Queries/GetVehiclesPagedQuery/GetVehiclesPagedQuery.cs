@@ -50,7 +50,7 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork)
 
         var vehicleDtos = pagedList.Items.Select(v => new GetVehicleDto
         {
-            VehicleId = v.VehicleId,
+            VehicleId = v.Id,
             NumberPlate = v.NumberPlate,
             Manufacturer = v.Manufacturer,
             Model = v.Model,

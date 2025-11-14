@@ -70,7 +70,42 @@ public static class AuthMessage
     {
         public const string Success = "Đăng ký thành công";
         public const string UserExists = "Tên đăng nhập hoặc email đã tồn tại";
+        public const string PhoneNumberExists = "Số điện thoại đã tồn tại";
         public const string RoleNotFound = "Không tìm thấy vai trò khách hàng";
-        public const string Error = "Có lỗi xảy ra khi đăng ký";
+        public const string Error = "Có lỗi xảy trong quá trình đăng ký";
+    }
+
+    public static class GoogleLogin
+    {
+        public const string UnverifiedEmail = "Email của Google chưa được xác thực";
+        public const string Error = "Có lỗi trong quá trình đăng nhập Google";
+        public const string Success = Login.Success;
+        public const string NotFound = "Không tìm thấy thông tin đăng nhập";
+        public const string Banned = Login.Banned;
+    }
+
+    public static class GoogleLogup
+    {
+        public const string UnverifiedEmail = GoogleLogin.UnverifiedEmail;
+        public const string Error = Logup.Error;
+        public const string UserExists = "Email đã tồn tại";
+        public const string PhoneNumberExists = Logup.PhoneNumberExists;
+        public const string Success = Logup.Success;
+    }
+
+    public static class ForgetPassword
+    {
+        public const string Success = "Tin nhắn đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn.";
+        public const string Error = "Có lỗi xảy ra khi gửi tin nhắn đặt lại mật khẩu";
+        public const string EmailNotFound = "Email người dùng không tồn tại";
+        public const string MaxAttempts = "Bạn đã vượt quá số lần gửi đặt lại mật khẩu. Vui lòng thử lại sau {0} giờ.";
+    }
+
+    public static class ResetPassword
+    {
+        public const string Success = "Đặt lại mật khẩu thành công";
+        public const string Error = "Có lỗi xảy ra khi đặt lại mật khẩu";
+        public const string InvalidToken = "Token không hợp lệ";
+        public const string ExpiredToken = "Token đã hết hạn";
     }
 }

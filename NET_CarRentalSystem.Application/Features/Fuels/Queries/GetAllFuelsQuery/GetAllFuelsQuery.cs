@@ -16,7 +16,7 @@ public class GetAllFuelsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<G
         
         return [.. fuels.Select(fuel => new GetFuelDto
         {
-            FuelId = fuel.FuelId,
+            FuelId = fuel.Id,
             Name = fuel.Name,
             Description = fuel.Description
         })];

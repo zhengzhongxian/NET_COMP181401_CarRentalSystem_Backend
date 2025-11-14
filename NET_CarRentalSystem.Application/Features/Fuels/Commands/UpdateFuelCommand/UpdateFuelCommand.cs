@@ -36,7 +36,7 @@ public class UpdateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 
         var fuelDto = new UpdateFuelDto
         {
-            FuelId = fuelToUpdate.FuelId,
+            FuelId = fuelToUpdate.Id,
             Name = fuelToUpdate.Name,
             Description = fuelToUpdate.Description
         };

@@ -23,25 +23,26 @@ public class LogoutAllOtherSessionsCommandHandler(
         var sessionCacheJson = await cacheService.GetStringAsync(request.CurrentRefreshToken, cancellationToken);
         if (sessionCacheJson is null)
         {
-            return Unit.Value; // If the current token is invalid, do nothing.
+            return Unit.Value; // if the current token is invalid, do nothing.
         }
 
         var sessionCache = sessionCacheJson.FromJson<UserSessionCacheDto>()!;
         if (sessionCache.IsRevoked)
         {
-            return Unit.Value; // If the current token is revoked, do nothing.
+            return Unit.Value; // if the current token is revoked, do nothing.
         }
 
         var currentUserId = currentUserService.GetUserId()!.Value;
         if (sessionCache.UserId != currentUserId)
         {
-            return Unit.Value; // Token does not belong to the current user.
+            return Unit.Value; // token does not belong to the current user.
         }
 
         var sessionRepository = unitOfWork.GetRepository<UserSession>();
 
-        var sessionsToLogout = await sessionRepository.GetAsync(
-            filter: s => s.UserId == currentUserId && s.RefreshToken != request.CurrentRefreshToken);
+        var sessionsToLogout = await sessionRepository.GetAsync(filter: s => 
+            s.UserId == currentUserId && s.RefreshToken != request.CurrentRefreshToken, 
+            cancellationToken: cancellationToken);
 
         if (sessionsToLogout.Count == 0)
         {

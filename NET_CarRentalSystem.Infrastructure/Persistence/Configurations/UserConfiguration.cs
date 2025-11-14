@@ -11,9 +11,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable("users");
 
-        builder.HasKey(u => u.UserId);
+        builder.HasKey(u => u.Id);
 
-        builder.Property(u => u.UserId)
+        builder.Property(u => u.Id)
             .HasColumnName("user_id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");
@@ -25,7 +25,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Password)
             .HasColumnName("password")
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(u => u.Email)
             .HasColumnName("email")
@@ -54,7 +54,8 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasOne(u => u.Customer)
             .WithOne(c => c.User)
-            .HasForeignKey<Customer>(c => c.UserId);
+            .HasForeignKey<Customer>(c => c.UserId)
+            .IsRequired(false);
 
         builder.HasMany(u => u.UserRoles)
             .WithOne(ur => ur.User)

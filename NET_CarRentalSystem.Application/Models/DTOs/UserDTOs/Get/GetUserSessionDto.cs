@@ -8,5 +8,5 @@ public class GetUserSessionDto
     
     public string? IpAddress { get; set; }
     
-    public DateTime CreatedAt { get; set; }
+    public DateTime? CreatedAt { get; set; }
 }

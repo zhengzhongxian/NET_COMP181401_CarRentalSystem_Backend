@@ -10,9 +10,9 @@ public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
     {
         builder.ToTable("user_sessions");
 
-        builder.HasKey(us => us.UserSessionId);
+        builder.HasKey(us => us.Id);
 
-        builder.Property(us => us.UserSessionId)
+        builder.Property(us => us.Id)
             .HasColumnName("user_session_id")
             .ValueGeneratedOnAdd();
 

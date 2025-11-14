@@ -2,12 +2,12 @@
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class VehicleCategory : BaseEntity
+public class VehicleCategory : BaseEntity<Guid>
 {
-    public Guid CategoryId { get; set; }
-
     public string CategoryCode { get; set; }
-
+    
+    public string? Description { get; set; }
+    
     public int Seat { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = [];

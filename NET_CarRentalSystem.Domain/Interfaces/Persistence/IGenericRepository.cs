@@ -72,15 +72,16 @@ public interface IGenericRepository<T> where T : class
         CancellationToken cancellationToken = default,
         bool useWriteConnection = false);
 
+
     /// <summary>
-    /// Lấy ra entity duy nhất khớp với điều kiện. Ném ra exception nếu có nhiều hơn một kết quả.
+    /// Lấy ra entity đầu tiên khớp với điều kiện. Ném ra exception nếu không tìm thấy.
     /// </summary>
     /// <param name="filter">Biểu thức điều kiện để lọc.</param>
     /// <param name="includeProperties">Chuỗi các thuộc tính liên quan cần tải (comma-separated).</param>
     /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
     /// <param name="useWriteConnection">Nếu là true, sử dụng kết nối ghi.</param>
-    /// <returns>Entity duy nhất thỏa mãn điều kiện hoặc null.</returns>
-    Task<T?> GetSingleOrDefaultAsync(
+    /// <returns>Entity đầu tiên thỏa mãn điều kiện.</returns>
+    Task<T> GetFirstAsync(
         Expression<Func<T, bool>> filter,
         string includeProperties = "",
         CancellationToken cancellationToken = default,
@@ -93,12 +94,14 @@ public interface IGenericRepository<T> where T : class
     /// <param name="sortBy">Tên thuộc tính để sắp xếp (ví dụ: "CreatedDate", "Name").</param>
     /// <param name="sortDirection">Hướng sắp xếp ("asc" cho tăng dần, "desc" cho giảm dần).</param>
     /// <param name="includeProperties">Chuỗi các thuộc tính liên quan cần tải (comma-separated).</param>
+    /// <param name="cancellationToken"></param>
     /// <returns>Danh sách các entity đã được lọc, sắp xếp và tải các thuộc tính liên quan.</returns>
     Task<List<T>> GetAsync(
         Expression<Func<T, bool>>? filter = null,
         string? sortBy = null,
         string? sortDirection = "asc",
-        string includeProperties = "");
+        string includeProperties = "",
+        CancellationToken cancellationToken = default);
 
 
     /// <summary>
@@ -120,7 +123,7 @@ public interface IGenericRepository<T> where T : class
     /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
     /// <returns>True nếu có ít nhất một entity thỏa mãn, ngược lại là False.</returns>
     Task<bool> ExistsAsync(
-        Expression<Func<T, bool>> predicate, 
+        Expression<Func<T, bool>> predicate,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -130,7 +133,7 @@ public interface IGenericRepository<T> where T : class
     /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
     /// <returns>Tổng số lượng entity thỏa mãn điều kiện.</returns>
     Task<int> CountAsync(
-        Expression<Func<T, bool>>? predicate = null, 
+        Expression<Func<T, bool>>? predicate = null,
         CancellationToken cancellationToken = default);
 
     /// <summary>
@@ -149,16 +152,6 @@ public interface IGenericRepository<T> where T : class
         CancellationToken cancellationToken = default);
 
     /// <summary>
-    /// Lấy entity đầu tiên thỏa mãn điều kiện. Ném ra exception nếu không tìm thấy.
-    /// </summary>
-    /// <param name="predicate">Biểu thức điều kiện để lọc.</param>
-    /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
-    /// <returns>Entity đầu tiên thỏa mãn điều kiện.</returns>
-    Task<T> FirstAsync(
-        Expression<Func<T, bool>> predicate,
-        CancellationToken cancellationToken = default);
-
-    /// <summary>
     /// Thực thi một câu lệnh SQL nội suy (interpolated SQL) và trả về số hàng bị ảnh hưởng.
     /// Thích hợp cho các thao tác INSERT, UPDATE, DELETE hoặc các lệnh DDL.
     /// </summary>
@@ -166,7 +159,7 @@ public interface IGenericRepository<T> where T : class
     /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
     /// <returns>Số hàng bị ảnh hưởng bởi câu lệnh SQL.</returns>
     Task<int> ExecuteSqlInterpolatedAsync(
-        FormattableString sql, 
+        FormattableString sql,
         CancellationToken cancellationToken = default);
 
     /// <summary>

@@ -11,9 +11,9 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
     {
         builder.ToTable("users");
 
-        builder.HasKey(u => u.UserId);
+        builder.HasKey(u => u.Id);
 
-        builder.Property(u => u.UserId)
+        builder.Property(u => u.Id)
             .HasColumnName("user_id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");
@@ -25,24 +25,12 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.Property(u => u.Password)
             .HasColumnName("password")
-            .IsRequired();
+            .IsRequired(false);
 
         builder.Property(u => u.Email)
             .HasColumnName("email")
             .IsRequired()
             .HasMaxLength(255);
-
-        builder.Property(u => u.Otp)
-            .HasColumnName("otp");
-
-        builder.Property(u => u.OtpAttempts)
-            .HasColumnName("otp_attempts");
-
-        builder.Property(u => u.OtpExpires)
-            .HasColumnName("otp_expires");
-
-        builder.Property(u => u.ResetPasswordToken)
-            .HasColumnName("reset_password_token");
 
         builder.Property(u => u.IsVerified)
             .HasColumnName("is_verified");
@@ -66,12 +54,13 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
 
         builder.HasOne(u => u.Customer)
             .WithOne(c => c.User)
-            .HasForeignKey<Customer>(c => c.UserId);
+            .HasForeignKey<Customer>(c => c.UserId)
+            .IsRequired(false);
 
         builder.HasMany(u => u.UserRoles)
-        .WithOne(ur => ur.User)
-        .HasForeignKey(ur => ur.UserId)
-        .IsRequired();
+            .WithOne(ur => ur.User)
+            .HasForeignKey(ur => ur.UserId)
+            .IsRequired();
 
         builder.HasMany(u => u.UserClaims)
             .WithOne(uc => uc.User)

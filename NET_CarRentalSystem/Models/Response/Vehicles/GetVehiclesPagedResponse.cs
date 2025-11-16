@@ -1,4 +1,4 @@
-﻿using NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
+﻿using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
 using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.API.Models.Response.Vehicles;

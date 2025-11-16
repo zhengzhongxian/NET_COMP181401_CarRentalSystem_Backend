@@ -11,7 +11,7 @@ public static class LocationSeeder
         [
             new()
             {
-                LocationId = Guid.Parse("10000000-0000-0000-0000-000000000001"),
+                Id = Guid.Parse("10000000-0000-0000-0000-000000000001"),
                 Name = "Chi nhánh Quận 1",
                 Address = "123 Lê Lợi, P. Bến Nghé",
                 City = "Hồ Chí Minh",
@@ -24,7 +24,7 @@ public static class LocationSeeder
             },
             new()
             {
-                LocationId = Guid.Parse("10000000-0000-0000-0000-000000000002"),
+                Id = Guid.Parse("10000000-0000-0000-0000-000000000002"),
                 Name = "Chi nhánh Cầu Giấy",
                 Address = "456 Xuân Thủy, P. Dịch Vọng Hậu",
                 City = "Hà Nội",
@@ -37,7 +37,7 @@ public static class LocationSeeder
             },
             new()
             {
-                LocationId = Guid.Parse("10000000-0000-0000-0000-000000000003"),
+                Id = Guid.Parse("10000000-0000-0000-0000-000000000003"),
                 Name = "Chi nhánh Hải Châu",
                 Address = "789 Hùng Vương, Hải Châu",
                 City = "Đà Nẵng",
@@ -50,7 +50,7 @@ public static class LocationSeeder
             },
             new()
             {
-                LocationId = Guid.Parse("10000000-0000-0000-0000-000000000004"),
+                Id = Guid.Parse("10000000-0000-0000-0000-000000000004"),
                 Name = "Chi nhánh Nha Trang",
                 Address = "12 Trần Phú, Lộc Thọ",
                 City = "Khánh Hòa",

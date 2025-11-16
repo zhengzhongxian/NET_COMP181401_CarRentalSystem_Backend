@@ -13,7 +13,7 @@ public static class InfrastructureServiceRegistration
         services.AddInfrastructureServices(configuration);
         services.AddJobServices();
         services.AddCacheServices(configuration);
-        
+
         return services;
     }
 }

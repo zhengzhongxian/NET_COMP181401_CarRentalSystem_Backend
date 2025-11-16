@@ -1,4 +1,5 @@
 using NET_CarRentalSystem.API.Extensions;
+using NET_CarRentalSystem.Shared.Constants;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,13 +19,19 @@ var app = builder.Build();
 
 _ = app.ApplyMigrationsAsync();
 
+app.UseStaticFiles();
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(c =>
+{
+    c.InjectStylesheet("/css/swagger-custom.css");
+});
+
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
-app.UseHttpsRedirection();
+app.UseCors(AppConstants.CorsPolicy.DefaultCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

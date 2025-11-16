@@ -9,7 +9,13 @@ public class UserLoginConfiguration : IEntityTypeConfiguration<UserLogin>
     public void Configure(EntityTypeBuilder<UserLogin> builder)
     {
         builder.ToTable("user_logins");
-        builder.HasKey(ul => new { ul.LoginProvider, ul.ProviderKey });
+        builder.HasKey(ul => ul.UserLoginId)
+            .HasName("PK_user_logins");
+        
+        builder.Property(ul => ul.UserLoginId)
+            .HasColumnName("user_login_id")
+            .ValueGeneratedOnAdd()
+            .HasDefaultValueSql("NEWSEQUENTIALID()");
 
         builder.Property(ul => ul.LoginProvider)
             .HasColumnName("login_provider")

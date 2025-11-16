@@ -13,4 +13,14 @@ public class CacheService(IDistributedCache cache) : ICacheService
         };
         return cache.SetStringAsync(key, value, options, ct);
     }
+
+    public Task<string?> GetStringAsync(string key, CancellationToken ct)
+    {
+        return cache.GetStringAsync(key, ct);
+    }
+
+    public Task RemoveAsync(string key, CancellationToken ct)
+    {
+        return cache.RemoveAsync(key, ct);
+    }
 }

@@ -11,9 +11,9 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
     {
         builder.ToTable("vehicles");
 
-        builder.HasKey(v => v.VehicleId);
+        builder.HasKey(v => v.Id);
 
-        builder.Property(v => v.VehicleId)
+        builder.Property(v => v.Id)
             .HasColumnName("vehicle_id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");

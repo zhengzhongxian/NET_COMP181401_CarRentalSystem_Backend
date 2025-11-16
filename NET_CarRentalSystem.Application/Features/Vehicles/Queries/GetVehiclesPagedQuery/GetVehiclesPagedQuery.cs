@@ -1,7 +1,7 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.DTOs.VehicleAttributeDTOs.Get;
-using NET_CarRentalSystem.Application.DTOs.VehicleDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Pagination;
@@ -50,7 +50,7 @@ public class GetVehiclesPagedQueryHandler(IUnitOfWork unitOfWork)
 
         var vehicleDtos = pagedList.Items.Select(v => new GetVehicleDto
         {
-            VehicleId = v.VehicleId,
+            VehicleId = v.Id,
             NumberPlate = v.NumberPlate,
             Manufacturer = v.Manufacturer,
             Model = v.Model,

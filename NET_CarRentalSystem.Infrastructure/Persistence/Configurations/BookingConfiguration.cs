@@ -10,9 +10,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
     public void Configure(EntityTypeBuilder<Booking> builder)
     {
         builder.ToTable("bookings");
-        builder.HasKey(b => b.BookingId);
+        builder.HasKey(b => b.Id);
 
-        builder.Property(b => b.BookingId)
+        builder.Property(b => b.Id)
             .HasColumnName("booking_id")
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");

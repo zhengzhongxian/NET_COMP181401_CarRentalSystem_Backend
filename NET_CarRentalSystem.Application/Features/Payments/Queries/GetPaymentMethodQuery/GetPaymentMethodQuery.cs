@@ -1,6 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.DTOs.PaymentDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.PaymentDTOs.Get;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Shared.Utilities;
 

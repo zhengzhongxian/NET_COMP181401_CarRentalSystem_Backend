@@ -4,10 +4,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class Vehicle : BaseEntity
+public class Vehicle : BaseEntity<Guid>
 {
-    public Guid VehicleId { get; set; }
-
     public string NumberPlate { get; set; }
 
     public string Manufacturer { get; set; }
@@ -21,7 +19,9 @@ public class Vehicle : BaseEntity
     public decimal PricePerHour { get; set; }
 
     public string? Thumbnail { get; set; }
-
+    
+    public string? Description { get; set; }
+    
     public DateTime? LastCheckoutAt { get; set; }
 
     public float Rating { get; set; }

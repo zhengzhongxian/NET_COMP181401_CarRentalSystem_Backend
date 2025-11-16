@@ -22,8 +22,6 @@ public static class PersistenceRegistration
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 
-        services.AddScoped<IQueryRepository, QueryRepository>();
-
         return services;
     }
 }

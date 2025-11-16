@@ -1,5 +1,4 @@
 using NET_CarRentalSystem.Domain.Constants;
-using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Seeders
 {
@@ -17,7 +16,11 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Seeders
                     PermissionConstants.Vehicles.Create,
                     PermissionConstants.Vehicles.Edit,
                     PermissionConstants.Bookings.View,
-                    PermissionConstants.Bookings.Edit
+                    PermissionConstants.Bookings.Edit,
+                    PermissionConstants.Fuels.Create,
+                    PermissionConstants.Fuels.Edit,
+                    PermissionConstants.Fuels.View,
+                    PermissionConstants.Fuels.Delete
                 ],
                 
                 [RoleSeeder.StaffRoleId] =

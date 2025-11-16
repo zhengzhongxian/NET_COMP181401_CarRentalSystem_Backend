@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.DTOs.FuelDTOs.Update;
+using NET_CarRentalSystem.Application.Models.DTOs.FuelDTOs.Update;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants;
@@ -23,16 +23,20 @@ public class UpdateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         var fuelToUpdate = await repository.GetByIdAsync(request.FuelId, cancellationToken, useWriteConnection: true);
 
         if (fuelToUpdate == null) return (FuelMessage.Update.NotFound, null);
-
+        
         fuelToUpdate.Name = request.Name;
-        fuelToUpdate.Description = request.Description;
+        
+        if (request.Description != null)
+        {
+            fuelToUpdate.Description = request.Description;
+        }
         
         repository.Update(fuelToUpdate);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         var fuelDto = new UpdateFuelDto
         {
-            FuelId = fuelToUpdate.FuelId,
+            FuelId = fuelToUpdate.Id,
             Name = fuelToUpdate.Name,
             Description = fuelToUpdate.Description
         };

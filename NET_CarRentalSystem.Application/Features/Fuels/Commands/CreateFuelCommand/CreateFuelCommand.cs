@@ -17,7 +17,7 @@ public class CreateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
     {
         var newFuel = new Fuel 
         { 
-            FuelId = Guid.NewGuid(), 
+            Id = Guid.NewGuid(), 
             Name = request.Name, 
             Description = request.Description 
         };
@@ -25,6 +25,6 @@ public class CreateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
         await unitOfWork.GetRepository<Fuel>().AddAsync(newFuel, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return newFuel.FuelId;
+        return newFuel.Id;
     }
 }

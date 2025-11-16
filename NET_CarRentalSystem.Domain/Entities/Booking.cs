@@ -2,10 +2,8 @@
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class Booking : BaseEntity
+public class Booking : BaseEntity<Guid>
 {
-    public Guid BookingId { get; set; }
-
     public Guid CustomerId { get; set; }
 
     public Guid VehicleId { get; set; }
@@ -29,7 +27,9 @@ public class Booking : BaseEntity
     public decimal? FuelPrice { get; set; }
 
     public string? ConditionNotes { get; set; }
-
+    
+    public string? Description { get; set; }
+    
     public Guid PickupLocationId { get; set; }
 
     public Guid? ReturnLocationId { get; set; }

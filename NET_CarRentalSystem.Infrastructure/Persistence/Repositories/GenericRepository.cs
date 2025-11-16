@@ -16,9 +16,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     {
         IQueryable<T> query = readDbContext.Set<T>();
 
-        if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        if (typeof(IAuditable).IsAssignableFrom(typeof(T)))
         {
-            query = query.Cast<BaseEntity>()
+            query = query.Cast<IAuditable>()
                 .OrderByDescending(e => e.UpdatedAt)
                 .Cast<T>();
         }
@@ -29,7 +29,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
     public async Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default,
         bool useWriteConnection = false)
     {
-        var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
+        DbContext db = useWriteConnection ? writeDbContext : readDbContext;
         return await db.Set<T>().FindAsync([id], cancellationToken);
     }
 
@@ -62,10 +62,10 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             return;
         }
 
-        if (entity is BaseEntity baseEntity)
+        if (entity is ISoftDelete softDelete)
         {
-            baseEntity.IsDeleted = true;
-            writeDbContext.Entry(baseEntity).State = EntityState.Modified;
+            softDelete.IsDeleted = true;
+            writeDbContext.Entry(softDelete).State = EntityState.Modified;
         }
         else
         {
@@ -97,10 +97,10 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
                 ? query.OrderByDescending(v => EF.Property<object>(v, pagingParams.SortBy))
                 : query.OrderBy(v => EF.Property<object>(v, pagingParams.SortBy));
         }
-        else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        else if (typeof(IAuditable).IsAssignableFrom(typeof(T)))
         {
             // Áp dụng sắp xếp mặc định nếu không có sortBy
-            query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
+            query = query.Cast<IAuditable>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
         var items = await query
@@ -124,10 +124,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         return await query.FirstOrDefaultAsync(filter, cancellationToken);
     }
 
-    public async Task<T?> GetSingleOrDefaultAsync(
-        Expression<Func<T, bool>> filter,
-        string includeProperties = "",
-        CancellationToken cancellationToken = default,
+    public async Task<T> GetFirstAsync(Expression<Func<T, bool>> filter, string includeProperties = "", CancellationToken cancellationToken = default,
         bool useWriteConnection = false)
     {
         IQueryable<T> query = useWriteConnection ? writeDbContext.Set<T>() : readDbContext.Set<T>();
@@ -135,13 +132,14 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             .Split([','], StringSplitOptions.RemoveEmptyEntries)
             .Aggregate(query, (current, includeProperty) => current.Include(includeProperty));
 
-        return await query.SingleOrDefaultAsync(filter, cancellationToken);
+        return await query.FirstAsync(filter, cancellationToken);
     }
 
     public async Task<List<T>> GetAsync(
         Expression<Func<T, bool>>? filter = null,
         string? sortBy = null, string? sortDirection = "asc",
-        string includeProperties = "")
+        string includeProperties = "",
+        CancellationToken  cancellationToken = default)
     {
         IQueryable<T> query = readDbContext.Set<T>();
 
@@ -160,12 +158,12 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
                 ? query.OrderByDescending(v => EF.Property<object>(v, sortBy))
                 : query.OrderBy(v => EF.Property<object>(v, sortBy));
         }
-        else if (typeof(BaseEntity).IsAssignableFrom(typeof(T)))
+        else if (typeof(IAuditable).IsAssignableFrom(typeof(T)))
         {
-            query = query.Cast<BaseEntity>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
+            query = query.Cast<IAuditable>().OrderByDescending(e => e.UpdatedAt).Cast<T>();
         }
 
-        return await query.ToListAsync();
+        return await query.ToListAsync(cancellationToken);
     }
 
     public async Task<bool> ExistsAsync(Expression<Func<T, bool>> predicate,
@@ -205,13 +203,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         };
     }
 
-    public async Task<T> FirstAsync(
-        Expression<Func<T, bool>> predicate,
-        CancellationToken cancellationToken = default)
-    {
-        return await readDbContext.Set<T>().FirstAsync(predicate, cancellationToken);
-    }
-
     public async Task<List<T>> FromSqlInterpolatedAsync(
         FormattableString sql,
         CancellationToken cancellationToken = default)
@@ -220,8 +211,6 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
             .FromSqlInterpolated(sql)
             .ToListAsync(cancellationToken);
     }
-
-
 
     public async Task<int> ExecuteSqlInterpolatedAsync(
         FormattableString sql,
@@ -238,7 +227,7 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
 
     {
 
-        var db = useWriteConnection ? (DbContext)writeDbContext : readDbContext;
+        DbContext db = useWriteConnection ? writeDbContext : readDbContext;
         var query = db.Set<T>().IgnoreQueryFilters();
 
         query = includeProperties
@@ -248,9 +237,9 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
         var allEntities = await query.Where(filter).ToListAsync(cancellationToken);
         var result = allEntities.FirstOrDefault(entity =>
         {
-            if (entity is BaseEntity baseEntity)
+            if (entity is ISoftDelete softDelete)
             {
-                return !baseEntity.IsDeleted;
+                return !softDelete.IsDeleted;
 
             }
             return true;
@@ -276,6 +265,4 @@ public class GenericRepository<T>(RenticarWriteDbContext writeDbContext, Rentica
 
         return query.AsQueryable();
     }
-
-
 }

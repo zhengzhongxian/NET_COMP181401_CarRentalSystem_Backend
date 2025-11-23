@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using NET_CarRentalSystem.Infrastructure.BackgroundJobs;
+using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Jobs;
 using Quartz;
 
 namespace NET_CarRentalSystem.Infrastructure.DependencyInjection;

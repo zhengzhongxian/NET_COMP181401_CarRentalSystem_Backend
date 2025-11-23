@@ -4,10 +4,12 @@ using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
+using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.CoreHelpers;
 using NET_CarRentalSystem.Shared.Utilities;
 

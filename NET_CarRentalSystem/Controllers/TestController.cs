@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.API.Controllers

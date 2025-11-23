@@ -25,12 +25,13 @@ public class ApiResponse<T>
         };
     }
 
-    public static ApiResponse<T> ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
+    public static ApiResponse<T> ErrorResult(T data, string message, int statusCode = 400, List<string>? errors = null)
     {
         return new ApiResponse<T>
         {
             Success = false,
             Message = message,
+            Data = data,
             Errors = errors ?? [],
             StatusCode = statusCode
         };
@@ -49,14 +50,14 @@ public class ApiResponse : ApiResponse<object>
         };
     }
     
-    public static ApiResponse ErrorResult(string message, object? data = null, int statusCode = 400)
+    public static ApiResponse ErrorResult(string message, int statusCode = 400, List<string>? errors = null)
     {
         return new ApiResponse
         {
             Success = false,
             Message = message,
             StatusCode = statusCode,
-            Data = data
+            Errors = errors ?? []
         };
     }
 }

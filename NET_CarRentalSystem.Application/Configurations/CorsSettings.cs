@@ -4,11 +4,11 @@ namespace NET_CarRentalSystem.Application.Configurations;
 
 public class CorsPolicyConfig
 {
-    public string[]? Origins { get; set; }
-    
-    public string[]? Methods { get; set; }
-    
-    public string[]? Headers { get; set; }
+    public string[]? Origins { get; set; } = default!;
+
+    public string[]? Methods { get; set; } = default!;
+
+    public string[]? Headers { get; set; } = default!;
     
     public bool AllowCredentials { get; set; } = false;
 }

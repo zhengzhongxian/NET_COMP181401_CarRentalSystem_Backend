@@ -5,8 +5,7 @@ using NET_CarRentalSystem.API.Models.Request.Vehicles;
 using NET_CarRentalSystem.API.Models.Response.Vehicles;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleDetailQuery;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
-using NET_CarRentalSystem.Application.Models.DTOs.VehicleDTOs.Get;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Pagination;
 using NET_CarRentalSystem.Shared.Wrapper;
 
@@ -77,6 +76,7 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
 
             var response = mapper.Map<GetVehicleDetailResponse>(resultDto);
             var apiResponse = ApiResponse.SuccessResult(response, VehicleMessage.Get.Success);
+            
             return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
@@ -86,6 +86,7 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]
             );
+            
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }

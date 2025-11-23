@@ -1,6 +1,8 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Models.DTOs.UserDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -11,7 +13,7 @@ public record GetUserProfileQuery : IQuery<UserDto>;
 
 public class GetUserProfileQueryHandler(
     IUnitOfWork unitOfWork,
-    ISecurityService securityService,
+    ICryptographyService cryptographyService,
     ICurrentUserService currentUserService) : IRequestHandler<GetUserProfileQuery, UserDto>
 {
     public async Task<UserDto> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
@@ -31,10 +33,10 @@ public class GetUserProfileQueryHandler(
         
         userDto.FirstName = customer.FirstName;
         userDto.LastName = customer.LastName;
-        userDto.PhoneNumber = !string.IsNullOrEmpty(customer.PhoneNumber) ? securityService.DecryptAes(customer.PhoneNumber) : null;
+        userDto.PhoneNumber = !string.IsNullOrEmpty(customer.PhoneNumber) ? cryptographyService.DecryptAes(customer.PhoneNumber) : null;
         userDto.Address = customer.Address;
         userDto.Dob = customer.Dob;
-        userDto.CccdNumber = !string.IsNullOrEmpty(customer.CccdNumber) ? securityService.DecryptAes(customer.CccdNumber) : null;
+        userDto.CccdNumber = !string.IsNullOrEmpty(customer.CccdNumber) ? cryptographyService.DecryptAes(customer.CccdNumber) : null;
         userDto.CccdIssueDate = customer.CccdIssueDate;
         userDto.CccdIssuePlace = customer.CccdIssuePlace;
         userDto.CccdFrontUrl = customer.CccdFrontUrl;

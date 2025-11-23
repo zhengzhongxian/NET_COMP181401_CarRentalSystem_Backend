@@ -21,6 +21,8 @@ public static class KeyConstants
         public const string AesSettings = "Security:AesSettings";
         public const string CorsSettings = "CorsSettings";
         public const string ResetPasswordSettings = "Security:ResetPasswordSettings";
+        public const string MyApiSettings = "ApiClient:MyApiSettings";
+        public const string VnPaySettings = "Payment:VnPaySettings";
     }
 
     public static class Quartz

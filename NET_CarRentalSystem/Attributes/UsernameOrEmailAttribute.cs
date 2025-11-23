@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 namespace NET_CarRentalSystem.API.Attributes;
 
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field | AttributeTargets.Parameter, AllowMultiple = false)]
-public partial class UsernameOrEmailAttribute : ValidationAttribute
+public partial class  UsernameOrEmailAttribute : ValidationAttribute
 {
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {

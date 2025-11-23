@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using NET_CarRentalSystem.Application.Interfaces.Services;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
 using NET_CarRentalSystem.Shared.Wrapper;
 using Microsoft.AspNetCore.Authorization;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Domain.Enums;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 
 namespace NET_CarRentalSystem.API.Attributes
 {
@@ -31,7 +31,7 @@ namespace NET_CarRentalSystem.API.Attributes
             {
                 var response = ApiResponse.ErrorResult(AuthMessage.User.NotValid, StatusCodes.Status401Unauthorized);
                 context.Result = new ObjectResult(response) { StatusCode = response.StatusCode };
-                return;
+                return; 
             }
             
             if (user.Status == UserStatus.Banned)

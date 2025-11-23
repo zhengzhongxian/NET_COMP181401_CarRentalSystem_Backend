@@ -6,6 +6,7 @@ using NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogupCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtpCommand;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Models.DTOs.AuthDTOs;
 using NET_CarRentalSystem.Application.Models.DTOs.UserDTOs.Get;
 

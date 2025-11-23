@@ -6,7 +6,7 @@ public class UserSession : BaseEntity<Guid>
 {
     public Guid UserId { get; set; }
 
-    public string RefreshToken { get; set; }
+    public string RefreshToken { get; set; } = default!;
 
     public DateTime RefreshTokenExpiryTime { get; set; }
 

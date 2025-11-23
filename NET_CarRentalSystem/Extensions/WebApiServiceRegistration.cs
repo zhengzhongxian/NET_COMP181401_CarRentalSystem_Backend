@@ -68,9 +68,7 @@ public static class WebApiServiceRegistration
                     combinedErrorMessage = "Lỗi xác thực không xác định.";
                 }
 
-                var errorResponse = ApiResponse<string>.ErrorResult(
-                    combinedErrorMessage
-                );
+                var errorResponse = ApiResponse.ErrorResult(combinedErrorMessage);
 
                 return new BadRequestObjectResult(errorResponse);
             };

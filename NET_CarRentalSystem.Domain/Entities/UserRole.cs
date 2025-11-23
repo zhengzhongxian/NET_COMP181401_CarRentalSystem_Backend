@@ -1,12 +1,10 @@
-﻿using System.Data;
-
-namespace NET_CarRentalSystem.Domain.Entities;
+﻿namespace NET_CarRentalSystem.Domain.Entities;
 
 public class UserRole
 {
-    public Guid UserRoleId { get; set; }
+    public Guid UserRoleId { get; set; } 
     
-    public Guid UserId { get; set; }
+    public Guid UserId { get; set; } 
 
     public Guid RoleId { get; set; }
 

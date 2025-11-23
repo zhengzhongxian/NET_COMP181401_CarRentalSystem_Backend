@@ -3,7 +3,7 @@ using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Entities;
 using System.Linq.Expressions;
 using System.Reflection;
-using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 

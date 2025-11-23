@@ -19,6 +19,7 @@ public class UserLoginConfiguration : IEntityTypeConfiguration<UserLogin>
 
         builder.Property(ul => ul.LoginProvider)
             .HasColumnName("login_provider")
+            .HasConversion<string>()
             .HasMaxLength(128);
 
         builder.Property(ul => ul.ProviderKey)

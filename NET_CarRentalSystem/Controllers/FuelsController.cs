@@ -9,7 +9,7 @@ using NET_CarRentalSystem.Application.Features.Fuels.Commands.DeleteFuelCommand;
 using NET_CarRentalSystem.Application.Features.Fuels.Commands.UpdateFuelCommand;
 using NET_CarRentalSystem.Application.Features.Fuels.Queries.GetAllFuelsQuery;
 using NET_CarRentalSystem.Domain.Constants;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 namespace NET_CarRentalSystem.API.Controllers;
 
@@ -58,14 +58,14 @@ public class FuelsController(ISender sender, IMapper mapper) : ControllerBase
             };
             var newId = await sender.Send(command, cancellationToken);
 
-            var apiResponse = ApiResponse.SuccessResult(newId, FuelMessage.Post.Success);
+            var apiResponse = ApiResponse.SuccessResult(newId, FuelMessage.Create.Success);
             
             return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
             var errorResponse = ApiResponse.ErrorResult(
-                FuelMessage.Post.Error, 
+                FuelMessage.Create.Error, 
                 StatusCodes.Status500InternalServerError, 
                 [ex.Message]);
             

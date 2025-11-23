@@ -4,11 +4,15 @@ using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
+using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.CoreHelpers;
 using NET_CarRentalSystem.Shared.Utilities;
 
@@ -24,7 +28,7 @@ public class ForgetPasswordCommandHandler(
     ICacheService cacheService,
     IOptions<ResetPasswordSettings> resetPasswordSettings,
     IEmailService emailService,
-    ISecurityService securityService) : IRequestHandler<ForgetPasswordCommand, (string, bool)>
+    ICryptographyService cryptographyService) : IRequestHandler<ForgetPasswordCommand, (string, bool)>
 {
     private readonly ResetPasswordSettings _resetPasswordSettings = resetPasswordSettings.Value;
     
@@ -33,7 +37,7 @@ public class ForgetPasswordCommandHandler(
         var userRepo = unitOfWork.GetRepository<User>();
         var user = await userRepo.GetFirstOrDefaultAsync(u => 
                 u.Email == request.Email &&
-                !u.UserLogins.Any(l => l.LoginProvider == AppConstants.LoginProvider.Google) &&
+                !u.UserLogins.Any(l => l.LoginProvider == LoginProvider.Google) &&
                 !u.UserRoles.Any(r => r.Role.Name == RoleConstants.Staff || 
                                       r.Role.Name == RoleConstants.Manager || 
                                       r.Role.Name == RoleConstants.Admin),
@@ -71,7 +75,7 @@ public class ForgetPasswordCommandHandler(
 
     private async Task<(string, bool)> UpdateAndSendResetPasswordEmail(ForgetPasswordCommand request, string key, ResetPasswordDetailsDto cachedResetPasswordDetails, string fullName, CancellationToken cancellationToken)
     {
-        var encryptedEmail = securityService.EncryptAes(request.Email);
+        var encryptedEmail = cryptographyService.EncryptAes(request.Email);
         var token = encryptedEmail + "." + TokenHelper.GenerateSecureToken();
         
         var resetPasswordDetails = new ResetPasswordDetailsDto
@@ -89,7 +93,7 @@ public class ForgetPasswordCommandHandler(
 
     private async Task<(string, bool)> CreateAndSendResetPasswordEmail(ForgetPasswordCommand request, string key, string fullName, CancellationToken cancellationToken)
     {
-        var encryptedEmail = securityService.EncryptAes(request.Email);
+        var encryptedEmail = cryptographyService.EncryptAes(request.Email);
         var token = encryptedEmail + "." + TokenHelper.GenerateSecureToken();
         
         var resetPasswordDetails = new ResetPasswordDetailsDto

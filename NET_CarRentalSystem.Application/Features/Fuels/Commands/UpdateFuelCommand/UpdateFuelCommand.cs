@@ -3,7 +3,7 @@ using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Models.DTOs.FuelDTOs.Update;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 
 namespace NET_CarRentalSystem.Application.Features.Fuels.Commands.UpdateFuelCommand;
 

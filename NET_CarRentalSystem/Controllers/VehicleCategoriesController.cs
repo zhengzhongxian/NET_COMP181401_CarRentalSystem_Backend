@@ -8,7 +8,7 @@ using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.Delete
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.UpdateVehicleCategory;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Queries.GetAllVehicleCategories;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Queries.GetVehicleCategoryById;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 
 namespace NET_CarRentalSystem.API.Controllers;
@@ -26,16 +26,16 @@ public class VehicleCategoriesController(ISender sender, IMapper mapper) : Contr
             var result = await sender.Send(query, cancellationToken);
             var mappedResult = mapper.Map<IEnumerable<GetVehicleCategoryResponse>>(result);
 
-            var apiResponse = ApiResponse<IEnumerable<GetVehicleCategoryResponse>>.SuccessResult(
+            var apiResponse = ApiResponse.SuccessResult(
                 mappedResult,
                 VehicleCategoryMessage.Get.Success
             );
 
-            return Ok(apiResponse);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<IEnumerable<GetVehicleCategoryResponse>>.ErrorResult(
+            var errorResponse = ApiResponse.ErrorResult(
                 VehicleCategoryMessage.Get.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]
@@ -55,20 +55,20 @@ public class VehicleCategoriesController(ISender sender, IMapper mapper) : Contr
 
             if (result == null)
             {
-                var notFoundResponse = ApiResponse<GetVehicleCategoryResponse>.ErrorResult(
+                var notFoundResponse = ApiResponse.ErrorResult(
                     VehicleCategoryMessage.Get.NotFound,
                     StatusCodes.Status404NotFound
                 );
-                return NotFound(notFoundResponse);
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
             }
 
             var mappedResult = mapper.Map<GetVehicleCategoryResponse>(result);
-            var apiResponse = ApiResponse<GetVehicleCategoryResponse>.SuccessResult(mappedResult, VehicleCategoryMessage.Get.Success);
+            var apiResponse = ApiResponse.SuccessResult(mappedResult, VehicleCategoryMessage.Get.Success);
             return Ok(apiResponse);
         }
         catch (Exception ex)
         {
-            var errorResponse = ApiResponse<GetVehicleCategoryResponse>.ErrorResult(
+            var errorResponse = ApiResponse.ErrorResult(
                 VehicleCategoryMessage.Get.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]
@@ -150,7 +150,7 @@ public class VehicleCategoriesController(ISender sender, IMapper mapper) : Contr
             if (!result)
             {
                 var errorResponse = ApiResponse.ErrorResult(VehicleCategoryMessage.Delete.NotFound, StatusCodes.Status404NotFound);
-                return NotFound(errorResponse);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
             }
 
             var apiResponse = ApiResponse.SuccessResult(VehicleCategoryMessage.Delete.Success);

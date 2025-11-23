@@ -1,3 +1,4 @@
+using NET_CarRentalSystem.Application.Common.Interfaces.Configurations;
 using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Application.Configurations;
@@ -8,6 +9,6 @@ public class AesSettings
     
     public string Key { get; set; } = string.Empty;
     
-    public string IV { get; set; } = string.Empty;
+    public string Iv { get; set; } = string.Empty;
 }
 

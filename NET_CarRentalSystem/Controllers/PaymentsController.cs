@@ -3,7 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Models.Response.Payments;
 using NET_CarRentalSystem.Application.Features.Payments.Queries.GetPaymentMethodQuery;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 
 namespace NET_CarRentalSystem.API.Controllers;

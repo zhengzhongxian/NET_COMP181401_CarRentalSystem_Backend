@@ -2,9 +2,11 @@ using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.CoreHelpers;
 using NET_CarRentalSystem.Shared.Utilities;
 
@@ -19,7 +21,7 @@ public class ResetPasswordCommand : ICommand<(string, bool)>
 public class ResetPasswordCommandHandler(
     IUnitOfWork unitOfWork,
     ICacheService cacheService,
-    ISecurityService securityService) : IRequestHandler<ResetPasswordCommand, (string, bool)>
+    ICryptographyService cryptographyService) : IRequestHandler<ResetPasswordCommand, (string, bool)>
 {
     public async Task<(string, bool)> Handle(ResetPasswordCommand request, CancellationToken cancellationToken)
     {
@@ -30,7 +32,7 @@ public class ResetPasswordCommandHandler(
         }
         
         var encryptedEmail = tokenParts[0];
-        var decryptedEmail = securityService.DecryptAes(encryptedEmail);
+        var decryptedEmail = cryptographyService.DecryptAes(encryptedEmail);
         
         var key = CacheKeyHelper.GetResetPasswordKey(decryptedEmail);
         var cachedResetPasswordDetailsJson = await cacheService.GetStringAsync(key, cancellationToken);
@@ -53,7 +55,7 @@ public class ResetPasswordCommandHandler(
         
         var userRepo = unitOfWork.GetRepository<User>();
         var user = await userRepo.GetFirstAsync(u => u.Email == decryptedEmail, cancellationToken: cancellationToken);
-        user.Password = securityService.HashPassword(request.Password);
+        user.Password = cryptographyService.HashPassword(request.Password);
         userRepo.Update(user);
         
         await unitOfWork.SaveChangesAsync(cancellationToken);

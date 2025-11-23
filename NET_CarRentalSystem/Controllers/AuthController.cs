@@ -8,6 +8,7 @@ using NET_CarRentalSystem.API.Models.Response.Auth;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.ForgetPasswordCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLoginCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLogupCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.LoginAfterResetPasswordCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LoginCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutAllOtherSessionsCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.LogoutCommand;
@@ -18,7 +19,7 @@ using NET_CarRentalSystem.Application.Features.Auth.Commands.ResetPasswordComman
 using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtpCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
 using NET_CarRentalSystem.Application.Features.Users.Queries.GetUserProfileQuery;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 
 namespace NET_CarRentalSystem.API.Controllers
@@ -317,7 +318,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     case AuthMessage.GoogleLogin.NotFound:
                     {
                         var ggInfo = mapper.Map<GoogleLoginResponse>(ggloginDto);
-                        var ggInfoResponse = ApiResponse.ErrorResult(message, ggInfo, 404);
+                        var ggInfoResponse = ApiResponse.ErrorResult(ggInfo, message, 404);
                         
                         return StatusCode(ggInfoResponse.StatusCode, ggInfoResponse);
                     }
@@ -428,6 +429,51 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.ResetPassword.Error,
                     StatusCodes.Status500InternalServerError,
                     [e.Message]);
+                
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("login-after-reset-password")]
+        public async Task<IActionResult> LoginAfterResetPassword([FromBody] LoginAfterResetPasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new LoginAfterResetPasswordCommand
+                {
+                    ResetPasswordToken = request.ResetPasswordToken,
+                    Password = request.Password,
+                    IpAddress = HttpContext.Connection.RemoteIpAddress?.ToString(),
+                    DeviceName = Request.Headers.UserAgent.ToString()
+                };
+
+                var (message, tokenData) = await mediator.Send(command, cancellationToken);
+                if (tokenData == null)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(
+                        message,
+                        StatusCodes.Status401Unauthorized
+                    );
+
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = mapper.Map<LoginResponse>(tokenData);
+                var apiResponse = ApiResponse.SuccessResult(
+                    response,
+                    message
+                );
+
+                return StatusCode(apiResponse.StatusCode, apiResponse);
+
+            }
+            catch (Exception ex)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.LoginAfterResetPassword.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
                 
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }

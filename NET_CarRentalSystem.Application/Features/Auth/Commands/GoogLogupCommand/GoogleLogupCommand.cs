@@ -2,12 +2,12 @@ using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Shared.Constants;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 
 namespace NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLogupCommand;
 
@@ -18,7 +18,7 @@ public class GoogleLogupCommand : ICommand<(string ,bool)>
 
 public class GoogleLogupCommandHandler(
     IUnitOfWork unitOfWork,
-    ISecurityService  securityService,
+    ICryptographyService  cryptographyService,
     IGoogleService googleService) : IRequestHandler<GoogleLogupCommand, (string, bool)>
 {
     public async Task<(string, bool)> Handle(GoogleLogupCommand request, CancellationToken cancellationToken)
@@ -40,7 +40,7 @@ public class GoogleLogupCommandHandler(
         {
             return (AuthMessage.GoogleLogup.UserExists, false);
         }
-        var encryptedPhone = securityService.EncryptAes(logupParams.PhoneNumber);
+        var encryptedPhone = cryptographyService.EncryptAes(logupParams.PhoneNumber);
         
         var customerRepository = unitOfWork.GetRepository<Customer>();
         var existingCustomerByPhone = await customerRepository.GetFirstOrDefaultAsync(
@@ -66,7 +66,7 @@ public class GoogleLogupCommandHandler(
             FirstName = logupParams.GivenName,
             LastName = logupParams.FamilyName,
             Dob = logupParams.Dob,
-            PhoneNumber = securityService.EncryptAes(logupParams.PhoneNumber),
+            PhoneNumber = cryptographyService.EncryptAes(logupParams.PhoneNumber),
             Address = logupParams.Address,
             AvatarUrl = payload.Picture
         };
@@ -89,9 +89,9 @@ public class GoogleLogupCommandHandler(
         
         var userLogin = new UserLogin
         {
-            LoginProvider = AppConstants.LoginProvider.Google,
+            LoginProvider = LoginProvider.Google,
             ProviderKey = userId.ToString(),
-            ProviderDisplayName = AppConstants.LoginProvider.Google,
+            ProviderDisplayName = LoginProvider.Google.ToString(),
             UserId = user.Id
         };
         

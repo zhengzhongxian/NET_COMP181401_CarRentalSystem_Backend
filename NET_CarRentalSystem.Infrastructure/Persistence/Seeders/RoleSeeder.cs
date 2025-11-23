@@ -1,6 +1,5 @@
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Domain.Entities;
-using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 

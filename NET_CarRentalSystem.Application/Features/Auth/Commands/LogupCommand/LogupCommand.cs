@@ -2,12 +2,13 @@ using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
 using NET_CarRentalSystem.Application.Interfaces.Services;
+using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
-using NET_CarRentalSystem.Shared.Constants;
-using NET_CarRentalSystem.Shared.Constants.MessageConstants;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.CoreHelpers;
 using NET_CarRentalSystem.Shared.Utilities;
 
@@ -21,7 +22,7 @@ public class LogupCommand : ICommand<(string, bool)>
 public class LogupCommandHandler(
     ICacheService cacheService,
     IUnitOfWork unitOfWork,
-    ISecurityService securityService) : IRequestHandler<LogupCommand, (string, bool)>
+    ICryptographyService cryptographyService) : IRequestHandler<LogupCommand, (string, bool)>
 {
     public async Task<(string, bool)> Handle(LogupCommand request, CancellationToken cancellationToken)
     {
@@ -62,7 +63,7 @@ public class LogupCommandHandler(
             return (AuthMessage.Logup.UserExists, false);
         }
         
-        var encryptedPhone = securityService.EncryptAes(logupDto.PhoneNumber);
+        var encryptedPhone = cryptographyService.EncryptAes(logupDto.PhoneNumber);
         
         var customerRepository = unitOfWork.GetRepository<Customer>();
         var existingCustomerByPhone = await customerRepository.GetFirstOrDefaultAsync(
@@ -87,7 +88,7 @@ public class LogupCommandHandler(
             FirstName = logupDto.FirstName,
             LastName = logupDto.LastName,
             Dob = logupDto.Dob,
-            PhoneNumber = securityService.EncryptAes(logupDto.PhoneNumber),
+            PhoneNumber = cryptographyService.EncryptAes(logupDto.PhoneNumber),
             Address = logupDto.Address
         };
 
@@ -96,7 +97,7 @@ public class LogupCommandHandler(
             Id = userId,
             UserName = logupDto.UserName,
             Email = logupDto.Email,
-            Password = securityService.HashPassword(logupDto.Password),
+            Password = cryptographyService.HashPassword(logupDto.Password),
             IsVerified = true,
             Status = UserStatus.Active,
             Customer = customer
@@ -110,12 +111,12 @@ public class LogupCommandHandler(
 
         var userLogin = new UserLogin
         {
-            LoginProvider = AppConstants.LoginProvider.Local,
+            LoginProvider = LoginProvider.Local,
             ProviderKey = userId.ToString(),
-            ProviderDisplayName = AppConstants.LoginProvider.Local,
+            ProviderDisplayName = LoginProvider.Local.ToString(),
             UserId = user.Id
         };
-
+        
         await userRepository.AddAsync(user, cancellationToken);
         await customerRepository.AddAsync(customer, cancellationToken);
         await unitOfWork.GetRepository<UserRole>().AddAsync(userRole, cancellationToken);

@@ -15,15 +15,15 @@ public class EmailSettings
 
 public class SmtpSettings
 {
-    public required string Host { get; set; }
-    
-    public int Port { get; set; }
-    
-    public required string EmailAddress { get; set; }
-    
-    public required string Password { get; set; }
-    
-    public bool EnableSsl { get; set; }
+    public required string Host { get; set; } = default!;
+
+    public int Port { get; set; } = default!;
+
+    public required string EmailAddress { get; set; } = default!;
+
+    public required string Password { get; set; } = default!;
+
+    public bool EnableSsl { get; set; } = default!;
     
     public bool UseCredential { get; set; }
 }

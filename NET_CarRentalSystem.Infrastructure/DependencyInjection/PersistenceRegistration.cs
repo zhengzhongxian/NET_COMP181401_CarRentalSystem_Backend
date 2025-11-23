@@ -15,10 +15,20 @@ public static class PersistenceRegistration
         IConfiguration configuration)
     {
         services.AddDbContext<RenticarWriteDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString(KeyConstants.ConnectionStrings.RenticarWriteDbContext)));
+            options.UseSqlServer(
+                configuration.GetConnectionString(KeyConstants.ConnectionStrings.RenticarWriteDbContext),
+                sql => sql.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null)));
 
         services.AddDbContext<RenticarReadDbContext>(options =>
-            options.UseSqlServer(configuration.GetConnectionString(KeyConstants.ConnectionStrings.RenticarReadDbContext)));
+            options.UseSqlServer(
+                configuration.GetConnectionString(KeyConstants.ConnectionStrings.RenticarReadDbContext),
+                sql => sql.EnableRetryOnFailure(
+                    maxRetryCount: 3,
+                    maxRetryDelay: TimeSpan.FromSeconds(5),
+                    errorNumbersToAdd: null)));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
 

@@ -6,6 +6,7 @@ using NET_CarRentalSystem.Application.Interfaces.Http;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
+using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Infrastructure.Http;
@@ -14,6 +15,7 @@ using NET_CarRentalSystem.Infrastructure.Services.Authentication;
 using NET_CarRentalSystem.Infrastructure.Services.Caching;
 using NET_CarRentalSystem.Infrastructure.Services.HostedService;
 using NET_CarRentalSystem.Infrastructure.Services.Notifications;
+using NET_CarRentalSystem.Infrastructure.Services.Payments;
 using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Schedulers;
 using NET_CarRentalSystem.Infrastructure.Services.Security;
 using NET_CarRentalSystem.Infrastructure.Services.Storage;
@@ -46,6 +48,7 @@ public static class ServiceRegistration
         services.AddScoped<ICurrentUserService, CurrentUserService>();
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IGoogleService, GoogleService>();
+        services.AddScoped<IVnPayService, VnPayService>();
 
         //http
         services.AddHttpClient<IApiClient, ApiClient>();

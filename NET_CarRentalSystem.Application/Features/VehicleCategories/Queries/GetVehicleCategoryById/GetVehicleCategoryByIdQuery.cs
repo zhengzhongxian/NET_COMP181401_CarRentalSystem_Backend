@@ -18,8 +18,7 @@ public class GetVehicleCategoryByIdQueryHandler(IUnitOfWork unitOfWork)
         GetVehicleCategoryByIdQuery request,
         CancellationToken cancellationToken)
     {
-        var category = await unitOfWork.GetRepository<VehicleCategory>()
-            .GetByIdAsync(request.Id, cancellationToken);
+        var category = await unitOfWork.GetReadRepository<VehicleCategory>().GetByIdAsync(request.Id, cancellationToken);
 
         if (category == null)
         {

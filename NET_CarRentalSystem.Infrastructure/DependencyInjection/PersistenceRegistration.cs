@@ -31,6 +31,7 @@ public static class PersistenceRegistration
                     errorNumbersToAdd: null)));
 
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        services.AddScoped<IDapperRepository, DapperRepository>();
 
         return services;
     }

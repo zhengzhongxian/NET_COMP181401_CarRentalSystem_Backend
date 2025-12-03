@@ -18,15 +18,15 @@ public class DeleteVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) : IRequ
         DeleteVehicleCategoryCommand request, 
         CancellationToken cancellationToken)
     {
-        var categoryToDelete = await unitOfWork.GetRepository<VehicleCategory>()
-            .GetByIdAsync(request.Id, cancellationToken);
+        var categoryRepository = unitOfWork.GetWriteRepository<VehicleCategory>();
+        var categoryToDelete = await categoryRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (categoryToDelete == null)
         {
             return false;
         }
 
-        unitOfWork.GetRepository<VehicleCategory>().Remove(categoryToDelete);
+        categoryRepository.Remove(categoryToDelete);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return true;

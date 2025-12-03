@@ -22,6 +22,176 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("Consumed")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid>("ConsumerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("Delivered")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpirationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastSequenceNumber")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("LockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("ReceiveCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Received")
+                        .HasColumnType("datetime2");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Delivered");
+
+                    b.ToTable("InboxState");
+                });
+
+            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
+                {
+                    b.Property<long>("SequenceNumber")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SequenceNumber"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<Guid?>("ConversationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("CorrelationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("DestinationAddress")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime?>("EnqueueTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("ExpirationTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("FaultAddress")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<string>("Headers")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("InboxConsumerId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InboxMessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("InitiatorId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("MessageType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("OutboxId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Properties")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid?>("RequestId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ResponseAddress")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.Property<DateTime>("SentTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("SourceAddress")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)");
+
+                    b.HasKey("SequenceNumber");
+
+                    b.HasIndex("EnqueueTime");
+
+                    b.HasIndex("ExpirationTime");
+
+                    b.HasIndex("OutboxId", "SequenceNumber")
+                        .IsUnique()
+                        .HasFilter("[OutboxId] IS NOT NULL");
+
+                    b.HasIndex("InboxMessageId", "InboxConsumerId", "SequenceNumber")
+                        .IsUnique()
+                        .HasFilter("[InboxMessageId] IS NOT NULL AND [InboxConsumerId] IS NOT NULL");
+
+                    b.ToTable("OutboxMessage");
+                });
+
+            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxState", b =>
+                {
+                    b.Property<Guid>("OutboxId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Delivered")
+                        .HasColumnType("datetime2");
+
+                    b.Property<long?>("LastSequenceNumber")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("LockId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion");
+
+                    b.HasKey("OutboxId");
+
+                    b.HasIndex("Created");
+
+                    b.ToTable("OutboxState");
+                });
+
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Booking", b =>
                 {
                     b.Property<Guid>("Id")
@@ -50,6 +220,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Property<Guid>("CustomerId")
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("customer_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
 
                     b.Property<decimal>("DepositRatio")
                         .HasColumnType("decimal(5, 2)")
@@ -127,46 +305,46 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001001"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 1000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000001")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001002"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 2000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000002")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001003"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -174,55 +352,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 3000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000003")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001004"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 4000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000004")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001005"),
-                            ActualEndDate = new DateTime(2025, 11, 20, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 2, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 5000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000005")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001006"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -230,54 +408,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 6000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000006")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001007"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 7000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000007")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001008"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 8000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000008")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001009"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -285,55 +463,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 9000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000009")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001010"),
-                            ActualEndDate = new DateTime(2025, 11, 13, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 25, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 10000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000010")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001011"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 11000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000011")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001012"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -341,55 +519,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 12000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000012")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001013"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 13000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000013")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001014"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 14000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000014")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001015"),
-                            ActualEndDate = new DateTime(2025, 11, 6, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 18, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -397,54 +575,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 15000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000015")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001016"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 16000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000016")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001017"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 17000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000017")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001018"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -452,55 +630,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 18000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000018")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001019"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 19000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000019")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001020"),
-                            ActualEndDate = new DateTime(2025, 11, 6, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 18, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 20000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000020")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001021"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -508,54 +686,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 21000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 984m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000021")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001022"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 22000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 28, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 9, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1008m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000022")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001023"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 23000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1032m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000023")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001024"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -563,55 +741,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 24000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1056m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000024")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001025"),
-                            ActualEndDate = new DateTime(2025, 10, 30, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 11, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 25000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1080m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000025")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001026"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 26000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1104m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000026")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001027"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -619,55 +797,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 27000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1128m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000027")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001028"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 28000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1152m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000028")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001029"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 29000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1176m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000029")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001030"),
-                            ActualEndDate = new DateTime(2025, 11, 22, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 4, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -675,54 +853,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 30000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1200m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000030")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001031"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 31000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1224m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000031")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001032"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 32000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1248m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000032")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001033"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -730,55 +908,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 33000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1272m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000033")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001034"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 34000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1296m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000034")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001035"),
-                            ActualEndDate = new DateTime(2025, 11, 15, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 27, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 35000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1320m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000035")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001036"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -786,54 +964,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 36000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1344m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000036")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001037"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 37000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1368m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000037")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001038"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 38000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1392m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000038")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001039"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -841,55 +1019,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 39000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1416m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000039")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001040"),
-                            ActualEndDate = new DateTime(2025, 11, 15, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 27, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 40000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1440m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000040")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001041"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 41000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1464m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000041")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001042"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -897,55 +1075,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 42000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1488m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000042")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001043"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 43000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1512m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000043")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001044"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 44000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1536m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000044")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001045"),
-                            ActualEndDate = new DateTime(2025, 11, 8, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 20, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -953,54 +1131,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 45000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1560m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000045")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001046"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 46000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1584m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000046")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001047"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 47000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1608m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000047")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001048"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1008,55 +1186,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 48000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1632m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000048")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001049"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 49000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1656m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000049")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001050"),
-                            ActualEndDate = new DateTime(2025, 11, 1, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 13, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 50000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1680m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000050")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001051"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1064,54 +1242,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 51000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1704m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000051")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001052"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 52000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 28, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 9, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1728m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000052")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001053"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 53000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1752m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000053")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001054"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1119,55 +1297,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 54000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1776m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000054")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001055"),
-                            ActualEndDate = new DateTime(2025, 11, 1, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 13, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 55000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1800m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000055")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001056"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 56000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1824m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000056")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001057"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1175,55 +1353,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 57000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1848m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000057")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001058"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 58000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1872m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000058")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001059"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 59000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1896m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000059")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001060"),
-                            ActualEndDate = new DateTime(2025, 11, 24, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 6, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1231,54 +1409,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 60000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 480m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000060")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001061"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 61000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000061")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001062"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 62000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000062")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001063"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1286,55 +1464,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 63000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000063")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001064"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 64000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000064")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001065"),
-                            ActualEndDate = new DateTime(2025, 11, 17, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 29, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 65000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000065")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001066"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1342,54 +1520,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 66000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000066")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001067"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 67000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000067")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001068"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 68000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000068")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001069"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1397,55 +1575,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 69000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000069")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001070"),
-                            ActualEndDate = new DateTime(2025, 11, 10, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 22, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 70000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000070")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001071"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 71000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000071")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001072"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1453,55 +1631,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 72000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000072")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001073"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 73000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000073")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001074"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 74000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000074")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001075"),
-                            ActualEndDate = new DateTime(2025, 11, 10, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 22, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1509,54 +1687,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 75000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000075")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001076"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 76000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000076")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001077"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 77000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000077")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001078"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1564,55 +1742,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 78000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000078")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001079"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 79000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000079")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001080"),
-                            ActualEndDate = new DateTime(2025, 11, 3, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 15, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 80000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000080")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001081"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1620,54 +1798,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 81000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 984m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000081")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001082"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 82000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 28, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 9, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1008m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000082")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001083"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 83000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1032m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000083")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001084"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1675,55 +1853,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 84000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1056m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000084")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001085"),
-                            ActualEndDate = new DateTime(2025, 10, 27, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 8, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 85000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1080m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000085")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001086"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 86000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1104m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000086")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001087"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1731,55 +1909,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 87000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1128m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000087")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001088"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 88000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1152m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000088")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001089"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 89000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1176m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000089")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001090"),
-                            ActualEndDate = new DateTime(2025, 11, 26, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 8, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1787,54 +1965,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 90000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1200m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000090")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001091"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 91000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1224m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000091")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001092"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 92000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1248m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000092")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001093"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1842,55 +2020,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 93000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1272m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000093")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001094"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 94000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1296m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000094")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001095"),
-                            ActualEndDate = new DateTime(2025, 11, 19, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 1, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 95000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1320m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000095")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001096"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1898,54 +2076,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 96000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1344m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000096")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001097"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 97000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1368m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000097")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001098"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 98000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1392m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000098")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001099"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -1953,55 +2131,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 99000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1416m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000099")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001100"),
-                            ActualEndDate = new DateTime(2025, 11, 12, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 24, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 100000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1440m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000100")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001101"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 101000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1464m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000101")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001102"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2009,55 +2187,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 102000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1488m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000102")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001103"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 103000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1512m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000103")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001104"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 104000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1536m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000104")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001105"),
-                            ActualEndDate = new DateTime(2025, 11, 5, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 17, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2065,54 +2243,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 105000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1560m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000105")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001106"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 106000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1584m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000106")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001107"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 107000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1608m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000107")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001108"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2120,55 +2298,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 108000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1632m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000108")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001109"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 109000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1656m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000109")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001110"),
-                            ActualEndDate = new DateTime(2025, 11, 5, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 17, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 110000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1680m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000110")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001111"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2176,54 +2354,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 111000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1704m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000111")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001112"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 112000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 28, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 9, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1728m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000112")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001113"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 113000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1752m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000113")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001114"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2231,55 +2409,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 114000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1776m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000114")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001115"),
-                            ActualEndDate = new DateTime(2025, 10, 29, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 10, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 115000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1800m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000115")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001116"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 116000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1824m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000116")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001117"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2287,55 +2465,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 117000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1848m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000117")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001118"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 118000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1872m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000118")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001119"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 119000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1896m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000119")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001120"),
-                            ActualEndDate = new DateTime(2025, 11, 21, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 3, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2343,54 +2521,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 120000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 480m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000120")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001121"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 121000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000121")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001122"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 122000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000122")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001123"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2398,55 +2576,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 123000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000123")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001124"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 124000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000124")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001125"),
-                            ActualEndDate = new DateTime(2025, 11, 21, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 3, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 125000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000125")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001126"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2454,54 +2632,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 126000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000126")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001127"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 127000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000127")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001128"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 128000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000128")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001129"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2509,55 +2687,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 129000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000129")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001130"),
-                            ActualEndDate = new DateTime(2025, 11, 14, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 26, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 130000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000130")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001131"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 131000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000131")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001132"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2565,55 +2743,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 132000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000132")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001133"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 133000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000133")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001134"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 134000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000134")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001135"),
-                            ActualEndDate = new DateTime(2025, 11, 7, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 19, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2621,54 +2799,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 135000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000135")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001136"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 136000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000136")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001137"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 137000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000137")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001138"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2676,55 +2854,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 138000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000138")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001139"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 139000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000139")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001140"),
-                            ActualEndDate = new DateTime(2025, 10, 31, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 12, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 140000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000140")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001141"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2732,54 +2910,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 141000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 984m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000141")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001142"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 142000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 28, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 9, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1008m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000142")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001143"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 143000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1032m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000143")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001144"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2787,55 +2965,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 144000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1056m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000144")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001145"),
-                            ActualEndDate = new DateTime(2025, 10, 31, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 12, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 145000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1080m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000145")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001146"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 146000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1104m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000146")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001147"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2843,55 +3021,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 147000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1128m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000147")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001148"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 148000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1152m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000148")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001149"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 149000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1176m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000149")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001150"),
-                            ActualEndDate = new DateTime(2025, 11, 23, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 5, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2899,54 +3077,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 150000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1200m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000150")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001151"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 151000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1224m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000151")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001152"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 152000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1248m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000152")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001153"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -2954,55 +3132,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 153000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1272m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000153")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001154"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 154000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1296m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000154")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001155"),
-                            ActualEndDate = new DateTime(2025, 11, 16, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 28, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 155000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1320m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000155")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001156"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3010,54 +3188,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 156000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1344m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000156")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001157"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 157000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1368m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000157")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001158"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 158000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1392m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000158")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001159"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3065,55 +3243,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 159000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1416m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000159")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001160"),
-                            ActualEndDate = new DateTime(2025, 11, 16, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 28, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 160000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1440m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000160")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001161"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 161000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1464m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000161")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001162"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3121,55 +3299,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 162000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1488m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000162")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001163"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 163000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1512m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000163")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001164"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 164000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1536m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000164")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001165"),
-                            ActualEndDate = new DateTime(2025, 11, 9, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 21, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3177,54 +3355,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 165000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1560m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000165")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001166"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 166000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1584m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000166")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001167"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 167000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1608m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000167")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001168"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3232,55 +3410,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 168000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1632m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000168")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001169"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 169000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1656m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000169")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001170"),
-                            ActualEndDate = new DateTime(2025, 11, 2, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 14, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 170000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1680m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000170")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001171"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3288,54 +3466,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 171000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 29, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 10, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1704m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000171")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001172"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 172000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 28, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 9, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1728m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000172")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001173"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 173000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 27, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 8, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1752m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000173")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001174"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3343,55 +3521,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 174000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1776m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000174")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001175"),
-                            ActualEndDate = new DateTime(2025, 10, 26, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 7, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 175000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 6, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1800m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000175")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001176"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 176000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 24, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 5, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1824m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000176")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001177"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3399,55 +3577,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 177000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 10, 23, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 4, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1848m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000177")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001178"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 178000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 10, 22, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 3, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1872m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000178")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001179"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 10, 26, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 179000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 21, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 2, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 1896m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000179")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001180"),
-                            ActualEndDate = new DateTime(2025, 11, 25, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 12, 7, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3455,54 +3633,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 180000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 480m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000180")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001181"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 12, 7, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 181000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000181")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001182"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 182000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 17, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 29, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000182")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001183"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3510,55 +3688,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 183000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 16, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 28, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000183")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001184"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 184000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 15, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 27, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000184")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001185"),
-                            ActualEndDate = new DateTime(2025, 11, 18, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 30, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 185000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 14, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 26, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000185")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001186"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3566,54 +3744,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 186000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 13, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 25, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000186")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001187"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 187000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 12, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 24, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000187")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001188"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 18, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 30, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 188000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000188")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001189"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3621,55 +3799,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 189000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 10, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 22, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000189")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001190"),
-                            ActualEndDate = new DateTime(2025, 11, 11, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 23, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 190000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 9, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 21, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000190")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001191"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 191000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 8, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 20, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000191")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001192"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3677,55 +3855,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 192000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 7, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 19, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000192")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001193"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 193000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 6, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 18, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000193")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001194"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 194000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 5, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 17, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000194")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001195"),
-                            ActualEndDate = new DateTime(2025, 11, 11, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 23, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 11, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 23, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3733,54 +3911,54 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 195000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000195")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001196"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 196000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 3, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 15, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000196")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001197"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 197000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 2, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 14, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000197")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001198"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             FuelPrice = 200000m,
                             IsDeleted = false,
@@ -3788,46 +3966,46 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             MileageStart = 198000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 1, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 13, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000198")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001199"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 60,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 199000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 10, 31, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 12, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000199")
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000001200"),
-                            ActualEndDate = new DateTime(2025, 11, 4, 15, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            ActualEndDate = new DateTime(2025, 11, 16, 18, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
                             DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 4, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            EndDate = new DateTime(2025, 11, 16, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             FuelLevelEnd = 80,
                             IsDeleted = false,
                             LatePenaltyRatio = 0.0m,
                             MileageStart = 200000,
                             PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
                             ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 10, 30, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            StartDate = new DateTime(2025, 11, 11, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 497, DateTimeKind.Utc).AddTicks(3189),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 329, DateTimeKind.Utc).AddTicks(7043),
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000200")
                         });
                 });
@@ -3875,6 +4053,12 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Dob")
@@ -3960,7 +4144,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "0s7H23SQolvCsrWr20Orjw==",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             Dob = new DateTime(1995, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl1-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -3971,7 +4155,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             IsDeleted = false,
                             LastName = "Nguyen",
                             PhoneNumber = "fupEgUxoPV44LCKJSY7JLw==",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
@@ -3983,7 +4167,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2014, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "cVXHyBreralnzAB1L4PQPg==",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             Dob = new DateTime(1992, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl2-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -3994,7 +4178,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             IsDeleted = false,
                             LastName = "Tran",
                             PhoneNumber = "8JAbpw+SbCGaHGhEfWg3g==",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
@@ -4006,7 +4190,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2016, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = " MK+LCGCQBxHbW7CoM5pipw==",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             Dob = new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl3-back.jpg",
                             DriverLicenseExpiry = new DateTime(2031, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -4017,7 +4201,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             IsDeleted = false,
                             LastName = "Le",
                             PhoneNumber = "Ha5ZLxongotYMMoHd5FJxg==",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -4029,7 +4213,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2013, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "c3UJRjSHiGUa76qRID5QIg==",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             Dob = new DateTime(1990, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl4-back.jpg",
                             DriverLicenseExpiry = new DateTime(2032, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -4040,7 +4224,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             IsDeleted = false,
                             LastName = "Bú Cu",
                             PhoneNumber = "BFW3YFm70nX+X+CmDyqtrQ==",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 498, DateTimeKind.Utc).AddTicks(8230),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 331, DateTimeKind.Utc).AddTicks(9769),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
@@ -4060,6 +4244,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
@@ -4091,29 +4283,29 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 499, DateTimeKind.Utc).AddTicks(6706),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 332, DateTimeKind.Utc).AddTicks(9376),
                             Description = "Sử dụng xăng",
                             IsDeleted = false,
                             Name = "Gasoline",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 499, DateTimeKind.Utc).AddTicks(6706)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 332, DateTimeKind.Utc).AddTicks(9376)
                         },
                         new
                         {
                             Id = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 499, DateTimeKind.Utc).AddTicks(6706),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 332, DateTimeKind.Utc).AddTicks(9376),
                             Description = "Sử dụng dầu Diesel",
                             IsDeleted = false,
                             Name = "Diesel",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 499, DateTimeKind.Utc).AddTicks(6706)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 332, DateTimeKind.Utc).AddTicks(9376)
                         },
                         new
                         {
                             Id = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 499, DateTimeKind.Utc).AddTicks(6706),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 332, DateTimeKind.Utc).AddTicks(9376),
                             Description = "Sử dụng năng lượng điện",
                             IsDeleted = false,
                             Name = "Electric",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 499, DateTimeKind.Utc).AddTicks(6706)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 332, DateTimeKind.Utc).AddTicks(9376)
                         });
                 });
 
@@ -4145,6 +4337,12 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
@@ -4196,56 +4394,56 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
                             Address = "123 Lê Lợi, P. Bến Nghé",
                             City = "Hồ Chí Minh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514),
                             IsDeleted = false,
                             Latitude = 10.7758,
                             Longitude = 106.702,
                             Name = "Chi nhánh Quận 1",
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "02838123456",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
                             Address = "456 Xuân Thủy, P. Dịch Vọng Hậu",
                             City = "Hà Nội",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514),
                             IsDeleted = false,
                             Latitude = 21.036000000000001,
                             Longitude = 105.782,
                             Name = "Chi nhánh Cầu Giấy",
                             OpeningHours = "7:30 - 19:30",
                             PhoneNumber = "02439123456",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             Address = "789 Hùng Vương, Hải Châu",
                             City = "Đà Nẵng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514),
                             IsDeleted = false,
                             Latitude = 16.054400000000001,
                             Longitude = 108.2022,
                             Name = "Chi nhánh Hải Châu",
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "023639123456",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000004"),
                             Address = "12 Trần Phú, Lộc Thọ",
                             City = "Khánh Hòa",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514),
                             IsDeleted = false,
                             Latitude = 12.238799999999999,
                             Longitude = 109.19670000000001,
                             Name = "Chi nhánh Nha Trang",
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "025839123456",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 500, DateTimeKind.Utc).AddTicks(2429)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 333, DateTimeKind.Utc).AddTicks(9514)
                         });
                 });
 
@@ -4268,7 +4466,16 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
@@ -4294,7 +4501,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("updated_at");
 
                     b.Property<string>("UpdatedBy")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
 
                     b.HasKey("Id");
 
@@ -4307,7 +4515,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
-                            ConcurrencyStamp = "79e45718-4769-4f15-bbf0-acd82e3153d5",
+                            ConcurrencyStamp = "ffdf8127-1446-464f-8b4a-b41e5cc8a987",
                             IsDeleted = false,
                             Name = "Admin",
                             NormalizedName = "ADMIN"
@@ -4315,7 +4523,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
-                            ConcurrencyStamp = "a20a3451-d252-4096-ad33-decbe1263b7b",
+                            ConcurrencyStamp = "b0406c38-ea33-436f-8315-be8bc1f3c647",
                             IsDeleted = false,
                             Name = "Manager",
                             NormalizedName = "MANAGER"
@@ -4323,7 +4531,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
-                            ConcurrencyStamp = "3d2a90e8-ba0a-448e-88fb-dcc235bb0978",
+                            ConcurrencyStamp = "5dde62dd-1c31-4ff7-ba75-8b39440be361",
                             IsDeleted = false,
                             Name = "Staff",
                             NormalizedName = "STAFF"
@@ -4331,7 +4539,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
-                            ConcurrencyStamp = "5e7bbe4f-8efa-4603-a113-1fcc87762dff",
+                            ConcurrencyStamp = "ac4f6280-e43b-45e4-ba1d-7229ba4364c8",
                             IsDeleted = false,
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
@@ -4368,182 +4576,210 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.HasData(
                         new
                         {
-                            Id = new Guid("aa762712-93df-4f9a-84f9-ee24d7cc6a24"),
+                            Id = new Guid("f087b1be-0653-4197-b61f-2bd646979657"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1e70d6b9-3c21-4239-8ee7-0ee6a7fe09e7"),
+                            Id = new Guid("92387513-706b-48a6-bd1b-ea38d79e7d3c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("edd700c7-6056-460b-b3db-3ee184398da9"),
+                            Id = new Guid("ace0fb64-07e3-43d0-91b8-b31da586b867"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8ae53560-2a62-47b7-b72d-493585ef9d8b"),
+                            Id = new Guid("696704d9-fdde-4dd2-afb6-1fdeb0d5da2c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("e77155c4-0da6-4b57-b25e-5bfd9d744880"),
+                            Id = new Guid("fc0c4387-f515-4030-b241-bd444664525b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("d30cdf97-6313-409d-9c3b-4fe13b35730d"),
+                            Id = new Guid("5443ef24-6006-4cd2-b21f-798a77a9f293"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("9f9cd984-aafd-4537-8ffd-dc0060fef39c"),
+                            Id = new Guid("b17d9991-29a7-4e8f-b45c-b7e566c870d6"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("eaf4491c-cc22-4e0b-be69-9c7089be9c12"),
+                            Id = new Guid("92fff580-b665-4354-80aa-7282ddfe51d2"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("d010b4de-4162-43dd-a780-103e8a50f336"),
+                            Id = new Guid("dd481eb2-6479-4f63-b369-302fadf73f56"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b677ff12-355f-4a28-a535-0718842b7fa8"),
+                            Id = new Guid("932315a6-7ebf-47b8-93ff-5d3fd7e17d5b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("591e4977-508c-4905-a001-e0614491b05e"),
+                            Id = new Guid("ba7f98a7-bccc-4b6c-ba7f-f9a0de7497a0"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("057c0201-6706-4a53-acde-89417f67c410"),
+                            Id = new Guid("147fb4f3-8af8-4fd4-9d93-265888bad8e8"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("d005bdf6-f605-4a5a-b3d9-e603a0b03cec"),
+                            Id = new Guid("55f9e7f1-cace-4706-8c89-51b546950801"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Transmissions.View",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("574189a6-f00c-4d94-8895-0ab7642e663b"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Transmissions.Create",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("cbc7bf40-c43b-4dfd-bdac-24ed6a2dc863"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Transmissions.Edit",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("9e255aa8-6099-4a5b-8a86-021b03be8ddb"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Transmissions.Delete",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("046826e1-1fe1-4d74-890a-3e9c39464f9f"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("961764ec-a4dd-461f-ab21-a7c8a8a34a7c"),
+                            Id = new Guid("1b40264c-04cd-422d-8d45-db121384c95b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("479554ce-592e-4e8d-b965-126a8a7d7195"),
+                            Id = new Guid("47f1bf9b-b9ca-410f-abef-dbb8fbb1e925"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("edd2aaca-b28b-4cf2-8da0-b489540462e3"),
+                            Id = new Guid("9a077044-eb09-45bf-9628-546b7e127470"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("eb2f2dbb-3193-45ff-b987-5f480aef4e49"),
+                            Id = new Guid("4834ab74-3831-4c39-8591-f995981eb7c3"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("498937b1-dcef-4046-8ce2-b852404b0f7e"),
+                            Id = new Guid("d0d830e5-13df-4ce6-9903-6025a4390f4f"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("34984c99-bf4c-4f98-93e2-646a4e809cba"),
+                            Id = new Guid("37fdb168-4f36-4a9c-96b3-cdab87512019"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("f52a4a31-e52c-4330-b60d-747373dddf89"),
+                            Id = new Guid("4807943e-b857-4674-aeb9-b2d1a997f6e6"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("3a350eea-6a49-420c-9453-f0d5e5847e09"),
+                            Id = new Guid("54c17a8a-2c29-4e3a-9ce1-350075645e37"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("91d10917-ccd9-40c2-bf65-63ca1aa88234"),
+                            Id = new Guid("283b7fb7-9bbd-4f34-b6ab-2786c76408d6"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("46da75ba-baf6-4c77-8c67-2f331620da40"),
+                            Id = new Guid("58fefa7d-e03f-4213-bc23-7411bc676e62"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("16608ee1-62e4-4ed7-b8eb-53536ba995df"),
+                            Id = new Guid("752a7db2-21a3-4294-8965-bf11d6f14052"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("fd403039-50bd-4e52-a0cf-44a7bcd7800d"),
+                            Id = new Guid("2f5f10e3-7dde-4af9-a879-b0689ecc9149"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         },
                         new
                         {
-                            Id = new Guid("a6932de3-e254-4c69-b73e-56e2f1eaff8e"),
+                            Id = new Guid("f4d64e28-a698-4f83-bdf4-fed1c82a1185"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
@@ -4610,6 +4846,12 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -4661,49 +4903,49 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             Email = "admin@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$elRpoTN7AZumcF4TJwPdO.VSY6nO/Dba1zPc/ditv2uyusUHuU9he",
+                            Password = "$2a$11$3zOmcrxL2RRkOcb/DWGLHuw/qOLk/ikMMZbbR/qOFmaLk8CjcLD2G",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             UserName = "admin"
                         },
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             Email = "staff1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$licnElpxLjjwdyX1Q/5oDeUN5pb5q35VNHYmAVH6SYQrtmjItorB2",
+                            Password = "$2a$11$tw8BZV0H5mgHecOyMyZMS.3R56JvXzSbWkJMhFgNCmYPoKPxLHRRW",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             UserName = "staff1"
                         },
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             Email = "customer1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$1E2.F3sy7u8lD7nhBLALwubZW.bqNu6PCoJeeFSDVcDIdwHEdMHW.",
+                            Password = "$2a$11$NJo/tzRzQJcscF61cwL6uOitBbPnhZL4SlSchj7SSuwc/PcaOLZKi",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             UserName = "customer1"
                         },
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             Email = "customer2@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$S.SM/Sixjx1VL5Y7j7AKTuJXHSmpzL4QCA2zo3vt1xnzK6DukJiBC",
+                            Password = "$2a$11$YTYHBYvyQaRI5tIDD2Pf0eHvRt9h4JlOqQpuW0aaAjytpBUcXEYDm",
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 29, 504, DateTimeKind.Utc).AddTicks(2279),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 340, DateTimeKind.Utc).AddTicks(2029),
                             UserName = "customer2"
                         });
                 });
@@ -4802,25 +5044,25 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.HasData(
                         new
                         {
-                            UserRoleId = new Guid("862c62e2-9059-447e-a846-352fdd3a6d81"),
+                            UserRoleId = new Guid("8d8e8fd1-b4ab-4a92-b3d6-5f8fccd7cb75"),
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            UserRoleId = new Guid("fc30d2c4-707a-472e-afff-e14aa560a035"),
+                            UserRoleId = new Guid("51071e5a-a27a-4f34-8760-4e05a2dc9099"),
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            UserRoleId = new Guid("e36bac3f-a760-4ec8-b555-1e5f44be4e28"),
+                            UserRoleId = new Guid("3b23ce5c-fa97-497f-9ab2-af56c7f77f87"),
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            UserRoleId = new Guid("31cce68c-ffb0-47cf-8fdf-ae4577f562e3"),
+                            UserRoleId = new Guid("ba44880a-ed3f-4463-a987-908161a6b9d1"),
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         });
@@ -4838,6 +5080,12 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("created_at");
 
                     b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DeviceName")
@@ -4931,6 +5179,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
 
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
@@ -5036,7 +5292,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000001"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5048,14 +5304,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000002"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5067,14 +5323,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000003"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5086,14 +5342,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000004"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5105,14 +5361,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000005"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5124,14 +5380,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000006"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5143,14 +5399,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000007"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5162,14 +5418,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000008"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5181,14 +5437,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000009"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5200,14 +5456,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000010"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5219,14 +5475,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000011"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5238,14 +5494,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000012"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5257,14 +5513,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000013"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5276,14 +5532,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000014"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5295,14 +5551,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000015"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5314,14 +5570,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000016"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5333,14 +5589,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000017"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5352,14 +5608,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000018"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5371,14 +5627,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000019"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5390,14 +5646,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000020"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5409,14 +5665,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000021"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5428,14 +5684,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000022"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5447,14 +5703,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000023"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5466,14 +5722,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000024"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5485,14 +5741,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000025"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5504,14 +5760,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000026"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5523,14 +5779,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000027"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5542,14 +5798,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000028"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5561,14 +5817,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000029"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5580,14 +5836,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000030"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5599,14 +5855,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000031"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5618,14 +5874,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000032"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5637,14 +5893,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000033"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5656,14 +5912,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000034"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5675,14 +5931,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000035"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5694,14 +5950,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000036"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5713,14 +5969,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000037"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5732,14 +5988,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000038"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5751,14 +6007,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000039"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5770,14 +6026,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000040"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5789,14 +6045,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000041"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5808,14 +6064,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000042"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5827,14 +6083,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000043"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5846,14 +6102,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000044"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5865,14 +6121,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000045"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5884,14 +6140,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000046"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5903,14 +6159,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000047"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5922,14 +6178,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000048"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -5941,14 +6197,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000049"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -5960,14 +6216,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000050"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -5979,14 +6235,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000051"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -5998,14 +6254,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000052"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6017,14 +6273,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000053"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6036,14 +6292,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000054"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6055,14 +6311,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000055"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6074,14 +6330,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000056"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6093,14 +6349,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000057"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6112,14 +6368,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000058"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6131,14 +6387,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000059"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6150,14 +6406,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000060"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6169,14 +6425,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000061"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6188,14 +6444,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000062"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6207,14 +6463,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000063"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6226,14 +6482,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000064"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6245,14 +6501,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000065"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6264,14 +6520,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000066"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6283,14 +6539,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000067"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6302,14 +6558,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000068"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6321,14 +6577,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000069"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6340,14 +6596,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000070"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6359,14 +6615,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000071"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6378,14 +6634,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000072"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6397,14 +6653,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000073"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6416,14 +6672,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000074"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6435,14 +6691,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000075"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6454,14 +6710,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000076"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6473,14 +6729,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000077"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6492,14 +6748,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000078"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6511,14 +6767,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000079"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6530,14 +6786,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000080"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6549,14 +6805,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000081"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6568,14 +6824,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000082"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6587,14 +6843,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000083"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6606,14 +6862,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000084"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6625,14 +6881,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000085"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6644,14 +6900,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000086"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6663,14 +6919,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000087"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6682,14 +6938,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000088"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6701,14 +6957,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000089"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6720,14 +6976,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000090"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6739,14 +6995,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000091"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6758,14 +7014,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000092"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6777,14 +7033,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000093"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6796,14 +7052,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000094"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6815,14 +7071,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000095"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6834,14 +7090,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000096"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6853,14 +7109,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000097"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6872,14 +7128,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000098"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6891,14 +7147,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000099"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6910,14 +7166,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000100"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -6929,14 +7185,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000101"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -6948,14 +7204,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000102"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -6967,14 +7223,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000103"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -6986,14 +7242,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000104"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7005,14 +7261,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000105"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7024,14 +7280,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000106"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7043,14 +7299,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000107"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7062,14 +7318,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000108"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7081,14 +7337,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000109"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7100,14 +7356,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000110"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7119,14 +7375,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000111"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7138,14 +7394,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000112"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7157,14 +7413,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000113"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7176,14 +7432,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000114"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7195,14 +7451,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000115"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7214,14 +7470,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000116"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7233,14 +7489,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000117"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7252,14 +7508,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000118"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7271,14 +7527,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000119"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7290,14 +7546,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000120"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7309,14 +7565,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000121"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7328,14 +7584,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000122"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7347,14 +7603,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000123"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7366,14 +7622,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000124"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7385,14 +7641,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000125"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7404,14 +7660,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000126"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7423,14 +7679,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000127"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7442,14 +7698,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000128"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7461,14 +7717,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000129"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7480,14 +7736,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000130"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7499,14 +7755,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000131"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7518,14 +7774,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000132"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7537,14 +7793,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000133"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7556,14 +7812,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000134"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7575,14 +7831,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000135"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7594,14 +7850,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000136"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7613,14 +7869,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000137"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7632,14 +7888,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000138"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7651,14 +7907,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000139"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7670,14 +7926,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000140"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7689,14 +7945,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000141"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7708,14 +7964,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000142"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7727,14 +7983,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000143"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7746,14 +8002,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000144"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7765,14 +8021,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000145"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7784,14 +8040,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000146"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7803,14 +8059,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000147"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7822,14 +8078,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000148"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7841,14 +8097,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000149"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7860,14 +8116,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000150"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7879,14 +8135,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000151"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7898,14 +8154,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000152"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7917,14 +8173,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000153"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -7936,14 +8192,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000154"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -7955,14 +8211,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000155"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -7974,14 +8230,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000156"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -7993,14 +8249,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000157"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8012,14 +8268,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000158"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8031,14 +8287,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000159"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8050,14 +8306,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000160"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8069,14 +8325,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000161"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8088,14 +8344,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000162"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8107,14 +8363,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000163"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8126,14 +8382,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000164"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8145,14 +8401,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000165"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8164,14 +8420,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000166"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8183,14 +8439,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000167"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8202,14 +8458,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000168"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8221,14 +8477,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000169"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8240,14 +8496,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000170"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8259,14 +8515,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000171"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8278,14 +8534,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000172"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8297,14 +8553,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000173"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8316,14 +8572,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000174"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8335,14 +8591,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000175"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8354,14 +8610,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000176"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8373,14 +8629,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000177"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8392,14 +8648,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000178"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8411,14 +8667,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000179"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8430,14 +8686,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000180"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8449,14 +8705,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000181"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8468,14 +8724,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000182"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8487,14 +8743,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000183"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8506,14 +8762,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000184"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8525,14 +8781,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000185"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8544,14 +8800,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000186"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8563,14 +8819,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.1f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000187"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8582,14 +8838,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.2f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000188"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8601,14 +8857,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.3f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000189"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8620,14 +8876,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.4f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000190"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8639,14 +8895,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.5f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000191"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8658,14 +8914,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.6f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000192"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8677,14 +8933,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.7f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000193"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8696,14 +8952,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.8f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000194"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8715,14 +8971,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4.9f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000195"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8734,14 +8990,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.5f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000196"),
                             Color = "Đen",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8753,14 +9009,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.6f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000197"),
                             Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
@@ -8772,14 +9028,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.7f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000198"),
                             Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
@@ -8791,14 +9047,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.8f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000199"),
                             Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
@@ -8810,14 +9066,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 3.9f,
                             Status = "Available",
                             TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
                         },
                         new
                         {
                             Id = new Guid("00000000-0000-0000-0000-000000000200"),
                             Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
                             IsDeleted = false,
                             LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
@@ -8829,7 +9085,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Rating = 4f,
                             Status = "Available",
                             TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 3, DateTimeKind.Utc).AddTicks(6795),
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 890, DateTimeKind.Utc).AddTicks(3544),
                             VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
                         });
                 });
@@ -8916,6 +9172,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("created_by");
 
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("description");
@@ -8945,41 +9209,41 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01"),
                             CategoryCode = "SEDAN",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528),
                             Description = "Xe sedan 4-5 chỗ, phổ thông",
                             IsDeleted = false,
                             Seat = 5,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02"),
                             CategoryCode = "SUV",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528),
                             Description = "Xe thể thao đa dụng, gầm cao",
                             IsDeleted = false,
                             Seat = 7,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03"),
                             CategoryCode = "HATCHBACK",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528),
                             Description = "Xe cỡ nhỏ cho đô thị",
                             IsDeleted = false,
                             Seat = 5,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04"),
                             CategoryCode = "MINIVAN",
-                            CreatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119),
+                            CreatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528),
                             Description = "Xe gia đình, rộng rãi",
                             IsDeleted = false,
                             Seat = 7,
-                            UpdatedAt = new DateTime(2025, 11, 19, 13, 1, 30, 2, DateTimeKind.Utc).AddTicks(119)
+                            UpdatedAt = new DateTime(2025, 12, 1, 16, 1, 44, 887, DateTimeKind.Utc).AddTicks(9528)
                         });
                 });
 
@@ -9047,6 +9311,18 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Order = 1,
                             VehicleId = new Guid("00000000-0000-0000-0000-000000000002")
                         });
+                });
+
+            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
+                {
+                    b.HasOne("MassTransit.EntityFrameworkCoreIntegration.OutboxState", null)
+                        .WithMany()
+                        .HasForeignKey("OutboxId");
+
+                    b.HasOne("MassTransit.EntityFrameworkCoreIntegration.InboxState", null)
+                        .WithMany()
+                        .HasForeignKey("InboxMessageId", "InboxConsumerId")
+                        .HasPrincipalKey("MessageId", "ConsumerId");
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Booking", b =>

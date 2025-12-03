@@ -7,5 +7,4 @@ public interface ICacheService
     Task<string?> GetStringAsync(string key, CancellationToken ct);
     
     Task RemoveAsync(string key, CancellationToken ct);
-
 }

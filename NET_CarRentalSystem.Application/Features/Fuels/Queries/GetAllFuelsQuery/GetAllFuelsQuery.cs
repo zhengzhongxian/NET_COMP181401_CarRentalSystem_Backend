@@ -12,7 +12,7 @@ public class GetAllFuelsQueryHandler(IUnitOfWork unitOfWork) : IRequestHandler<G
 {
     public async Task<List<GetFuelDto>> Handle(GetAllFuelsQuery request, CancellationToken cancellationToken)
     {
-        var fuels = await unitOfWork.GetRepository<Fuel>().GetAllAsync(cancellationToken);
+        var fuels = await unitOfWork.GetReadRepository<Fuel>().GetAsync(cancellationToken: cancellationToken);
         
         return [.. fuels.Select(fuel => new GetFuelDto
         {

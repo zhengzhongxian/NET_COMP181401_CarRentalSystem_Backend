@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Data;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using System.Text;
@@ -21,8 +22,11 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Setup
             try
             {
                 var connection = context.Database.GetDbConnection();
-                await connection.OpenAsync();
-
+                
+                if (connection.State != ConnectionState.Open)
+                {
+                    await connection.OpenAsync();
+                }
                 //kích hoạt Theo dõi Thay đổi cho toàn bộ db
                 logger.LogInformation("Checking and enabling Change Tracking for the database...");
                 const string enableDbCtSql = "IF NOT EXISTS (SELECT 1 FROM sys.change_tracking_databases WHERE database_id = DB_ID()) " +

@@ -6,7 +6,7 @@ public class VehicleImage
 
     public int Order { get; set; }
 
-    public string ImageUrl { get; set; }
+    public string ImageUrl { get; set; } = default!;
 
     public string? AltText { get; set; }
 
@@ -16,5 +16,5 @@ public class VehicleImage
 
     public Guid VehicleId { get; set; }
 
-    public virtual Vehicle Vehicle { get; set; }
+    public virtual Vehicle Vehicle { get; set; } = default!;
 }

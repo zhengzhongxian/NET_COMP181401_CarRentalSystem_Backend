@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Models.DTOs.UserDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
@@ -18,7 +17,7 @@ public class GetActiveSessionsQueryHandler(
     {
         var userId = currentUserService.GetUserId()!.Value;
 
-        var sessions = await unitOfWork.GetRepository<UserSession>().GetAsync(filter: s => 
+        var sessions = await unitOfWork.GetReadRepository<UserSession>().GetAsync(filter: s => 
             s.UserId == userId, sortBy: "CreatedAt", sortDirection: "desc", 
             cancellationToken: cancellationToken);
 

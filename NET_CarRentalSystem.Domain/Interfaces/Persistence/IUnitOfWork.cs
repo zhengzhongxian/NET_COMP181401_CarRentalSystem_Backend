@@ -2,11 +2,13 @@
 
 public interface IUnitOfWork : IDisposable
 {
-    IGenericRepository<T> GetRepository<T>() where T : class;
+    IReadRepository<T> GetReadRepository<T>() where T : class;
+    
+    IWriteRepository<T> GetWriteRepository<T>() where T : class;
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 
-    IQueryRepository GetQueryRepository();
+    IRawSqlRepository GetQueryRepository();
 
     Task<IDbTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default);
     

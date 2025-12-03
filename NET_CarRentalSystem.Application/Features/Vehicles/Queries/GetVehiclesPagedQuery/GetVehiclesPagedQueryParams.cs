@@ -1,5 +1,18 @@
-﻿using NET_CarRentalSystem.Shared.Pagination;
+using NET_CarRentalSystem.Shared.Pagination;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
 
-public class GetVehiclesPagedQueryParams : PagingParams;
+public class GetVehiclesPagedQueryParams : PagedParams
+{
+    public Guid? CategoryId { get; set; }
+
+    public Guid? FuelId { get; set; }
+
+    public Guid? LocationId { get; set; }
+
+    public string? Status { get; set; }
+
+    public decimal? MinPrice { get; set; }
+
+    public decimal? MaxPrice { get; set; }
+}

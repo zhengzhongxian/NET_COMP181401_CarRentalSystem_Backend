@@ -1,7 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Models.DTOs.AuthDTOs;
@@ -35,7 +34,9 @@ public class GoogleLoginCommandHandler(
             return (AuthMessage.GoogleLogin.UnverifiedEmail, null);
         }
 
-        var user = await unitOfWork.GetRepository<User>().GetFirstOrDefaultAsync(u => u.Email == payload.Email && u.IsVerified);
+        var user = await unitOfWork
+            .GetReadRepository<User>()
+            .GetFirstOrDefaultAsync(u => u.Email == payload.Email && u.IsVerified, cancellationToken: cancellationToken);
         
         var ggloginDto = new GoogleLoginDto();
         
@@ -50,7 +51,7 @@ public class GoogleLoginCommandHandler(
 
         if (user.Status == UserStatus.Banned) return (AuthMessage.GoogleLogin.Banned, null);
         
-        var tokens = await tokenService.GenerateTokensAsync(user);
+        var tokens = await tokenService.GenerateTokensAsync(user, cancellationToken);
         ggloginDto.TokenResponse = tokens;
         
         var userSession = new UserSession
@@ -62,9 +63,9 @@ public class GoogleLoginCommandHandler(
             DeviceName = request.DeviceName
         };
         
-        await unitOfWork.GetRepository<UserSession>().AddAsync(userSession, cancellationToken);
+        await unitOfWork.GetWriteRepository<UserSession>().AddAsync(userSession, cancellationToken);
         user.Status = UserStatus.LoggedIn;
-        unitOfWork.GetRepository<User>().Update(user); 
+        unitOfWork.GetWriteRepository<User>().Update(user); 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
         var sessionCacheDto = new UserSessionCacheDto

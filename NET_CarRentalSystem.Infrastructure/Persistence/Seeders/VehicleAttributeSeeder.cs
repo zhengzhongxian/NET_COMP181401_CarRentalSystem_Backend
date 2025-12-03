@@ -1,6 +1,4 @@
 ﻿using NET_CarRentalSystem.Domain.Entities;
-using System;
-using System.Collections.Generic;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 

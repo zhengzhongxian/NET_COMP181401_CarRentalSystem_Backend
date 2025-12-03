@@ -1,4 +1,5 @@
 using NET_CarRentalSystem.API.Extensions;
+using NET_CarRentalSystem.API.Middlewares;
 using NET_CarRentalSystem.Shared.Constants;
 using Serilog;
 
@@ -26,6 +27,7 @@ app.UseSwaggerUI(c =>
     c.InjectStylesheet("/css/swagger-custom.css");
 });
 
+app.UseMiddleware<GlobalInfrastructureMiddleware>();
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseCors(AppConstants.CorsPolicy.DefaultCorsPolicy);

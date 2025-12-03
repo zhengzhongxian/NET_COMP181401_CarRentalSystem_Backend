@@ -3,7 +3,6 @@ using System.Net.Mail;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Configurations;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 
 namespace NET_CarRentalSystem.Infrastructure.Services.Notifications;

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NET_CarRentalSystem.Domain.Exceptions.Common;
@@ -16,7 +17,8 @@ public static class ExceptionExtensions
                 DbUpdateConcurrencyException or 
                 TimeoutException or
                 DomainException or
-                ExternalServiceException
+                ExternalServiceException or
+                ValidationException
                 => true,
             _ => false
         };

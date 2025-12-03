@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Domain.Constants;
@@ -31,9 +30,9 @@ public class GoogleLogupCommandHandler(
             return (AuthMessage.GoogleLogup.UnverifiedEmail, false);
         }
         
-        var userRepository = unitOfWork.GetRepository<User>();
+        var userReadRepository = unitOfWork.GetReadRepository<User>();
         
-        var existingUser = await userRepository.GetFirstOrDefaultAsync(
+        var existingUser = await userReadRepository.GetFirstOrDefaultAsync(
             u => u.Email == payload.Email && u.IsVerified, 
             cancellationToken: cancellationToken);
         if (existingUser != null) 
@@ -42,8 +41,8 @@ public class GoogleLogupCommandHandler(
         }
         var encryptedPhone = cryptographyService.EncryptAes(logupParams.PhoneNumber);
         
-        var customerRepository = unitOfWork.GetRepository<Customer>();
-        var existingCustomerByPhone = await customerRepository.GetFirstOrDefaultAsync(
+        var customerReadRepository = unitOfWork.GetReadRepository<Customer>();
+        var existingCustomerByPhone = await customerReadRepository.GetFirstOrDefaultAsync(
             c => c.PhoneNumber == encryptedPhone, 
             cancellationToken: cancellationToken
         );
@@ -53,8 +52,8 @@ public class GoogleLogupCommandHandler(
             return (AuthMessage.GoogleLogup.PhoneNumberExists, false);
         }
         
-        var roleRepository = unitOfWork.GetRepository<Role>();
-        var customerRole = await roleRepository.GetFirstAsync(
+        var roleReadRepository = unitOfWork.GetReadRepository<Role>();
+        var customerRole = await roleReadRepository.GetFirstAsync(
             r => r.Name == RoleConstants.Customer, 
             cancellationToken: cancellationToken);
         
@@ -91,14 +90,14 @@ public class GoogleLogupCommandHandler(
         {
             LoginProvider = LoginProvider.Google,
             ProviderKey = userId.ToString(),
-            ProviderDisplayName = LoginProvider.Google.ToString(),
+            ProviderDisplayName = nameof(LoginProvider.Google),
             UserId = user.Id
         };
         
-        await userRepository.AddAsync(user, cancellationToken);
-        await customerRepository.AddAsync(customer, cancellationToken);
-        await unitOfWork.GetRepository<UserRole>().AddAsync(userRole, cancellationToken);
-        await unitOfWork.GetRepository<UserLogin>().AddAsync(userLogin, cancellationToken);
+        await unitOfWork.GetWriteRepository<User>().AddAsync(user, cancellationToken);
+        await unitOfWork.GetWriteRepository<Customer>().AddAsync(customer, cancellationToken);
+        await unitOfWork.GetWriteRepository<UserRole>().AddAsync(userRole, cancellationToken);
+        await unitOfWork.GetWriteRepository<UserLogin>().AddAsync(userLogin, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
         return (AuthMessage.GoogleLogup.Success, true);

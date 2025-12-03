@@ -27,7 +27,15 @@ public static class PermissionConstants
         public const string Edit = "Permissions.Fuels.Edit";
         public const string Delete = "Permissions.Fuels.Delete";
     }
-    
+
+    public static class Transmissions
+    {
+        public const string View = "Permissions.Transmissions.View";
+        public const string Create = "Permissions.Transmissions.Create";
+        public const string Edit = "Permissions.Transmissions.Edit";
+        public const string Delete = "Permissions.Transmissions.Delete";
+    }
+
     public static List<string> GetAllPermissions()
     {
         return ReflectionHelper.GetConstants<string>(typeof(PermissionConstants));

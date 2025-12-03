@@ -6,26 +6,50 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Repositories;
 
 public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbContext readDbContext) : IUnitOfWork
 {
-    private Dictionary<string, object>? _repositories;
-    private IQueryRepository? _queryRepository;
-
-    public IGenericRepository<T> GetRepository<T>() where T : class
+    private Dictionary<string, object>? _readRepositories;
+    private Dictionary<string, object>? _writeRepositories;
+    private IRawSqlRepository? _queryRepository;
+    
+    public IReadRepository<T> GetReadRepository<T>() where T : class
     {
-        _repositories ??= new Dictionary<string, object>();
+        _readRepositories ??= new Dictionary<string, object>();
         var type = typeof(T).Name;
 
-        if (_repositories.TryGetValue(type, out var repo))
+        if (_readRepositories.TryGetValue(type, out var repo))
         {
-            return (IGenericRepository<T>)repo;
+            return (IReadRepository<T>)repo;
         }
 
-        var repositoryType = typeof(GenericRepository<>);
-        var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), writeDbContext, readDbContext);
+        var repositoryType = typeof(ReadRepository<>);
+        var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), readDbContext);
 
         if (repositoryInstance == null)
-            throw new InvalidOperationException($"Unable to create repository for type {type}");
-        _repositories.Add(type, repositoryInstance);
-        return (IGenericRepository<T>)repositoryInstance;
+            throw new InvalidOperationException($"Unable to create read repository for type {type}");
+            
+        _readRepositories.Add(type, repositoryInstance);
+        
+        return (IReadRepository<T>)repositoryInstance;
+    }
+
+    public IWriteRepository<T> GetWriteRepository<T>() where T : class
+    {
+        _writeRepositories ??= new Dictionary<string, object>();
+        var type = typeof(T).Name;
+
+        if (_writeRepositories.TryGetValue(type, out var repo))
+        {
+            return (IWriteRepository<T>)repo;
+        }
+
+        var repositoryType = typeof(WriteRepository<>);
+        var repositoryInstance = Activator.CreateInstance(repositoryType.MakeGenericType(typeof(T)), writeDbContext);
+
+        if (repositoryInstance == null)
+            throw new InvalidOperationException($"Unable to create write repository for type {type}");
+
+        _writeRepositories.Add(type, repositoryInstance);
+        
+        return (IWriteRepository<T>)repositoryInstance;
     }
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -33,9 +57,9 @@ public class UnitOfWork(RenticarWriteDbContext writeDbContext, RenticarReadDbCon
         return await writeDbContext.SaveChangesAsync(cancellationToken);
     }
 
-    public IQueryRepository GetQueryRepository()
+    public IRawSqlRepository GetQueryRepository()
     {
-        _queryRepository ??= new QueryRepository(readDbContext);
+        _queryRepository ??= new RawSqlRepository(readDbContext);
         return _queryRepository;
     }
 

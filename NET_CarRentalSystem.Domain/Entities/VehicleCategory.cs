@@ -4,7 +4,7 @@ namespace NET_CarRentalSystem.Domain.Entities;
 
 public class VehicleCategory : BaseEntity<Guid>
 {
-    public string CategoryCode { get; set; }
+    public string? CategoryCode { get; set; }
     
     public string? Description { get; set; }
     

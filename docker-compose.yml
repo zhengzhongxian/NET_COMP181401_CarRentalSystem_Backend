@@ -16,6 +16,7 @@ services:
       - sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
     networks:
       - renticar-network
+
   #Redis
   redis:
     image: redis:7.2-alpine
@@ -27,6 +28,27 @@ services:
       - redis_data_${ASPNETCORE_ENVIRONMENT}:/data
     networks:
       - renticar-network
+  
+  #RabbitMQ
+  rabbitmq:
+    image: masstransit/rabbitmq:latest
+    container_name: renticar_rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmq_data_${ASPNETCORE_ENVIRONMENT}:/var/lib/rabbitmq
+    networks:
+      - renticar-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   # .NET API Application
   api:
@@ -37,19 +59,20 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - ASPNETCORE_URLS=http://+:80;https://+:443
+      - ASPNETCORE_URLS=https://+:80;https://+:443
       - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
       - CERTIFICATE_PASSWORD=${CERTIFICATE_PASSWORD}
       - CERTIFICATE_PATH=${CERTIFICATE_PATH}
-      - ConnectionStrings__RenticarWriteDbContext=${DB_WRITE_CONNECTION_STRING}
-      - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
-      - ConnectionStrings__Redis=${REDIS_CONNECTION_STRING}
     ports:
       - "8080:80"
       - "8443:443"
     depends_on:
-      - sqlserver
-      - redis
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
     volumes:
       - ./https:/https:ro
       - ./logs:/app/Logs
@@ -65,8 +88,6 @@ services:
     restart: always
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
-      - ConnectionStrings__RenticarWriteDbContext=${DB_WRITE_CONNECTION_STRING}
-      - ConnectionStrings__RenticarReadDbContext=${DB_READ_CONNECTION_STRING}
     depends_on:
       - sqlserver
       - api
@@ -82,6 +103,9 @@ volumes:
   redis_data_Production:
   redis_data_Test:
   redis_data_Development:
+  rabbitmq_data_Production:
+  rabbitmq_data_Test:
+  rabbitmq_data_Development:
 
 networks:
   renticar-network:

@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NET_CarRentalSystem.Domain.Exceptions.Common;
@@ -14,6 +15,18 @@ public class GlobalInfrastructureMiddleware(ILogger<GlobalInfrastructureMiddlewa
         {
             await next(context);
         }
+        catch (ValidationException validationEx)
+        {
+            logger.LogWarning("Validation Error: {Errors}", string.Join(", ", validationEx.Errors.Select(e => e.ErrorMessage)));
+            
+            var errors = validationEx.Errors.Select(e => e.ErrorMessage).ToList();
+            
+            await WriteErrorAsync(
+                context, 
+                StatusCodes.Status400BadRequest, 
+                "Dữ liệu đầu vào không hợp lệ",
+                errors);
+        }
         catch (OperationCanceledException)
         {
             logger.LogWarning("Client request was cancelled.");
@@ -23,6 +36,11 @@ public class GlobalInfrastructureMiddleware(ILogger<GlobalInfrastructureMiddlewa
         {
             logger.LogError("Database connection timed out.");
             await WriteErrorAsync(context, StatusCodes.Status504GatewayTimeout, DatabaseErrorMessage.Timeout);
+        }
+        catch (InvalidOperationException invalidEx)
+        {
+            logger.LogWarning("Invalid Operation: {Message}", invalidEx.Message);
+            await WriteErrorAsync(context, StatusCodes.Status400BadRequest, "Invalid Operation", [invalidEx.Message]);
         }
         catch (DbUpdateConcurrencyException)
         {

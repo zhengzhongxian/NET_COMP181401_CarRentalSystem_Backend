@@ -8,7 +8,7 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
 {
     public async Task<User?> FindUserAsync(string usernameOrEmail)
     {
-        var user = await unitOfWork.GetRepository<User>().GetFirstOrDefaultAsync(
+        var user = await unitOfWork.GetReadRepository<User>().GetFirstOrDefaultAsync(
             u => u.Email == usernameOrEmail || u.UserName == usernameOrEmail
         );
 
@@ -19,7 +19,7 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
     {
         if (Guid.TryParse(userId, out var userGuid))
         {
-            return await unitOfWork.GetRepository<User>().GetByIdAsync(userGuid);
+            return await unitOfWork.GetReadRepository<User>().GetByIdAsync(userGuid);
         }
         return null;
     }
@@ -28,7 +28,7 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
     {
         if (Guid.TryParse(userId, out var userGuid))
         {
-            return await unitOfWork.GetRepository<User>().ExistsAsync(u => u.Id == userGuid);
+            return await unitOfWork.GetReadRepository<User>().ExistsAsync(u => u.Id == userGuid);
         }
 
         return false;

@@ -22,7 +22,7 @@ public class CreateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
             Description = request.Description 
         };
 
-        await unitOfWork.GetRepository<Fuel>().AddAsync(newFuel, cancellationToken);
+        await unitOfWork.GetWriteRepository<Fuel>().AddAsync(newFuel, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return newFuel.Id;

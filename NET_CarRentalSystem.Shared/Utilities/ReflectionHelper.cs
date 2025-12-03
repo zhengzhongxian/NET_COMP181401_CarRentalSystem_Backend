@@ -6,7 +6,7 @@ public static class ReflectionHelper
 {
     public static List<TValue> GetConstants<TValue>(Type classType)
     {
-        return GetConstantsRecursive<TValue>(classType);
+        return GetConstantsRecursive<TValue>(classType).Distinct().ToList();
     }
 
     public static List<TFieldType> GetConstants<TClass, TFieldType>()

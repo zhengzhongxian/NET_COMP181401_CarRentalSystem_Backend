@@ -27,7 +27,22 @@ public abstract class RenticarBaseDbContext(
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+        
+        modelBuilder.ApplyConfigurationsFromAssembly(
+            Assembly.GetExecutingAssembly(), 
+            type => 
+            {
+                var configInterface = type.GetInterfaces().FirstOrDefault(i => 
+                    i.IsGenericType && 
+                    i.GetGenericTypeDefinition() == typeof(IEntityTypeConfiguration<>));
+
+                if (configInterface == null) return false;
+                
+                var entityType = configInterface.GetGenericArguments()[0];
+                
+                return this is not RenticarWriteDbContext || !typeof(IReadEntity).IsAssignableFrom(entityType);
+            }
+        );
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {

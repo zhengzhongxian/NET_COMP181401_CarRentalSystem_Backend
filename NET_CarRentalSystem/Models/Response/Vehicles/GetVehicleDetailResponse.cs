@@ -1,4 +1,5 @@
 using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleImageDTOs;
 using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.API.Models.Response.Vehicles;
@@ -6,16 +7,28 @@ namespace NET_CarRentalSystem.API.Models.Response.Vehicles;
 public class GetVehicleDetailResponse
 {
     public Guid VehicleId { get; set; }
-    public string NumberPlate { get; set; }
-    public string Manufacturer { get; set; }
-    public string Model { get; set; }
+
+    public string NumberPlate { get; set; } = string.Empty;
+    
+    public string Manufacturer { get; set; } = string.Empty;
+    
+    public string Model { get; set; } = string.Empty;
+    
     public decimal PricePerHour { get; set; }
+    
     public float Rating { get; set; }
+    
     public VehicleStatus Status { get; set; }
+    
     public string? VehicleCategoryCode { get; set; }
+    
     public string? FuelName { get; set; }
+    
     public string? TransmissionName { get; set; }
+    
     public string? LocationName { get; set; }
+    
     public List<GetVehicleAttributeDto> Attributes { get; set; } = [];
-    public List<string> Images { get; set; } = [];
+    
+    public List<GetVehicleImageDto> Images { get; set; } = [];
 }

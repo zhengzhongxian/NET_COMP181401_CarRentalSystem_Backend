@@ -1,7 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Domain.Entities;
@@ -40,9 +39,10 @@ public class LogoutAllOtherSessionsCommandHandler(
             return Unit.Value; // token does not belong to the current user.
         }
 
-        var sessionRepository = unitOfWork.GetRepository<UserSession>();
+        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
+        var sessionWriteRepository = unitOfWork.GetWriteRepository<UserSession>();
 
-        var sessionsToLogout = await sessionRepository.GetAsync(filter: s => 
+        var sessionsToLogout = await sessionReadRepository.GetAsync(filter: s => 
             s.UserId == currentUserId && s.RefreshToken != request.CurrentRefreshToken, 
             cancellationToken: cancellationToken);
 
@@ -53,7 +53,7 @@ public class LogoutAllOtherSessionsCommandHandler(
 
         foreach (var session in sessionsToLogout)
         {
-            sessionRepository.Remove(session);
+            sessionWriteRepository.Remove(session);
             await cacheService.RemoveAsync(session.RefreshToken, cancellationToken);
         }
 
@@ -62,4 +62,3 @@ public class LogoutAllOtherSessionsCommandHandler(
         return Unit.Value;
     }
 }
-

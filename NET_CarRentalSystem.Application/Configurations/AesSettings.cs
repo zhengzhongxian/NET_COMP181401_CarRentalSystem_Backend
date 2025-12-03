@@ -1,4 +1,3 @@
-using NET_CarRentalSystem.Application.Common.Interfaces.Configurations;
 using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Application.Configurations;

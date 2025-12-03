@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
@@ -34,7 +33,7 @@ public class ForgetPasswordCommandHandler(
     
     public async Task<(string, bool)> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
     {
-        var userRepo = unitOfWork.GetRepository<User>();
+        var userRepo = unitOfWork.GetReadRepository<User>();
         var user = await userRepo.GetFirstOrDefaultAsync(u => 
                 u.Email == request.Email &&
                 !u.UserLogins.Any(l => l.LoginProvider == LoginProvider.Google) &&
@@ -51,7 +50,7 @@ public class ForgetPasswordCommandHandler(
         var key= CacheKeyHelper.GetResetPasswordKey(request.Email);
         var cachedResetPasswordDetailsJson = await cacheService.GetStringAsync(key, cancellationToken);
         
-        var customer = await unitOfWork.GetRepository<Customer>().GetFirstAsync(c => 
+        var customer = await unitOfWork.GetReadRepository<Customer>().GetFirstAsync(c => 
             c.UserId == user.Id, 
             cancellationToken: cancellationToken);
         

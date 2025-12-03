@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NET_CarRentalSystem.API.Middlewares;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants;
@@ -186,6 +187,8 @@ public static class WebApiServiceRegistration
                 });
             }
         });
+        
+        services.AddTransient<GlobalInfrastructureMiddleware>();
         
         return services;
     }

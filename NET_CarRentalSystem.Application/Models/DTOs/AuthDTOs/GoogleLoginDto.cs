@@ -1,4 +1,3 @@
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 
 namespace NET_CarRentalSystem.Application.Models.DTOs.AuthDTOs;

@@ -1,6 +1,5 @@
 ﻿using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Enums;
-using System.ComponentModel.DataAnnotations;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 

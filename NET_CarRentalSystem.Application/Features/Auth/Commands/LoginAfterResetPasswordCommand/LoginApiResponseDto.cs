@@ -1,4 +1,4 @@
-namespace NET_CarRentalSystem.Application.Models.DTOs.AuthDTOs;
+namespace NET_CarRentalSystem.Application.Features.Auth.Commands.LoginAfterResetPasswordCommand;
 
 public class LoginApiResponseDto
 {

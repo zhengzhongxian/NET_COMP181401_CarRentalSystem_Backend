@@ -94,6 +94,12 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
 
         builder.Property(c => c.IsDeleted)
             .HasColumnName("is_deleted");
+        
+        builder.Property(c => c.DeletedBy)
+            .HasColumnName("deleted_by");
+        
+        builder.Property(c => c.DeletedAt)
+            .HasColumnName("deleted_at");
 
         builder.HasIndex(v => v.NumberPlate).IsUnique();
 

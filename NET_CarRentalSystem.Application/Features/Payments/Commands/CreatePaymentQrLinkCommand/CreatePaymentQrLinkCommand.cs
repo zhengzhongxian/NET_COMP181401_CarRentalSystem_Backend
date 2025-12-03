@@ -7,8 +7,8 @@ namespace NET_CarRentalSystem.Application.Features.Payments.Commands.CreatePayme
 
 public class CreatePaymentQrLinkCommand : ICommand<CreatePaymentQrLinkDto>
 {
-    public required decimal Amount { get; init; }
-    public required string Description { get; init; }
+    public required decimal Amount { get; set; }
+    public required string Description { get; set; }
 }
 
 public class CreatePaymentQrLinkCommandHandler(IVnPayService vnPayService) 

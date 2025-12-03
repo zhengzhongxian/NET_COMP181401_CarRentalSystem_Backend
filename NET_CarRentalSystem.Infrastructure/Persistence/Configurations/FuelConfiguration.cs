@@ -40,6 +40,12 @@ public class FuelConfiguration : IEntityTypeConfiguration<Fuel>
 
         builder.Property(c => c.IsDeleted)
             .HasColumnName("is_deleted");
+        
+        builder.Property(c => c.DeletedBy)
+            .HasColumnName("deleted_by");
+        
+        builder.Property(c => c.DeletedAt)
+            .HasColumnName("deleted_at");
 
         builder.HasData(FuelSeeder.Seed());
     }

@@ -19,12 +19,11 @@ public class CreateVehicleCategoryCommandHandler(IUnitOfWork unitOfWork) : IRequ
     {
         var newCategory = new VehicleCategory
         {
-            Id = Guid.NewGuid(),
             CategoryCode = request.CategoryCode,
             Seat = request.Seat
         };
 
-        await unitOfWork.GetRepository<VehicleCategory>().AddAsync(newCategory, cancellationToken);
+        await unitOfWork.GetWriteRepository<VehicleCategory>().AddAsync(newCategory, cancellationToken);
         await unitOfWork.SaveChangesAsync(cancellationToken);
 
         return newCategory.Id;

@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
@@ -31,32 +30,28 @@ public class LogoutCommandHandler(
             }
         }
 
-        var sessionRepository = unitOfWork.GetRepository<UserSession>();
-        var session = await sessionRepository.GetFirstOrDefaultAsync(
+        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
+        var session = await sessionReadRepository.GetFirstOrDefaultAsync(
             s => s.RefreshToken == request.RefreshToken,
-            cancellationToken: cancellationToken,
-            useWriteConnection: true);
+            cancellationToken: cancellationToken);
 
         if (session == null)
         {
             return Unit.Value;
         }
         
-        sessionRepository.Remove(session, true);
+        unitOfWork.GetWriteRepository<UserSession>().Remove(session, true);
         await cacheService.RemoveAsync(request.RefreshToken, cancellationToken);
 
-        var remainingSessions = await sessionRepository.CountAsync(s => s.UserId == session.UserId, cancellationToken);
+        var remainingSessions = await sessionReadRepository.CountAsync(s => s.UserId == session.UserId, cancellationToken);
 
         if (remainingSessions <= 1)
         {
-            var userRepository = unitOfWork.GetRepository<User>();
-            var user = await userRepository.GetFirstAsync(
-                s=> s.Id == session.UserId, 
-                cancellationToken: cancellationToken, 
-                useWriteConnection: true);
+            var userWriteRepository = unitOfWork.GetWriteRepository<User>();
+            var user = await userWriteRepository.GetFirstAsync(u => u.Id == session.UserId, cancellationToken);
             
             user.Status = UserStatus.LoggedOut;
-            userRepository.Update(user);
+            userWriteRepository.Update(user);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -64,4 +59,3 @@ public class LogoutCommandHandler(
         return Unit.Value;
     }
 }
-

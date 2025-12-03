@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Configurations;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using BCryptNet = BCrypt.Net.BCrypt;
 

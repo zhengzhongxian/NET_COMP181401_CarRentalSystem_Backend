@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Shared.Wrapper;
 using Microsoft.AspNetCore.Authorization;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;

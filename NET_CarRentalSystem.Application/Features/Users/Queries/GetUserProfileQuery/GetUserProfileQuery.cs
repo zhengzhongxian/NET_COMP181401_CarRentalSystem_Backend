@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Models.DTOs.UserDTOs.Get;
@@ -20,8 +19,8 @@ public class GetUserProfileQueryHandler(
     {
         var userId = currentUserService.GetUserId()!.Value;
         
-        var user = await unitOfWork.GetRepository<User>().GetFirstAsync(u => u.Id == userId, cancellationToken: cancellationToken);
-        var customer = await unitOfWork.GetRepository<Customer>().GetFirstOrDefaultAsync(c => c.UserId == userId, cancellationToken: cancellationToken);
+        var user = await unitOfWork.GetReadRepository<User>().GetFirstAsync(u => u.Id == userId, cancellationToken: cancellationToken);
+        var customer = await unitOfWork.GetReadRepository<Customer>().GetFirstOrDefaultAsync(c => c.UserId == userId, cancellationToken: cancellationToken);
 
         var userDto = new UserDto
         {

@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 

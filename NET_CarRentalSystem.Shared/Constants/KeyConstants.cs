@@ -39,4 +39,13 @@ public static class KeyConstants
         public const string MaxRetries = "DatabaseInitializationSettings:MaxRetries";
         public const string RetryInterval = "DatabaseInitializationSettings:DbRetryDelayInSeconds";
     }
+
+    public static class RabbitMq
+    {
+        public const string Host = "RabbitMQ:Host";
+        public const string Port = "RabbitMQ:Port";
+        public const string VirtualHost = "RabbitMQ:VirtualHost";
+        public const string Username = "RabbitMQ:Username";
+        public const string Password = "RabbitMQ:Password";
+    }
 }

@@ -2,11 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using NET_CarRentalSystem.Application.Configurations;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -17,9 +17,9 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
 {
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
-    public async Task<TokenResponse> GenerateTokensAsync(User user)
+    public async Task<TokenResponse> GenerateTokensAsync(User user, CancellationToken cancellationToken = default)
     {
-        var claims = await GetClaimsAsync(user);
+        var claims = await GetClaimsAsync(user, cancellationToken);
         var accessTokenExpiry = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenDurationInMinutes);
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
@@ -94,7 +94,7 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
         return claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 
-    private async Task<List<Claim>> GetClaimsAsync(User user)
+    private async Task<List<Claim>> GetClaimsAsync(User user, CancellationToken cancellationToken = default)
     {
         var claims = new List<Claim>
         {
@@ -104,22 +104,22 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
             new(JwtRegisteredClaimNames.Name, user.UserName)
         };
 
-        var roleIds = unitOfWork.GetRepository<UserRole>()
+        var roleIds = unitOfWork.GetReadRepository<UserRole>()
             .GetQueryable(ur => ur.UserId == user.Id)
             .Select(ur => ur.RoleId);
 
-        var existRoleIds = await unitOfWork.GetQueryRepository().AnyAsync(roleIds);
+        var existRoleIds = await roleIds.AnyAsync(cancellationToken);
         if (!existRoleIds) return claims.Distinct().ToList();
 
-        var roles = unitOfWork.GetRepository<Role>()
+        var roles = unitOfWork.GetReadRepository<Role>()
             .GetQueryable(r => roleIds.Contains(r.Id))
             .Select(r => r.Name);
 
-        var roleNames = await unitOfWork.GetQueryRepository().ToListAsync(roles);
+        var roleNames = await roles.ToListAsync(cancellationToken);
         claims.AddRange(roleNames.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        var permissionClaims = await unitOfWork.GetRepository<RoleClaim>()
-            .GetAsync(rc => roleIds.Contains(rc.RoleId) && rc.ClaimType == "Permission");
+        var permissionClaims = await unitOfWork.GetReadRepository<RoleClaim>()
+            .GetAsync(rc => roleIds.Contains(rc.RoleId) && rc.ClaimType == "Permission", cancellationToken: cancellationToken);
 
         claims.AddRange(permissionClaims.Select(c => new Claim(c.ClaimType, c.ClaimValue)));
 

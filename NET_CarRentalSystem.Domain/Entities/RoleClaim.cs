@@ -1,6 +1,4 @@
-﻿using System.Data;
-
-namespace NET_CarRentalSystem.Domain.Entities;
+﻿namespace NET_CarRentalSystem.Domain.Entities;
 
 public class RoleClaim
 {

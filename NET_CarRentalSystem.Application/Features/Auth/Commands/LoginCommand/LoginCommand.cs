@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -48,7 +47,7 @@ public class LoginCommandHandler(
             return (AuthMessage.Login.Banned, null);
         }
 
-        var tokens = await tokenService.GenerateTokensAsync(user);
+        var tokens = await tokenService.GenerateTokensAsync(user, cancellationToken);
         
         var userSession = new UserSession
         {
@@ -59,9 +58,9 @@ public class LoginCommandHandler(
             DeviceName = request.DeviceName
         };
         
-        await unitOfWork.GetRepository<UserSession>().AddAsync(userSession, cancellationToken);
+        await unitOfWork.GetWriteRepository<UserSession>().AddAsync(userSession, cancellationToken);
         user.Status = UserStatus.LoggedIn;
-        unitOfWork.GetRepository<User>().Update(user); 
+        unitOfWork.GetWriteRepository<User>().Update(user); 
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
         var sessionCacheDto = new UserSessionCacheDto

@@ -18,9 +18,9 @@ public class UpdateFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 {
     public async Task<(string, UpdateFuelDto?)> Handle(UpdateFuelCommand request, CancellationToken cancellationToken)
     {
-        var repository = unitOfWork.GetRepository<Fuel>();
+        var repository = unitOfWork.GetWriteRepository<Fuel>();
         
-        var fuelToUpdate = await repository.GetByIdAsync(request.FuelId, cancellationToken, useWriteConnection: true);
+        var fuelToUpdate = await repository.GetByIdAsync(request.FuelId, cancellationToken);
 
         if (fuelToUpdate == null) return (FuelMessage.Update.NotFound, null);
         

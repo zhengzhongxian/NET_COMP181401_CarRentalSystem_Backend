@@ -18,4 +18,6 @@ public class DbTransactionAdapter(IDbContextTransaction efTransaction) : IDbTran
     public void Dispose() => efTransaction.Dispose();
     
     public async ValueTask DisposeAsync() => await efTransaction.DisposeAsync();
+    
+    public System.Data.IDbTransaction GetDbTransaction() => efTransaction.GetDbTransaction();
 }

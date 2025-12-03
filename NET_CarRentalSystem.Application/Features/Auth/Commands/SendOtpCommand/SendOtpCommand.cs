@@ -3,7 +3,6 @@ using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Domain.Entities;
@@ -30,8 +29,8 @@ public class SendOtpCommandHandler(
     
     public async Task<(string, bool)> Handle(SendOtpCommand request, CancellationToken cancellationToken)
     {
-        var userRepository = unitOfWork.GetRepository<User>();
-        var existingUser = await userRepository.GetFirstOrDefaultAsync(
+        var userReadRepository = unitOfWork.GetReadRepository<User>();
+        var existingUser = await userReadRepository.GetFirstOrDefaultAsync(
             u => u.UserName == request.SendOtpParams.UserName || u.Email == request.SendOtpParams.Email, 
             cancellationToken: cancellationToken);
         

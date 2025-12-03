@@ -15,13 +15,12 @@ public class DeleteFuelCommandHandler(IUnitOfWork unitOfWork) : IRequestHandler<
 {
     public async Task<(string, bool)> Handle(DeleteFuelCommand request, CancellationToken cancellationToken)
     {
-        var fuelToDelete = await unitOfWork.GetRepository<Fuel>().GetByIdAsync(
-            request.Id,
-            cancellationToken, 
-            useWriteConnection: true);
+        var fuelRepository = unitOfWork.GetWriteRepository<Fuel>();
+        var fuelToDelete = await fuelRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (fuelToDelete == null) return (FuelMessage.Delete.NotFound, false);
-        unitOfWork.GetRepository<Fuel>().Remove(fuelToDelete);
+        
+        fuelRepository.Remove(fuelToDelete);
         
         await unitOfWork.SaveChangesAsync(cancellationToken);
         

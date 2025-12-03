@@ -33,12 +33,25 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
 
         builder.Property(c => c.CreatedAt)
             .HasColumnName("created_at");
+        
+        builder.Property(c => c.CreatedBy)
+            .HasColumnName("created_by");
 
         builder.Property(c => c.UpdatedAt)
             .HasColumnName("updated_at");
+        
+        builder.Property(c => c.UpdatedBy)
+            .HasColumnName("updated_by");
 
         builder.Property(c => c.IsDeleted)
             .HasColumnName("is_deleted");
+        
+        builder.Property(c => c.DeletedBy)
+            .HasColumnName("deleted_by");
+        
+        builder.Property(c => c.DeletedAt)
+            .HasColumnName("deleted_at");
+
 
         builder.HasIndex(r => r.NormalizedName).IsUnique();
 

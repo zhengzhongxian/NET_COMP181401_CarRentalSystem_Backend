@@ -1,7 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Domain.Entities;
@@ -53,7 +52,7 @@ public class ResetPasswordCommandHandler(
             return (AuthMessage.ResetPassword.InvalidToken, false);
         }
         
-        var userRepo = unitOfWork.GetRepository<User>();
+        var userRepo = unitOfWork.GetWriteRepository<User>();
         var user = await userRepo.GetFirstAsync(u => u.Email == decryptedEmail, cancellationToken: cancellationToken);
         user.Password = cryptographyService.HashPassword(request.Password);
         userRepo.Update(user);

@@ -47,6 +47,13 @@ public class VehicleCategoryConfiguration : IEntityTypeConfiguration<VehicleCate
 
         builder.Property(c => c.IsDeleted)
             .HasColumnName("is_deleted");
+        
+        builder.Property(c => c.DeletedBy)
+            .HasColumnName("deleted_by");
+        
+        builder.Property(c => c.DeletedAt)
+            .HasColumnName("deleted_at");
+
 
         builder.HasData(VehicleCategorySeeder.Seed());
     }

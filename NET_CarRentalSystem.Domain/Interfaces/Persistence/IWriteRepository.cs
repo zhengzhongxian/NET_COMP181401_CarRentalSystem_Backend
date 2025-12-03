@@ -1,0 +1,20 @@
+using System.Linq.Expressions;
+
+namespace NET_CarRentalSystem.Domain.Interfaces.Persistence;
+
+public interface IWriteRepository<T> where T : class
+{
+    Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    Task<T> GetFirstAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+    
+    Task AddAsync(T entity, CancellationToken cancellationToken = default);
+    
+    void Update(T entity);
+    
+    void Remove(T entity, bool hardDelete = false);
+    
+    Task AddRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default);
+    
+    Task<List<T>> GetListAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default);
+}

@@ -1,6 +1,6 @@
 namespace NET_CarRentalSystem.Application.Models.Storage;
 
-public abstract class FileModel
+public class FileModel
 {
     public required Stream Content { get; set; } = null!;
     

@@ -16,7 +16,7 @@ public class TokenResponse
 
 public interface ITokenService
 {
-    Task<TokenResponse> GenerateTokensAsync(User user);
+    Task<TokenResponse> GenerateTokensAsync(User user, CancellationToken  cancellationToken = default);
 
     string GenerateRefreshToken();
     

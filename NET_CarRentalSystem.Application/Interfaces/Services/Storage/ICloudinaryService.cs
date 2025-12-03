@@ -11,7 +11,7 @@ public interface ICloudinaryService
     /// <param name="folder">Thư mục lưu trữ (optional)</param>
     /// <param name="publicId">Public ID tùy chỉnh (optional)</param>
     /// <returns>URL của file đã upload</returns>
-    Task<string> UploadImageAsync(FileModel file, string? folder = null, string? publicId = null);
+    Task<CloudinaryFileInfo> UploadImageAsync(FileModel file, string? folder = null, string? publicId = null);
 
     /// <summary>
     /// Upload nhiều file cùng lúc
@@ -19,7 +19,7 @@ public interface ICloudinaryService
     /// <param name="files">Danh sách file cần upload</param>
     /// <param name="folder">Thư mục lưu trữ (optional)</param>
     /// <returns>Danh sách URL của các file đã upload</returns>
-    Task<List<string>> UploadMultipleImagesAsync(IList<FileModel> files, string? folder = null);
+    Task<List<CloudinaryFileInfo>> UploadMultipleImagesAsync(IList<FileModel> files, string? folder = null);
 
     /// <summary>
     /// Xóa một file từ Cloudinary

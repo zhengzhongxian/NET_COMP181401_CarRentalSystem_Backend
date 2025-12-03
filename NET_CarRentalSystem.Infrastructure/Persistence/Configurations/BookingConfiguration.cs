@@ -87,6 +87,12 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(c => c.IsDeleted)
             .HasColumnName("is_deleted")
             .IsRequired();
+        
+        builder.Property(c => c.DeletedBy)
+            .HasColumnName("deleted_by");
+        
+        builder.Property(c => c.DeletedAt)
+            .HasColumnName("deleted_at");
 
         builder.HasOne(b => b.Vehicle)
             .WithMany(v => v.Bookings)

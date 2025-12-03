@@ -1,6 +1,5 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
-using NET_CarRentalSystem.Application.Interfaces.Services;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Domain.Entities;
@@ -23,25 +22,28 @@ public class LogoutSessionCommandHandler(
     public async Task<(string, bool)> Handle(LogoutSessionCommand request, CancellationToken cancellationToken)
     {
         var currentUserId = currentUserService.GetUserId()!.Value;
-        var sessionRepository = unitOfWork.GetRepository<UserSession>();
+        var sessionWriteRepository = unitOfWork.GetWriteRepository<UserSession>();
+        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
 
-        var sessionToLogout = await sessionRepository.GetByIdAsync(request.SessionId, cancellationToken, useWriteConnection: true);
+        var sessionToLogout = await sessionWriteRepository.GetByIdAsync(request.SessionId, cancellationToken);
 
         if (sessionToLogout == null || sessionToLogout.UserId != currentUserId)
         {
             return (AuthMessage.LogoutSession.NotFound, false);
         }
 
-        sessionRepository.Remove(sessionToLogout, true);
+        sessionWriteRepository.Remove(sessionToLogout, true);
         await cacheService.RemoveAsync(sessionToLogout.RefreshToken, cancellationToken);
 
-        var remainingSessions = await sessionRepository.CountAsync(s => s.UserId == currentUserId, cancellationToken);
+        // Đếm số session hiện có trong DB (bao gồm cả session vừa đánh dấu xóa vì chưa SaveChanges)
+        var remainingSessions = await sessionReadRepository.CountAsync(s => s.UserId == currentUserId, cancellationToken);
+        
         if (remainingSessions <= 1)
         {
-            var userRepository = unitOfWork.GetRepository<User>();
-            var user = await userRepository.GetFirstAsync(u => u.Id == currentUserId, cancellationToken: cancellationToken, useWriteConnection: true);
+            var userWriteRepository = unitOfWork.GetWriteRepository<User>();
+            var user = await userWriteRepository.GetFirstAsync(u => u.Id == currentUserId, cancellationToken);
             user.Status = UserStatus.LoggedOut;
-            userRepository.Update(user);
+            userWriteRepository.Update(user);
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);
@@ -49,4 +51,3 @@ public class LogoutSessionCommandHandler(
         return (AuthMessage.LogoutSession.Success, true);
     }
 }
-

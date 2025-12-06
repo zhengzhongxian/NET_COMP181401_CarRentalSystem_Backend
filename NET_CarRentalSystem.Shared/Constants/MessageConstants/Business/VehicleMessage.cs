@@ -50,5 +50,25 @@ public static class VehicleMessage
         public const string Error = "Có lỗi xảy ra khi thêm thuộc tính xe.";
         public const string NotFound = "Không tìm thấy xe để thêm thuộc tính.";
     }
+    public static class DeleteImages
+    {
+        public const string Success = "Xóa danh sách ảnh xe thành công";
+        public const string Error = "Đã xảy ra lỗi khi xóa danh sách ảnh xe";
+        public const string NotFound = "Không tìm thấy xe hoặc ảnh để xóa";
+    }
+
+    public static class UpdateAttribute
+    {
+        public const string Success = "Cập nhật thuộc tính xe thành công";
+        public const string Error = "Đã xảy ra lỗi khi cập nhật thuộc tính xe";
+        public const string NotFound = "Không tìm thấy xe hoặc thuộc tính để cập nhật";
+    }
+
+    public static class DeleteAttribute
+    {
+        public const string Success = "Xóa thuộc tính xe thành công";
+        public const string Error = "Đã xảy ra lỗi khi xóa thuộc tính xe";
+        public const string NotFound = "Không tìm thấy xe hoặc thuộc tính để xóa";
+    }
 }
 

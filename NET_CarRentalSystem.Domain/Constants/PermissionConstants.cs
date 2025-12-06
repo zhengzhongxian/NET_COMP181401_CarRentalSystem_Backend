@@ -36,6 +36,14 @@ public static class PermissionConstants
         public const string Delete = "Permissions.Transmissions.Delete";
     }
 
+    public static class VehicleCategory
+    {
+        public const string View = "Permissions.VehicleCategory.View";
+        public const string Create = "Permissions.VehicleCategory.Create";
+        public const string Edit = "Permissions.VehicleCategory.Edit";
+        public const string Delete = "Permissions.VehicleCategory.Delete";
+    }
+
     public static List<string> GetAllPermissions()
     {
         return ReflectionHelper.GetConstants<string>(typeof(PermissionConstants));

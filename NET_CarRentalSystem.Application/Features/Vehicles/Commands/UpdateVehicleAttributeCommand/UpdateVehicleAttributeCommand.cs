@@ -7,19 +7,21 @@ using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Utilities;
 
-namespace NET_CarRentalSystem.Application.Features.Vehicles.Commands.AddVehicleAttributesCommand;
+namespace NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleAttributeCommand;
 
-public class AddVehicleAttributesCommand : ICommand<bool>
+public class UpdateVehicleAttributeCommand : ICommand<bool>
 {
-    public Guid VehicleId { get; set; }
-    public List<VehicleAttributeParams> Attributes { get; set; } = [];
+    public required Guid VehicleId { get; init; }
+    public required Guid AttributeId { get; init; }
+    public required string Key { get; init; }
+    public required string Value { get; init; }
 }
 
-public class AddVehicleAttributesCommandHandler(
+public class UpdateVehicleAttributeCommandHandler(
     IUnitOfWork unitOfWork,
-    IPublishEndpoint publishEndpoint) : IRequestHandler<AddVehicleAttributesCommand, bool>
+    IPublishEndpoint publishEndpoint) : IRequestHandler<UpdateVehicleAttributeCommand, bool>
 {
-    public async Task<bool> Handle(AddVehicleAttributesCommand request, CancellationToken cancellationToken)
+    public async Task<bool> Handle(UpdateVehicleAttributeCommand request, CancellationToken cancellationToken)
     {
         return await unitOfWork.ExecuteInTransactionAsync(async (ct) =>
         {
@@ -28,35 +30,30 @@ public class AddVehicleAttributesCommandHandler(
 
             if (vehicle == null) return false;
 
-            var existingAttributes = await unitOfWork.GetWriteRepository<VehicleAttribute>()
+            var attribute = await unitOfWork.GetWriteRepository<VehicleAttribute>()
+                .GetFirstAsync(x => x.AttributeId == request.AttributeId && x.VehicleId == request.VehicleId, ct);
+            
+            attribute.AttributeKey = request.Key;
+            attribute.AttributeValue = request.Value;
+
+            unitOfWork.GetWriteRepository<VehicleAttribute>().Update(attribute);
+            unitOfWork.GetWriteRepository<Vehicle>().Update(vehicle);
+            await unitOfWork.SaveChangesAsync(ct);
+
+            var allAttributes = await unitOfWork.GetWriteRepository<VehicleAttribute>()
                 .GetListAsync(x => x.VehicleId == request.VehicleId, ct);
 
-            var newAttributes = request.Attributes.Select(a => new VehicleAttribute
-            {
-                VehicleId = vehicle.Id,
-                AttributeKey = a.Key,
-                AttributeValue = a.Value
-            }).ToList();
-
-            if (newAttributes.Count > 0)
-            {
-                await unitOfWork.GetWriteRepository<VehicleAttribute>().AddRangeAsync(newAttributes, ct);
-                await unitOfWork.SaveChangesAsync(ct);
-            }
-
-            var allAttributes = existingAttributes.Concat(newAttributes).Select(a => new
+            var attributesJson = allAttributes.Select(a => new
             {
                 a.AttributeId,
                 a.AttributeKey,
                 a.AttributeValue
-            }).ToList();
-
-            var attributesJson = allAttributes.ToJson();
+            }).ToList().ToJson();
 
             var evt = vehicle.ToUpdatedEvent<Vehicle, VehicleAttributesUpdatedEvent, Guid>(_ => new VehicleAttributesUpdatedEvent
             {
                 AttributesJson = attributesJson,
-                Id = default,
+                Id = vehicle.Id,
                 CreatedAt = default,
                 CreatedBy = null,
                 UpdatedAt = default,
@@ -64,9 +61,7 @@ public class AddVehicleAttributesCommandHandler(
             });
 
             await publishEndpoint.Publish(evt, ct);
-
             await unitOfWork.SaveChangesAsync(ct);
-
             return true;
         }, cancellationToken);
     }

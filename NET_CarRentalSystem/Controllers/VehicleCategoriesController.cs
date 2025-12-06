@@ -1,6 +1,7 @@
 using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Models.Request.VehicleCategories;
 using NET_CarRentalSystem.API.Models.Response.VehicleCategories;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.CreateVehicleCategory;
@@ -8,6 +9,7 @@ using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.Delete
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Commands.UpdateVehicleCategory;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Queries.GetAllVehicleCategories;
 using NET_CarRentalSystem.Application.Features.VehicleCategories.Queries.GetVehicleCategoryById;
+using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 
@@ -78,6 +80,7 @@ public class VehicleCategoriesController(ISender sender, IMapper mapper) : Contr
     }
 
     [HttpPost]
+    [ValidateUserExists(Policy = PermissionConstants.VehicleCategory.Create)]
     public async Task<IActionResult> Create([FromBody] CreateVehicleCategoryRequest request, CancellationToken cancellationToken)
     {
         try
@@ -106,6 +109,7 @@ public class VehicleCategoriesController(ISender sender, IMapper mapper) : Contr
     }
 
     [HttpPut("{id:guid}")]
+    [ValidateUserExists(Policy = PermissionConstants.VehicleCategory.Edit)]
     public async Task<IActionResult> Update(Guid id, [FromBody] UpdateVehicleCategoryRequest request, CancellationToken cancellationToken)
     {
         try
@@ -141,6 +145,7 @@ public class VehicleCategoriesController(ISender sender, IMapper mapper) : Contr
     }
 
     [HttpDelete("{id:guid}")]
+    [ValidateUserExists(Policy = PermissionConstants.VehicleCategory.Delete)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken cancellationToken)
     {
         try

@@ -6,10 +6,13 @@ using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Extensions;
 using NET_CarRentalSystem.API.Models.Request.Vehicles;
 using NET_CarRentalSystem.API.Models.Response.Vehicles;
-using NET_CarRentalSystem.Application.Features.Vehicles.Commands.AddVehicleImagesCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.AddVehicleAttributesCommand;
+using NET_CarRentalSystem.Application.Features.Vehicles.Commands.AddVehicleImagesCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.CreateVehicleCommand;
+using NET_CarRentalSystem.Application.Features.Vehicles.Commands.DeleteVehicleAttributeCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.DeleteVehicleCommand;
+using NET_CarRentalSystem.Application.Features.Vehicles.Commands.DeleteVehicleImagesCommand;
+using NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleAttributeCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleThumbnailCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleDetailsQuery;
@@ -366,6 +369,131 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
         {
             var errorResponse = ApiResponse.ErrorResult(
                 VehicleMessage.AddAttributes.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+        }
+    }
+    [HttpDelete("{vehicleId}/images")]
+    [ValidateUserExists(Policy = PermissionConstants.Vehicles.Edit)]
+    public async Task<IActionResult> DeleteImages(
+        Guid vehicleId,
+        [FromBody] DeleteVehicleImagesRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new DeleteVehicleImagesCommand
+            {
+                VehicleId = vehicleId,
+                PublicIds = request.PublicIds
+            };
+
+            var success = await sender.Send(command, cancellationToken);
+
+            if (!success)
+            {
+                var notFoundResponse = ApiResponse.ErrorResult(
+                    VehicleMessage.DeleteImages.NotFound,
+                    StatusCodes.Status404NotFound);
+
+                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.DeleteImages.Success);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleMessage.DeleteImages.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+        }
+    }
+
+    [HttpPut("{vehicleId}/attributes/{attributeId}")]
+    [ValidateUserExists(Policy = PermissionConstants.Vehicles.Edit)]
+    public async Task<IActionResult> UpdateAttribute(
+        Guid vehicleId,
+        Guid attributeId,
+        [FromBody] UpdateVehicleAttributesRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new UpdateVehicleAttributeCommand
+            {
+                VehicleId = vehicleId,
+                AttributeId = attributeId,
+                Key = request.Key,
+                Value = request.Value
+            };
+
+            var success = await sender.Send(command, cancellationToken);
+
+            if (!success)
+            {
+                var notFoundResponse = ApiResponse.ErrorResult(
+                    VehicleMessage.UpdateAttribute.NotFound,
+                    StatusCodes.Status404NotFound);
+
+                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.UpdateAttribute.Success);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleMessage.UpdateAttribute.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+        }
+    }
+
+    [HttpDelete("{vehicleId}/attributes/{attributeId}")]
+    [ValidateUserExists(Policy = PermissionConstants.Vehicles.Edit)]
+    public async Task<IActionResult> DeleteAttribute(
+        Guid vehicleId,
+        Guid attributeId,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new DeleteVehicleAttributeCommand
+            {
+                VehicleId = vehicleId,
+                AttributeId = attributeId
+            };
+
+            var success = await sender.Send(command, cancellationToken);
+
+            if (!success)
+            {
+                var notFoundResponse = ApiResponse.ErrorResult(
+                    VehicleMessage.DeleteAttribute.NotFound,
+                    StatusCodes.Status404NotFound);
+
+                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.DeleteAttribute.Success);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleMessage.DeleteAttribute.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]);
 

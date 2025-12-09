@@ -32,7 +32,7 @@ jobs:
             ENV_NAME="${{ vars.ASPNETCORE_ENVIRONMENT }}"
             ENV_FILE=".env"
             APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
-
+            SYNC_APPSETTINGS="./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
             echo "--- Cleanup & Pull Latest Source ---"
             rm -rf ${PROJECT_PATH}
             git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
@@ -195,6 +195,69 @@ jobs:
               }
             }
             EOF
+            
+            # -------------------------------
+            # 4. GENERATE SyncDataTool APPSETTINGS.JSON
+            # -------------------------------
+            echo "--- Generating ${SYNC_APPSETTINGS} ---"
+            cat <<EOF > ${SYNC_APPSETTINGS}
+            {
+              "ConnectionStrings": {
+                "RenticarWriteDbContext": "${{ secrets.DB_WRITE_CONNECTION_STRING }}",
+                "RenticarReadDbContext": "${{ secrets.DB_READ_CONNECTION_STRING }}",
+                "Redis": "${{ secrets.REDIS_CONNECTION_STRING }}"
+              },
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Information",
+                  "Microsoft.AspNetCore": "Warning"
+                }
+              },
+              "Serilog": {
+                "MinimumLevel": {
+                  "Default": "Information",
+                  "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning"
+                  }
+                },
+                "WriteTo": [
+                  { "Name": "Console" },
+                  {
+                    "Name": "File",
+                    "Args": {
+                      "path": "Logs/log-.txt",
+                      "rollingInterval": "Day",
+                      "retainedFileCountLimit": 7,
+                      "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    }
+                  }
+                ],
+                "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
+              },
+              "SyncDataToolSettings": {
+                "SyncIntervalInSeconds": 2,
+                "DbRetryDelayInSeconds": 5,
+                "TablesToSync": [
+                  { "TableName": "bookings", "PrimaryKeyColumn": "booking_id" },
+                  { "TableName": "customers", "PrimaryKeyColumn": "customer_id" },
+                  { "TableName": "locations", "PrimaryKeyColumn": "location_id" },
+                  { "TableName": "transmissions", "PrimaryKeyColumn": "transmission_id" },
+                  { "TableName": "vehicle_attributes", "PrimaryKeyColumn": "attribute_id" },
+                  { "TableName": "vehicle_categories", "PrimaryKeyColumn": "vehicle_categorie_id" },
+                  { "TableName": "vehicle_images", "PrimaryKeyColumn": "image_id" },
+                  { "TableName": "vehicles", "PrimaryKeyColumn": "vehicle_id" },
+                  { "TableName": "users", "PrimaryKeyColumn": "user_id" },
+                  { "TableName": "role_claims", "PrimaryKeyColumn": "id" },
+                  { "TableName": "roles", "PrimaryKeyColumn": "role_id" },
+                  { "TableName": "user_sessions", "PrimaryKeyColumn": "user_session_id" },
+                  { "TableName": "user_roles", "PrimaryKeyColumn": "user_role_id" },
+                  { "TableName": "user_logins", "PrimaryKeyColumn": "user_login_id" },
+                  { "TableName": "fuels", "PrimaryKeyColumn": "fuel_id" }
+                ]
+              }
+            }
+            EOF
 
       # ------------------------------------------------------------------
       # 2. RUN DOCKER COMPOSE ON VPS
@@ -209,5 +272,5 @@ jobs:
           script: |
             cd ${{ vars.VPS_PROJECT_PATH }}
             echo "--- Starting Docker Compose ---"
-            docker compose --env-file .env up --build -d
+            docker compose -f docker-compose.yml --env-file .env up -d
             docker image prune -f

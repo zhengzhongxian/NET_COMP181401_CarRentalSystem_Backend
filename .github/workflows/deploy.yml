@@ -33,25 +33,20 @@ jobs:
             ENV_FILE=".env"
             APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
             SYNC_APPSETTINGS="./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
+            
             echo "=== Checking for existing Docker containers ==="
             if [ -d "$PROJECT_PATH" ]; then
-              cd $PROJECT_PATH
-
-              # Nếu file docker-compose.yml tồn tại → down trước
-              if [ -f "docker-compose.yml" ]; then
-                echo "--- Stopping existing containers ---"
-                docker compose -f docker-compose.yml down || true
-              fi
+              echo "--- Stopping existing containers ---"
+              docker compose -f $PROJECT_PATH/docker-compose.yml down || true
             fi
 
             echo "--- Cleanup old project files but keep folder: $PROJECT_PATH ---"
-            # Nếu thư mục tồn tại → xoá toàn bộ file/folder con, trừ chính nó
             if [ -d "$PROJECT_PATH" ]; then
-            rm -rf ${PROJECT_PATH:?}/*   # Xoá hết file con
-            rm -rf ${PROJECT_PATH}/.* 2>/dev/null || true  # Xoá file ẩn (như .env, .gitignore)
+              rm -rf ${PROJECT_PATH:?}/*   # Xóa file thường
+              rm -rf ${PROJECT_PATH}/.* 2>/dev/null || true  # Xóa file ẩn (.env, .git...)
             else
-            mkdir -p "$PROJECT_PATH"
-            fi  
+              mkdir -p "$PROJECT_PATH"
+            fi
 
             # Clone repo mới
             echo "--- Pull Latest Source ---"

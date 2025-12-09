@@ -10,7 +10,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     environment:
       name: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/test' && 'test') || 'dev' }}
 
@@ -24,10 +23,12 @@ jobs:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-
           script: |
-            PROJECT_PATH="${{ secrets.VPS_PROJECT_PATH }}"
-            ENV_FILE_NAME="${{ secrets.ENV_FILE_NAME }}" 
+            # --- 1. SETUP PATHS & VARIABLES ---
+            PROJECT_PATH="${{ vars.VPS_PROJECT_PATH }}"
+            ENV_NAME="${{ vars.ASPNETCORE_ENVIRONMENT }}"
+            ENV_FILE=".env"
+            APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json" 
 
             if [ ! -d "${PROJECT_PATH}" ]; then
               git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
@@ -36,15 +37,168 @@ jobs:
             git pull
             git checkout ${{ github.ref_name }}
 
-            echo "ASPNETCORE_ENVIRONMENT=${{ secrets.ASPNETCORE_ENVIRONMENT }}" > ${ENV_FILE_NAME}
-            echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" >> ${ENV_FILE_NAME}
+            # --- 2. GENERATE .ENV FILE (Cho hạ tầng Docker Compose) ---
+            echo "ASPNETCORE_ENVIRONMENT=${ENV_NAME}" > ${ENV_FILE}
+            echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" >> ${ENV_FILE}
+            echo "RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}" >> ${ENV_FILE}
+            echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ${ENV_FILE}
+            
+            # Flex Ports (Port Host - Để truy cập từ bên ngoài nếu cần)
+            echo "SQL_PORT=${{ vars.SQL_PORT }}" >> ${ENV_FILE}
+            echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> ${ENV_FILE}
+            echo "RABBITMQ_AMQP_PORT=${{ vars.RABBITMQ_AMQP_PORT }}" >> ${ENV_FILE}
+            echo "RABBITMQ_ADMIN_PORT=${{ vars.RABBITMQ_ADMIN_PORT }}" >> ${ENV_FILE}
+            echo "API_HTTP_PORT=${{ vars.API_HTTP_PORT }}" >> ${ENV_FILE}
+            echo "API_HTTPS_PORT=${{ vars.API_HTTPS_PORT }}" >> ${ENV_FILE}
+            
+            # Certificate Settings
+            echo "ASPNETCORE_HTTPS_PORT=${{ vars.API_HTTPS_PORT }}" >> ${ENV_FILE}
+            echo "CERTIFICATE_PASSWORD=${{ secrets.CERTIFICATE_PASSWORD }}" >> ${ENV_FILE}
+            echo "CERTIFICATE_PATH=${{ vars.CERTIFICATE_PATH }}" >> ${ENV_FILE}
 
-            echo "DB_WRITE_CONNECTION_STRING=${{ secrets.DB_WRITE_CONNECTION_STRING }}" >> ${ENV_FILE_NAME}
-            echo "DB_READ_CONNECTION_STRING=${{ secrets.DB_READ_CONNECTION_STRING }}" >> ${ENV_FILE_NAME}
-            echo "CERTIFICATE_PASSWORD=${{ secrets.CERTIFICATE_PASSWORD }}" >> ${ENV_FILE_NAME}
-            echo "CERTIFICATE_PATH=${{ secrets.CERTIFICATE_PATH }}" >> ${ENV_FILE_NAME}
-            echo "ASPNETCORE_HTTPS_PORT=${{ secrets.ASPNETCORE_HTTPS_PORT }}" >> ${ENV_FILE_NAME}
-            echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ${ENV_FILE_NAME}
+            # --- 3. GENERATE APPSETTINGS JSON (Cho Application Logic) ---
+            echo "--- Generating ${APPSETTINGS_FILE} ---"
+            
+            # Lưu ý: Các biến số (number) không cần dấu ngoặc kép, biến chuỗi (string) cần dấu ngoặc kép
+            cat <<EOF > ${APPSETTINGS_FILE}
+            {
+              "ConnectionStrings": {
+                "RenticarWriteDbContext": "${{ secrets.DB_WRITE_CONNECTION_STRING }}",
+                "RenticarReadDbContext": "${{ secrets.DB_READ_CONNECTION_STRING }}",
+                "Redis": "${{ secrets.REDIS_CONNECTION_STRING }}"
+              },
+              "DatabaseInitializationSettings": {
+                "MaxRetries": ${{ vars.DB_MAX_RETRIES }},
+                "DbRetryDelayInSeconds": ${{ vars.DB_RETRY_DELAY_SECONDS }}
+              },
+              "Logging": {
+                "LogLevel": {
+                  "Default": "Information",
+                  "Microsoft.AspNetCore": "Warning"
+                }
+              },
+              "Serilog": {
+                "MinimumLevel": {
+                  "Default": "Information",
+                  "Override": {
+                    "Microsoft": "Warning",
+                    "System": "Warning"
+                  }
+                },
+                "WriteTo": [
+                  {
+                    "Name": "Console"
+                  },
+                  {
+                    "Name": "File",
+                    "Args": {
+                      "path": "Logs/log-.txt",
+                      "rollingInterval": "Day",
+                      "retainedFileCountLimit": 7,
+                      "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+                    }
+                  }
+                ],
+                "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
+              },
+              "AllowedHosts": "*",
+              "CloudinarySettings": {
+                "CloudName": "${{ secrets.CLOUDINARY_CLOUD_NAME }}",
+                "ApiKey": "${{ secrets.CLOUDINARY_API_KEY }}",
+                "ApiSecret": "${{ secrets.CLOUDINARY_API_SECRET }}"
+              },
+              "Quartz": {
+                "CheckToolAlive": {
+                  "JobName": "${{ vars.QUARTZ_JOB_NAME }}",
+                  "CronExpression": "${{ vars.QUARTZ_CRON_EXPRESSION }}"
+                }
+              },
+              "Authentication": {
+                "JwtSettings": {
+                  "Key": "${{ secrets.JWT_SECRET }}",
+                  "Issuer": "${{ vars.JWT_ISSUER }}",
+                  "Audience": "${{ vars.JWT_AUDIENCE }}",
+                  "AccessTokenDurationInMinutes": ${{ vars.JWT_ACCESS_TOKEN_DURATION }},
+                  "RefreshTokenDurationInDays": ${{ vars.JWT_REFRESH_TOKEN_DURATION }}
+                },
+                "GoogleSettings": {
+                  "ClientId": "${{ secrets.GOOGLE_CLIENT_ID }}",
+                  "ClientSecret": "${{ secrets.GOOGLE_CLIENT_SECRET }}"
+                }
+              },
+              "EmailSettings": {
+                "Smtp": {
+                  "Host": "${{ vars.EMAIL_SMTP_HOST }}",
+                  "Port": ${{ vars.EMAIL_SMTP_PORT }},
+                  "EmailAddress": "${{ vars.EMAIL_ADDRESS }}",
+                  "Password": "${{ secrets.EMAIL_PASSWORD }}",
+                  "EnableSsl": true,
+                  "UserCredential": false
+                },
+                "FromEmailAddress": "${{ vars.EMAIL_ADDRESS }}",
+                "FromDisplayName": "Renticar Support"
+              },
+              "Security": {
+                "RsaSettings": {
+                  "PublicKey": "${{ secrets.RSA_PUBLIC_KEY }}",
+                  "PrivateKey": "${{ secrets.RSA_PRIVATE_KEY }}"
+                },
+                "AesSettings": {
+                  "Key": "${{ secrets.AES_KEY }}",
+                  "Iv": "${{ secrets.AES_IV }}"
+                },
+                "OtpSettings": {
+                  "OtpExpiryMinutes": ${{ vars.OTP_EXPIRY_MINUTES }},
+                  "MaxOtpAttempts": ${{ vars.MAX_OTP_ATTEMPTS }},
+                  "KeyExpiryHours": ${{ vars.OTP_KEY_EXPIRY_HOURS }}
+                },
+                "ResetPasswordSettings": {
+                  "TokenExpiryMinutes": ${{ vars.RESET_TOKEN_EXPIRY_MINUTES }},
+                  "MaxTokenAttempts": ${{ vars.MAX_RESET_TOKEN_ATTEMPTS }},
+                  "KeyExpiryHours": ${{ vars.RESET_KEY_EXPIRY_HOURS }},
+                  "ClientUrl": "${{ vars.CLIENT_URL }}"
+                }
+              },
+              "CorsSettings": {
+                "Policies": {
+                  "FrontendApp": {
+                    "Origins": [
+                      "${{ vars.FRONTEND_URL }}"
+                    ],
+                    "Methods": ["*"],
+                    "Headers": ["*"],
+                    "AllowCredentials": true
+                  }
+                }
+              },
+              "ApiClient": {
+                "MyApiSettings": {
+                  "BaseUrl": "${{ vars.API_BASE_URL }}",
+                  "DefaultTimeout": ${{ vars.API_DEFAULT_TIMEOUT }}
+                }
+              },
+              "Payment": {
+                "VnPaySettings": {
+                  "ClientId": "${{ secrets.VNPAY_CLIENT_ID }}",
+                  "ApiKey": "${{ secrets.VNPAY_API_KEY }}",
+                  "BankCode": "${{ secrets.VNPAY_API_BANKCODE }}" ,
+                  "AccountNumber": "${{ secrets.VNPAY_ACCOUNT_NUMBER }}",
+                  "AccountName": "${{ secrets.VNPAY_ACCOUNT_NAME }}",
+                  "ApiUrl": "${{ vars.VNPAY_API_URL }}",
+                  "Template": "payment_template"
+                }
+              },
+              "RabbitMQ": {
+                "Host": "renticar-rabbitmq-${{ vars.ASPNETCORE_ENVIRONMENT }}",
+                "Port": ${{ vars.RABBITMQ_INTERNAL_PORT }},
+                "VirtualHost": "/",
+                "Username": "${{ secrets.RABBITMQ_USER }}",
+                "Password": "${{ secrets.RABBITMQ_PASSWORD }}"
+              }
+            }
+            EOF
 
-            docker-compose -f docker-compose.yml --env-file ${ENV_FILE_NAME} up --build -d
+            # --- 4. START DOCKER ---
+            echo "--- Starting Docker Compose ---"
+            docker-compose --env-file ${ENV_FILE} up --build -d
             docker image prune -f

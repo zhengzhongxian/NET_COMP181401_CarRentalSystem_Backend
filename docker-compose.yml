@@ -1,7 +1,7 @@
 version: "3.8"
 
 services:
-  # SQL Server Database
+  # 1. SQL Server
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: renticar-sqlserver-${ASPNETCORE_ENVIRONMENT}
@@ -11,34 +11,34 @@ services:
       - MSSQL_PID=Express
     restart: always
     ports:
-      - "1433:1433"
+      - "${SQL_PORT}:1433"
     volumes:
       - sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
     networks:
       - renticar-network
 
-  #Redis
+  # 2. Redis
   redis:
     image: redis:7.2-alpine
     container_name: renticar-redis-${ASPNETCORE_ENVIRONMENT}
     restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     volumes:
       - redis_data_${ASPNETCORE_ENVIRONMENT}:/data
     networks:
       - renticar-network
   
-  #RabbitMQ
+  # 3. RabbitMQ
   rabbitmq:
     image: masstransit/rabbitmq:latest
-    container_name: renticar_rabbitmq
+    container_name: renticar-rabbitmq-${ASPNETCORE_ENVIRONMENT}
     environment:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RABBITMQ_AMQP_PORT}:5672"
+      - "${RABBITMQ_ADMIN_PORT}:15672"
     volumes:
       - rabbitmq_data_${ASPNETCORE_ENVIRONMENT}:/var/lib/rabbitmq
     networks:
@@ -50,7 +50,7 @@ services:
       retries: 5
       start_period: 10s
 
-  # .NET API Application
+  # 4. .NET API
   api:
     build:
       context: ./NET_CarRentalSystem
@@ -61,11 +61,11 @@ services:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=https://+:80;https://+:443
       - ASPNETCORE_HTTPS_PORT=${ASPNETCORE_HTTPS_PORT}
-      - CERTIFICATE_PASSWORD=${CERTIFICATE_PASSWORD}
-      - CERTIFICATE_PATH=${CERTIFICATE_PATH}
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERTIFICATE_PASSWORD}
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=${CERTIFICATE_PATH}
     ports:
-      - "8080:80"
-      - "8443:443"
+      - "${API_HTTP_PORT}:80" 
+      - "${API_HTTPS_PORT}:443"
     depends_on:
       sqlserver:
         condition: service_started
@@ -79,7 +79,7 @@ services:
     networks:
       - renticar-network
 
-  # .NET Sync Service
+  # 5. Sync Tool
   syncdatatool:
     build:
       context: ./NET_CarRentalSystem.SyncDataTool
@@ -110,4 +110,3 @@ volumes:
 networks:
   renticar-network:
     driver: bridge
-

@@ -81,7 +81,7 @@ services:
       dockerfile: Dockerfile
     container_name: renticar-syncdatatool
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=Development
     depends_on:
       - sqlserver
       - api

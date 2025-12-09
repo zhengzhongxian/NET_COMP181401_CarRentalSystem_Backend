@@ -31,11 +31,9 @@ jobs:
             ENV_FILE=".env"
             APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json" 
 
-            if [ ! -d "${PROJECT_PATH}" ]; then
-              git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
-            fi
+            rm -rf ${PROJECT_PATH}
+            git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
             cd ${PROJECT_PATH}
-            git pull
             git checkout ${{ github.ref_name }}
 
             # --- 2. GENERATE .ENV FILE (Cho hạ tầng Docker Compose) ---

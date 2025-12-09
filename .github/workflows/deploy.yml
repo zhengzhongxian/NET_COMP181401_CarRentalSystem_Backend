@@ -29,12 +29,24 @@ jobs:
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           script: |
             PROJECT_PATH="${{ vars.VPS_PROJECT_PATH }}"
-            ENV_NAME="${{ vars.ASPNETCORE_ENVIRONMENT }}"
-            ENV_FILE=".env"
-            APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
-            SYNC_APPSETTINGS="./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
-            echo "--- Cleanup & Pull Latest Source ---"
+
+            echo "=== Checking for existing Docker containers ==="
+            if [ -d "$PROJECT_PATH" ]; then
+              cd $PROJECT_PATH
+
+              # Nếu file docker-compose.yml tồn tại → down trước
+              if [ -f "docker-compose.yml" ]; then
+                echo "--- Stopping existing containers ---"
+                docker compose -f docker-compose.yml down || true
+              fi
+            fi
+
+            # Xóa source cũ
+            echo "--- Cleanup old project folder ---"
             rm -rf ${PROJECT_PATH}
+
+            # Clone repo mới
+            echo "--- Pull Latest Source ---"
             git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
             cd ${PROJECT_PATH}
             git checkout ${{ github.ref_name }}

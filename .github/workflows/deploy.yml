@@ -44,9 +44,14 @@ jobs:
               fi
             fi
 
-            # Xóa source cũ
-            echo "--- Cleanup old project folder ---"
-            rm -rf ${PROJECT_PATH}
+            echo "--- Cleanup old project files but keep folder: $PROJECT_PATH ---"
+            # Nếu thư mục tồn tại → xoá toàn bộ file/folder con, trừ chính nó
+            if [ -d "$PROJECT_PATH" ]; then
+            rm -rf ${PROJECT_PATH:?}/*   # Xoá hết file con
+            rm -rf ${PROJECT_PATH}/.* 2>/dev/null || true  # Xoá file ẩn (như .env, .gitignore)
+            else
+            mkdir -p "$PROJECT_PATH"
+            fi  
 
             # Clone repo mới
             echo "--- Pull Latest Source ---"

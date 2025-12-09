@@ -23,13 +23,12 @@ public class Worker(
     {        
         logger.LogInformation("Sync Service is starting...");
         logger.LogInformation("Waiting for database (Renticar_WriteDB) to be ready...");
-
+        logger.LogInformation("Connectstring: {0}", _writeDbConnection);
         var dbIsReady = false;
         while (!dbIsReady && !stoppingToken.IsCancellationRequested)
         {
             try
             {
-                logger.LogInformation("Connectstring: {0}", _writeDbConnection);
                 await using var connection = new SqlConnection(_writeDbConnection);
                 await connection.OpenAsync(stoppingToken);
                 await connection.CloseAsync();

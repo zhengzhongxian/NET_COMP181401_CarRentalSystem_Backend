@@ -287,5 +287,6 @@ jobs:
           script: |
             cd ${{ vars.VPS_PROJECT_PATH }}
             echo "--- Starting Docker Compose ---"
-            docker compose -f docker-compose.yml --env-file .env up -d
+            docker compose build
+            docker compose -f docker-compose.yml --env-file .env up -d --force-recreate --remove-orphans
             docker image prune -f

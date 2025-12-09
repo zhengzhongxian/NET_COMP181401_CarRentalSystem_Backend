@@ -29,6 +29,7 @@ public class Worker(
         {
             try
             {
+                logger.LogInformation("Connectstring: {0}", _writeDbConnection);
                 await using var connection = new SqlConnection(_writeDbConnection);
                 await connection.OpenAsync(stoppingToken);
                 await connection.CloseAsync();

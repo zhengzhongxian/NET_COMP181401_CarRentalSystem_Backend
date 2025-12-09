@@ -28,7 +28,7 @@ services:
       - redis_data_${ASPNETCORE_ENVIRONMENT}:/data
     networks:
       - renticar-network
-  
+
   # 3. RabbitMQ
   rabbitmq:
     image: masstransit/rabbitmq:latest
@@ -44,7 +44,7 @@ services:
     networks:
       - renticar-network
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
       interval: 10s
       timeout: 10s
       retries: 5
@@ -53,8 +53,8 @@ services:
   # 4. .NET API
   api:
     build:
-      context: ./NET_CarRentalSystem
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./NET_CarRentalSystem/Dockerfile
     container_name: renticar-api-${ASPNETCORE_ENVIRONMENT}
     restart: always
     environment:
@@ -64,7 +64,7 @@ services:
       - ASPNETCORE_Kestrel__Certificates__Default__Password=${CERTIFICATE_PASSWORD}
       - ASPNETCORE_Kestrel__Certificates__Default__Path=${CERTIFICATE_PATH}
     ports:
-      - "${API_HTTP_PORT}:80" 
+      - "${API_HTTP_PORT}:80"
       - "${API_HTTPS_PORT}:443"
     depends_on:
       sqlserver:
@@ -82,8 +82,8 @@ services:
   # 5. Sync Tool
   syncdatatool:
     build:
-      context: ./NET_CarRentalSystem.SyncDataTool
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ./NET_CarRentalSystem.SyncDataTool/Dockerfile
     container_name: renticar-syncdatatool-${ASPNETCORE_ENVIRONMENT}
     restart: always
     environment:
@@ -106,6 +106,7 @@ volumes:
   rabbitmq_data_Production:
   rabbitmq_data_Test:
   rabbitmq_data_Development:
+
 
 networks:
   renticar-network:

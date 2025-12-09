@@ -17,7 +17,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Deploy to VPS via SSH
+      # ------------------------------------------------------------------
+      # 1. PULL SOURCE CODE FROM GITHUB → VPS
+      # ------------------------------------------------------------------
+      - name: Pull Source Code to VPS
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -25,40 +28,40 @@ jobs:
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           script: |
-            # --- 1. SETUP PATHS & VARIABLES ---
             PROJECT_PATH="${{ vars.VPS_PROJECT_PATH }}"
             ENV_NAME="${{ vars.ASPNETCORE_ENVIRONMENT }}"
             ENV_FILE=".env"
-            APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json" 
+            APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
 
+            echo "--- Cleanup & Pull Latest Source ---"
             rm -rf ${PROJECT_PATH}
             git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
             cd ${PROJECT_PATH}
             git checkout ${{ github.ref_name }}
 
-            # --- 2. GENERATE .ENV FILE (Cho hạ tầng Docker Compose) ---
+            # -------------------------------
+            # 2. GENERATE .ENV FILE
+            # -------------------------------
             echo "ASPNETCORE_ENVIRONMENT=${ENV_NAME}" > ${ENV_FILE}
             echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" >> ${ENV_FILE}
             echo "RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}" >> ${ENV_FILE}
             echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ${ENV_FILE}
-            
-            # Flex Ports (Port Host - Để truy cập từ bên ngoài nếu cần)
+
             echo "SQL_PORT=${{ vars.SQL_PORT }}" >> ${ENV_FILE}
             echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> ${ENV_FILE}
             echo "RABBITMQ_AMQP_PORT=${{ vars.RABBITMQ_AMQP_PORT }}" >> ${ENV_FILE}
             echo "RABBITMQ_ADMIN_PORT=${{ vars.RABBITMQ_ADMIN_PORT }}" >> ${ENV_FILE}
             echo "API_HTTP_PORT=${{ vars.API_HTTP_PORT }}" >> ${ENV_FILE}
             echo "API_HTTPS_PORT=${{ vars.API_HTTPS_PORT }}" >> ${ENV_FILE}
-            
-            # Certificate Settings
+
             echo "ASPNETCORE_HTTPS_PORT=${{ vars.API_HTTPS_PORT }}" >> ${ENV_FILE}
             echo "CERTIFICATE_PASSWORD=${{ secrets.CERTIFICATE_PASSWORD }}" >> ${ENV_FILE}
             echo "CERTIFICATE_PATH=${{ vars.CERTIFICATE_PATH }}" >> ${ENV_FILE}
 
-            # --- 3. GENERATE APPSETTINGS JSON (Cho Application Logic) ---
+            # -------------------------------
+            # 3. GENERATE APPSETTINGS.JSON
+            # -------------------------------
             echo "--- Generating ${APPSETTINGS_FILE} ---"
-            
-            # Lưu ý: Các biến số (number) không cần dấu ngoặc kép, biến chuỗi (string) cần dấu ngoặc kép
             cat <<EOF > ${APPSETTINGS_FILE}
             {
               "ConnectionStrings": {
@@ -85,9 +88,7 @@ jobs:
                   }
                 },
                 "WriteTo": [
-                  {
-                    "Name": "Console"
-                  },
+                  { "Name": "Console" },
                   {
                     "Name": "File",
                     "Args": {
@@ -161,9 +162,7 @@ jobs:
               "CorsSettings": {
                 "Policies": {
                   "FrontendApp": {
-                    "Origins": [
-                      "${{ vars.FRONTEND_URL }}"
-                    ],
+                    "Origins": [ "${{ vars.FRONTEND_URL }}" ],
                     "Methods": ["*"],
                     "Headers": ["*"],
                     "AllowCredentials": true
@@ -180,7 +179,7 @@ jobs:
                 "VnPaySettings": {
                   "ClientId": "${{ secrets.VNPAY_CLIENT_ID }}",
                   "ApiKey": "${{ secrets.VNPAY_API_KEY }}",
-                  "BankCode": "${{ secrets.VNPAY_API_BANKCODE }}" ,
+                  "BankCode": "${{ secrets.VNPAY_API_BANKCODE }}",
                   "AccountNumber": "${{ secrets.VNPAY_ACCOUNT_NUMBER }}",
                   "AccountName": "${{ secrets.VNPAY_ACCOUNT_NAME }}",
                   "ApiUrl": "${{ vars.VNPAY_API_URL }}",
@@ -197,7 +196,18 @@ jobs:
             }
             EOF
 
-            # --- 4. START DOCKER ---
+      # ------------------------------------------------------------------
+      # 2. RUN DOCKER COMPOSE ON VPS
+      # ------------------------------------------------------------------
+      - name: Run Docker Compose on VPS
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
+          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
+          script: |
+            cd ${{ vars.VPS_PROJECT_PATH }}
             echo "--- Starting Docker Compose ---"
-            docker-compose --env-file ${ENV_FILE} up --build -d
+            docker compose --env-file .env up --build -d
             docker image prune -f

@@ -29,7 +29,10 @@ jobs:
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           script: |
             PROJECT_PATH="${{ vars.VPS_PROJECT_PATH }}"
-
+            ENV_NAME="${{ vars.ASPNETCORE_ENVIRONMENT }}"
+            ENV_FILE=".env"
+            APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
+            SYNC_APPSETTINGS="./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
             echo "=== Checking for existing Docker containers ==="
             if [ -d "$PROJECT_PATH" ]; then
               cd $PROJECT_PATH

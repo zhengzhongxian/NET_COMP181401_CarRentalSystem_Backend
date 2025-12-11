@@ -13,7 +13,7 @@ services:
     ports:
       - "${SQL_PORT}:1433"
     volumes:
-      - sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
+      - ./sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
     networks:
       - renticar-network
 
@@ -25,7 +25,7 @@ services:
     ports:
       - "${REDIS_PORT}:6379"
     volumes:
-      - redis_data_${ASPNETCORE_ENVIRONMENT}:/data
+      - ./redis_data_${ASPNETCORE_ENVIRONMENT}:/data
     networks:
       - renticar-network
 
@@ -40,7 +40,7 @@ services:
       - "${RABBITMQ_AMQP_PORT}:5672"
       - "${RABBITMQ_ADMIN_PORT}:15672"
     volumes:
-      - rabbitmq_data_${ASPNETCORE_ENVIRONMENT}:/var/lib/rabbitmq
+      - ./rabbitmq_data_${ASPNETCORE_ENVIRONMENT}:/var/lib/rabbitmq
     networks:
       - renticar-network
     healthcheck:

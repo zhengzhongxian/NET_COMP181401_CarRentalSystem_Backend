@@ -81,7 +81,7 @@ jobs:
 
             if [ -d "$PROJECT_PATH" ]; then
               cd "$PROJECT_PATH"
-              docker compose down || true
+              docker compose -f docker-compose.yml down || true
               cd ..
               rm -rf "$PROJECT_PATH"
               mkdir -p "$PROJECT_PATH"
@@ -100,8 +100,8 @@ jobs:
             export GITHUB_REPOSITORY_OWNER=$GH_OWNER_LOWER
             export ASPNETCORE_ENVIRONMENT=$ENV_NAME
 
-            docker compose pull
-            docker compose --env-file .env up -d --force-recreate
+            docker compose -f docker-compose.yml pull
+            docker compose -f docker-compose.yml --env-file .env up -d --force-recreate
             docker image prune -f
             
             echo "=== DEPLOY SUCCESS ==="

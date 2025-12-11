@@ -80,24 +80,38 @@ jobs:
             mkdir -p "$PROJECT_PATH"
             cd "$PROJECT_PATH"
 
-            # Ghi ENV file & appsettings
+            # Ghi env file để truyền vào container
             echo "$ENV_CONTENT" > .env
-            echo "$API_CONFIG" > .api.config
-            echo "$SYNC_CONFIG" > .sync.config
-
-            export ASPNETCORE_ENVIRONMENT=$ENV_NAME
-            export GITHUB_REPOSITORY_OWNER=$GH_OWNER_LOWER
+            echo "$API_CONFIG" > appsettings.api.${ENV_NAME}.json
+            echo "$SYNC_CONFIG" > appsettings.sync.${ENV_NAME}.json
 
             echo "--- Pulling latest images ---"
             docker pull ghcr.io/$GH_OWNER_LOWER/renticar-api:$ENV_NAME
             docker pull ghcr.io/$GH_OWNER_LOWER/renticar-sync:$ENV_NAME
 
-            # Dừng container cũ
-            docker compose down || true
+            echo "--- Stopping old containers ---"
+            docker stop renticar-api || true
+            docker rm renticar-api || true
 
-            # Run lại container
-            echo "--- Starting containers ---"
-            docker compose --env-file .env up -d --force-recreate
+            docker stop renticar-sync || true
+            docker rm renticar-sync || true
+
+            echo "--- Running new containers ---"
+
+            # Chạy API
+            docker run -d \
+              --name renticar-api \
+              --env-file .env \
+              -p 127.0.0.1:8080:80 \
+              -v $PROJECT_PATH/appsettings.api.${ENV_NAME}.json:/app/appsettings.$ENV_NAME.json \
+              ghcr.io/$GH_OWNER_LOWER/renticar-api:$ENV_NAME
+
+            # Chạy Sync Tool
+            docker run -d \
+              --name renticar-sync \
+              --env-file .env \
+              -v $PROJECT_PATH/appsettings.sync.${ENV_NAME}.json:/app/appsettings.$ENV_NAME.json \
+              ghcr.io/$GH_OWNER_LOWER/renticar-sync:$ENV_NAME
 
             docker image prune -f
             echo "=== DEPLOY SUCCESS ==="

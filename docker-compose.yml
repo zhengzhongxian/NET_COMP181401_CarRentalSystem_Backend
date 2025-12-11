@@ -58,6 +58,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
       - ASPNETCORE_URLS=http://+:80
+    env_file:
+      - .
     ports:
       - "${API_HTTP_PORT}:80"
     depends_on:
@@ -70,7 +72,6 @@ services:
     volumes:
       - ./https:/https:ro
       - ./logs:/app/Logs
-      - ./api.config:/app/appsettings.Development.json
     networks:
       - renticar-network
 
@@ -86,7 +87,6 @@ services:
       - api
     volumes:
       - ./logs:/app/Logs
-      - ./sync.config:/app/appsettings.Development.json
     networks:
       - renticar-network
 
@@ -100,8 +100,6 @@ volumes:
   rabbitmq_data_Production:
   rabbitmq_data_Test:
   rabbitmq_data_Development:
-  api.config:
-  sync.config:
 
 
 networks:

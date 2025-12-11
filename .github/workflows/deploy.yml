@@ -2,291 +2,106 @@ name: Deploy Renticar
 
 on:
   push:
-    branches:
-      - main
-      - test
-      - dev
+    branches: [ "main", "test", "dev" ]
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/test' && 'test') || 'dev' }}
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Lowercase Repo Owner
+        run: |
+          echo "REPO_OWNER=${GITHUB_REPOSITORY_OWNER,,}" >> ${GITHUB_ENV}
+        env:
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+
+      - name: Build and Push API
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./NET_CarRentalSystem/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPO_OWNER }}/renticar-api:${{ vars.ASPNETCORE_ENVIRONMENT }}
+
+      - name: Build and Push SyncTool
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./NET_CarRentalSystem.SyncDataTool/Dockerfile
+          push: true
+          tags: ghcr.io/${{ env.REPO_OWNER }}/renticar-sync:${{ vars.ASPNETCORE_ENVIRONMENT }}
+
   deploy:
+    needs: build
     runs-on: ubuntu-latest
     environment:
       name: ${{ (github.ref == 'refs/heads/main' && 'production') || (github.ref == 'refs/heads/test' && 'test') || 'dev' }}
 
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      # ------------------------------------------------------------------
-      # 1. PULL SOURCE CODE FROM GITHUB → VPS
-      # ------------------------------------------------------------------
-      - name: Pull Source Code to VPS
+      - name: Deploy to VPS
         uses: appleboy/ssh-action@master
+        env:
+          ENV_CONTENT: ${{ secrets.ENV_FILE_CONTENT }}
+          API_CONFIG: ${{ secrets.APPSETTINGS_API_JSON }}
+          SYNC_CONFIG: ${{ secrets.APPSETTINGS_SYNC_JSON }}
+          PROJECT_PATH: ${{ vars.VPS_PROJECT_PATH }}
+          ENV_NAME: ${{ vars.ASPNETCORE_ENVIRONMENT }}
+          GITHUB_REF: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_USER: ${{ github.actor }}
+          GH_OWNER: ${{ github.repository_owner }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
+          envs: ENV_CONTENT,API_CONFIG,SYNC_CONFIG,PROJECT_PATH,ENV_NAME,GITHUB_REF,GH_TOKEN,GH_USER,GH_OWNER
           script: |
-            PROJECT_PATH="${{ vars.VPS_PROJECT_PATH }}"
-            ENV_NAME="${{ vars.ASPNETCORE_ENVIRONMENT }}"
-            ENV_FILE=".env"
-            APPSETTINGS_FILE="./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
-            SYNC_APPSETTINGS="./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
+            GH_OWNER_LOWER=$(echo "$GH_OWNER" | tr '[:upper:]' '[:lower:]')
             
-            echo "=== Checking for existing Docker containers ==="
-            if [ -d "$PROJECT_PATH" ]; then
-              echo "--- Stopping existing containers ---"
-              docker compose -f $PROJECT_PATH/docker-compose.yml down || true
-            fi
+            echo "=== DEPLOYING TO $ENV_NAME ==="
+            
+            echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_USER" --password-stdin
 
-            echo "--- Cleanup old project files but keep folder: $PROJECT_PATH ---"
             if [ -d "$PROJECT_PATH" ]; then
-              rm -rf ${PROJECT_PATH:?}/*   # Xóa file thường
-              rm -rf ${PROJECT_PATH}/.* 2>/dev/null || true  # Xóa file ẩn (.env, .git...)
+              cd "$PROJECT_PATH"
+              docker compose down || true
+              cd ..
+              rm -rf "$PROJECT_PATH"
+              mkdir -p "$PROJECT_PATH"
             else
               mkdir -p "$PROJECT_PATH"
             fi
-
-            # Clone repo mới
-            echo "--- Pull Latest Source ---"
-            git clone ${{ secrets.REPO_URL }} ${PROJECT_PATH}
-            cd ${PROJECT_PATH}
-            git checkout ${{ github.ref_name }}
-
-            # -------------------------------
-            # 2. GENERATE .ENV FILE
-            # -------------------------------
-            echo "ASPNETCORE_ENVIRONMENT=${ENV_NAME}" > ${ENV_FILE}
-            echo "SA_PASSWORD=${{ secrets.SA_PASSWORD }}" >> ${ENV_FILE}
-            echo "RABBITMQ_USER=${{ secrets.RABBITMQ_USER }}" >> ${ENV_FILE}
-            echo "RABBITMQ_PASSWORD=${{ secrets.RABBITMQ_PASSWORD }}" >> ${ENV_FILE}
-
-            echo "SQL_PORT=${{ vars.SQL_PORT }}" >> ${ENV_FILE}
-            echo "REDIS_PORT=${{ vars.REDIS_PORT }}" >> ${ENV_FILE}
-            echo "RABBITMQ_AMQP_PORT=${{ vars.RABBITMQ_AMQP_PORT }}" >> ${ENV_FILE}
-            echo "RABBITMQ_ADMIN_PORT=${{ vars.RABBITMQ_ADMIN_PORT }}" >> ${ENV_FILE}
-            echo "API_HTTP_PORT=${{ vars.API_HTTP_PORT }}" >> ${ENV_FILE}
-            echo "API_HTTPS_PORT=${{ vars.API_HTTPS_PORT }}" >> ${ENV_FILE}
-
-            echo "ASPNETCORE_HTTPS_PORT=${{ vars.API_HTTPS_PORT }}" >> ${ENV_FILE}
-            echo "CERTIFICATE_PASSWORD=${{ secrets.CERTIFICATE_PASSWORD }}" >> ${ENV_FILE}
-            echo "CERTIFICATE_PATH=${{ vars.CERTIFICATE_PATH }}" >> ${ENV_FILE}
-
-            # -------------------------------
-            # 3. GENERATE APPSETTINGS.JSON
-            # -------------------------------
-            echo "--- Generating ${APPSETTINGS_FILE} ---"
-            cat <<EOF > ${APPSETTINGS_FILE}
-            {
-              "ConnectionStrings": {
-                "RenticarWriteDbContext": "${{ secrets.DB_WRITE_CONNECTION_STRING }}",
-                "RenticarReadDbContext": "${{ secrets.DB_READ_CONNECTION_STRING }}",
-                "Redis": "${{ secrets.REDIS_CONNECTION_STRING }}"
-              },
-              "DatabaseInitializationSettings": {
-                "MaxRetries": ${{ vars.DB_MAX_RETRIES }},
-                "DbRetryDelayInSeconds": ${{ vars.DB_RETRY_DELAY_SECONDS }}
-              },
-              "Logging": {
-                "LogLevel": {
-                  "Default": "Information",
-                  "Microsoft.AspNetCore": "Warning"
-                }
-              },
-              "Serilog": {
-                "MinimumLevel": {
-                  "Default": "Information",
-                  "Override": {
-                    "Microsoft": "Warning",
-                    "System": "Warning"
-                  }
-                },
-                "WriteTo": [
-                  { "Name": "Console" },
-                  {
-                    "Name": "File",
-                    "Args": {
-                      "path": "Logs/log-.txt",
-                      "rollingInterval": "Day",
-                      "retainedFileCountLimit": 7,
-                      "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    }
-                  }
-                ],
-                "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
-              },
-              "AllowedHosts": "*",
-              "CloudinarySettings": {
-                "CloudName": "${{ secrets.CLOUDINARY_CLOUD_NAME }}",
-                "ApiKey": "${{ secrets.CLOUDINARY_API_KEY }}",
-                "ApiSecret": "${{ secrets.CLOUDINARY_API_SECRET }}"
-              },
-              "Quartz": {
-                "CheckToolAlive": {
-                  "JobName": "${{ vars.QUARTZ_JOB_NAME }}",
-                  "CronExpression": "${{ vars.QUARTZ_CRON_EXPRESSION }}"
-                }
-              },
-              "Authentication": {
-                "JwtSettings": {
-                  "Key": "${{ secrets.JWT_SECRET }}",
-                  "Issuer": "${{ vars.JWT_ISSUER }}",
-                  "Audience": "${{ vars.JWT_AUDIENCE }}",
-                  "AccessTokenDurationInMinutes": ${{ vars.JWT_ACCESS_TOKEN_DURATION }},
-                  "RefreshTokenDurationInDays": ${{ vars.JWT_REFRESH_TOKEN_DURATION }}
-                },
-                "GoogleSettings": {
-                  "ClientId": "${{ secrets.GOOGLE_CLIENT_ID }}",
-                  "ClientSecret": "${{ secrets.GOOGLE_CLIENT_SECRET }}"
-                }
-              },
-              "EmailSettings": {
-                "Smtp": {
-                  "Host": "${{ vars.EMAIL_SMTP_HOST }}",
-                  "Port": ${{ vars.EMAIL_SMTP_PORT }},
-                  "EmailAddress": "${{ vars.EMAIL_ADDRESS }}",
-                  "Password": "${{ secrets.EMAIL_PASSWORD }}",
-                  "EnableSsl": true,
-                  "UserCredential": false
-                },
-                "FromEmailAddress": "${{ vars.EMAIL_ADDRESS }}",
-                "FromDisplayName": "Renticar Support"
-              },
-              "Security": {
-                "RsaSettings": {
-                  "PublicKey": "${{ secrets.RSA_PUBLIC_KEY }}",
-                  "PrivateKey": "${{ secrets.RSA_PRIVATE_KEY }}"
-                },
-                "AesSettings": {
-                  "Key": "${{ secrets.AES_KEY }}",
-                  "Iv": "${{ secrets.AES_IV }}"
-                },
-                "OtpSettings": {
-                  "OtpExpiryMinutes": ${{ vars.OTP_EXPIRY_MINUTES }},
-                  "MaxOtpAttempts": ${{ vars.MAX_OTP_ATTEMPTS }},
-                  "KeyExpiryHours": ${{ vars.OTP_KEY_EXPIRY_HOURS }}
-                },
-                "ResetPasswordSettings": {
-                  "TokenExpiryMinutes": ${{ vars.RESET_TOKEN_EXPIRY_MINUTES }},
-                  "MaxTokenAttempts": ${{ vars.MAX_RESET_TOKEN_ATTEMPTS }},
-                  "KeyExpiryHours": ${{ vars.RESET_KEY_EXPIRY_HOURS }},
-                  "ClientUrl": "${{ vars.CLIENT_URL }}"
-                }
-              },
-              "CorsSettings": {
-                "Policies": {
-                  "FrontendApp": {
-                    "Origins": [ "${{ vars.FRONTEND_URL }}" ],
-                    "Methods": ["*"],
-                    "Headers": ["*"],
-                    "AllowCredentials": true
-                  }
-                }
-              },
-              "ApiClient": {
-                "MyApiSettings": {
-                  "BaseUrl": "${{ vars.API_BASE_URL }}",
-                  "DefaultTimeout": ${{ vars.API_DEFAULT_TIMEOUT }}
-                }
-              },
-              "Payment": {
-                "VnPaySettings": {
-                  "ClientId": "${{ secrets.VNPAY_CLIENT_ID }}",
-                  "ApiKey": "${{ secrets.VNPAY_API_KEY }}",
-                  "BankCode": "${{ secrets.VNPAY_API_BANKCODE }}",
-                  "AccountNumber": "${{ secrets.VNPAY_ACCOUNT_NUMBER }}",
-                  "AccountName": "${{ secrets.VNPAY_ACCOUNT_NAME }}",
-                  "ApiUrl": "${{ vars.VNPAY_API_URL }}",
-                  "Template": "payment_template"
-                }
-              },
-              "RabbitMQ": {
-                "Host": "renticar-rabbitmq-${{ vars.ASPNETCORE_ENVIRONMENT }}",
-                "Port": ${{ vars.RABBITMQ_INTERNAL_PORT }},
-                "VirtualHost": "/",
-                "Username": "${{ secrets.RABBITMQ_USER }}",
-                "Password": "${{ secrets.RABBITMQ_PASSWORD }}"
-              }
-            }
-            EOF
             
-            # -------------------------------
-            # 4. GENERATE SyncDataTool APPSETTINGS.JSON
-            # -------------------------------
-            echo "--- Generating ${SYNC_APPSETTINGS} ---"
-            cat <<EOF > ${SYNC_APPSETTINGS}
-            {
-              "ConnectionStrings": {
-                "RenticarWriteDbContext": "${{ secrets.DB_WRITE_CONNECTION_STRING }}",
-                "RenticarReadDbContext": "${{ secrets.DB_READ_CONNECTION_STRING }}",
-                "Redis": "${{ secrets.REDIS_CONNECTION_STRING }}"
-              },
-              "Logging": {
-                "LogLevel": {
-                  "Default": "Information",
-                  "Microsoft.AspNetCore": "Warning"
-                }
-              },
-              "Serilog": {
-                "MinimumLevel": {
-                  "Default": "Information",
-                  "Override": {
-                    "Microsoft": "Warning",
-                    "System": "Warning"
-                  }
-                },
-                "WriteTo": [
-                  { "Name": "Console" },
-                  {
-                    "Name": "File",
-                    "Args": {
-                      "path": "Logs/log-.txt",
-                      "rollingInterval": "Day",
-                      "retainedFileCountLimit": 7,
-                      "outputTemplate": "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
-                    }
-                  }
-                ],
-                "Enrich": [ "FromLogContext", "WithMachineName", "WithThreadId" ]
-              },
-              "SyncDataToolSettings": {
-                "SyncIntervalInSeconds": 2,
-                "DbRetryDelayInSeconds": 5,
-                "TablesToSync": [
-                  { "TableName": "bookings", "PrimaryKeyColumn": "booking_id" },
-                  { "TableName": "customers", "PrimaryKeyColumn": "customer_id" },
-                  { "TableName": "locations", "PrimaryKeyColumn": "location_id" },
-                  { "TableName": "transmissions", "PrimaryKeyColumn": "transmission_id" },
-                  { "TableName": "vehicle_attributes", "PrimaryKeyColumn": "attribute_id" },
-                  { "TableName": "vehicle_categories", "PrimaryKeyColumn": "vehicle_categorie_id" },
-                  { "TableName": "vehicle_images", "PrimaryKeyColumn": "image_id" },
-                  { "TableName": "vehicles", "PrimaryKeyColumn": "vehicle_id" },
-                  { "TableName": "users", "PrimaryKeyColumn": "user_id" },
-                  { "TableName": "role_claims", "PrimaryKeyColumn": "id" },
-                  { "TableName": "roles", "PrimaryKeyColumn": "role_id" },
-                  { "TableName": "user_sessions", "PrimaryKeyColumn": "user_session_id" },
-                  { "TableName": "user_roles", "PrimaryKeyColumn": "user_role_id" },
-                  { "TableName": "user_logins", "PrimaryKeyColumn": "user_login_id" },
-                  { "TableName": "fuels", "PrimaryKeyColumn": "fuel_id" }
-                ]
-              }
-            }
-            EOF
+            git clone ${{ secrets.REPO_URL }} "$PROJECT_PATH"
+            cd "$PROJECT_PATH"
+            git checkout "$GITHUB_REF"
 
-      # ------------------------------------------------------------------
-      # 2. RUN DOCKER COMPOSE ON VPS
-      # ------------------------------------------------------------------
-      - name: Run Docker Compose on VPS
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
-          script: |
-            cd ${{ vars.VPS_PROJECT_PATH }}
-            echo "--- Starting Docker Compose ---"
-            docker compose build
-            docker compose -f docker-compose.yml --env-file .env up -d --force-recreate --remove-orphans
+            echo "$ENV_CONTENT" > .env
+            echo "$API_CONFIG" > "./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
+            echo "$SYNC_CONFIG" > "./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
+            
+            export GITHUB_REPOSITORY_OWNER=$GH_OWNER_LOWER
+            export ASPNETCORE_ENVIRONMENT=$ENV_NAME
+
+            docker compose pull
+            docker compose --env-file .env up -d --force-recreate
             docker image prune -f
+            
+            echo "=== DEPLOY SUCCESS ==="

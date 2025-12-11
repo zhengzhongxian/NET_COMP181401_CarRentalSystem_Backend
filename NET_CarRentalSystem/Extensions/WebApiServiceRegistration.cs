@@ -129,55 +129,80 @@ public static class WebApiServiceRegistration
         services.AddCors(options =>
         {
             const string defaultPolicyName = AppConstants.CorsPolicy.DefaultCorsPolicy;
-            
-            if (corsSettings.Policies.Count > 0)
+
+            var allOrigins = corsSettings.Policies.Values
+                .Where(p => p.Origins != null && p.Origins.Length > 0)
+                .SelectMany(p => p.Origins!)
+                .Where(o => !string.IsNullOrWhiteSpace(o))
+                .Distinct()
+                .ToArray();
+
+            var allMethods = corsSettings.Policies.Values
+                .Where(p => p.Methods != null && p.Methods.Length > 0)
+                .SelectMany(p => p.Methods!)
+                .Where(m => !string.IsNullOrWhiteSpace(m))
+                .Distinct()
+                .ToArray();
+
+            var allHeaders = corsSettings.Policies.Values
+                .Where(p => p.Headers != null && p.Headers.Length > 0)
+                .SelectMany(p => p.Headers!)
+                .Where(h => !string.IsNullOrWhiteSpace(h))
+                .Distinct()
+                .ToArray();
+
+            var allowCredentials = corsSettings.Policies.Values.Any(p => p.AllowCredentials);
+
+            logger.LogInformation("CORS Configuration - Origins: [{Origins}], Methods: [{Methods}], Headers: [{Headers}], AllowCredentials: {AllowCredentials}",
+                string.Join(", ", allOrigins),
+                string.Join(", ", allMethods),
+                string.Join(", ", allHeaders),
+                allowCredentials);
+
+            if (allOrigins.Length > 0)
             {
-                var allOrigins = corsSettings.Policies.Values
-                    .Where(p => p.Origins != null)
-                    .SelectMany(p => p.Origins!)
-                    .Where(o => !string.IsNullOrEmpty(o))
-                    .Distinct()
-                    .ToArray();
-                
-                var allMethods = corsSettings.Policies.Values
-                    .Where(p => p.Methods != null)
-                    .SelectMany(p => p.Methods!)
-                    .Where(m => !string.IsNullOrEmpty(m))
-                    .Distinct()
-                    .ToArray();
-                
-                var allHeaders = corsSettings.Policies.Values
-                    .Where(p => p.Headers != null)
-                    .SelectMany(p => p.Headers!)
-                    .Where(h => !string.IsNullOrEmpty(h))
-                    .Distinct()
-                    .ToArray();
-                
-                var allowCredentials = corsSettings.Policies.Values.Any(p => p.AllowCredentials);
-                
                 options.AddPolicy(defaultPolicyName, builder =>
                 {
-                    if (allOrigins.Contains("*"))
+                    var isAnyOrigin = allOrigins.Contains("*");
+                    var isAnyMethod = allMethods.Length == 0 || allMethods.Contains("*");
+                    var isAnyHeader = allHeaders.Length == 0 || allHeaders.Contains("*");
+                    
+                    if (isAnyOrigin)
+                    {
                         builder.AllowAnyOrigin();
-                    else if (allOrigins.Length > 0)
+                    }
+                    else
+                    {
                         builder.WithOrigins(allOrigins);
-
-                    if (allMethods.Contains("*"))
+                    }
+                    
+                    if (isAnyMethod)
+                    {
                         builder.AllowAnyMethod();
-                    else if (allMethods.Length > 0)
+                    }
+                    else
+                    {
                         builder.WithMethods(allMethods);
-
-                    if (allHeaders.Contains("*"))
+                    }
+                    
+                    if (isAnyHeader)
+                    {
                         builder.AllowAnyHeader();
-                    else if (allHeaders.Length > 0)
+                    }
+                    else
+                    {
                         builder.WithHeaders(allHeaders);
-
-                    if (allowCredentials && !allOrigins.Contains("*"))
+                    }
+                    
+                    if (allowCredentials && !isAnyOrigin)
+                    {
                         builder.AllowCredentials();
+                    }
                 });
             }
             else
             {
+                logger.LogWarning("No CORS origins configured, using default localhost origins");
                 options.AddPolicy(defaultPolicyName, builder =>
                 {
                     builder.WithOrigins("http://localhost:5173", "https://localhost:5173")

@@ -73,35 +73,35 @@ jobs:
           passphrase: ${{ secrets.VPS_SSH_PASSPHRASE }}
           envs: ENV_CONTENT,API_CONFIG,SYNC_CONFIG,PROJECT_PATH,ENV_NAME,GITHUB_REF,GH_TOKEN,GH_USER,GH_OWNER
           script: |
+            BRANCH_NAME=${GITHUB_REF#refs/heads/}
             GH_OWNER_LOWER=$(echo "$GH_OWNER" | tr '[:upper:]' '[:lower:]')
-            
-            echo "=== DEPLOYING TO $ENV_NAME ==="
-            
+            echo "=== DEPLOYING TO $ENV_NAME (Branch: $BRANCH_NAME) ==="
             echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_USER" --password-stdin
-
             if [ -d "$PROJECT_PATH" ]; then
-              cd "$PROJECT_PATH"
-              docker compose -f docker-compose.yml down || true
-              cd ..
-              rm -rf "$PROJECT_PATH"
-              mkdir -p "$PROJECT_PATH"
+            cd "$PROJECT_PATH"
+            docker compose -f docker-compose.yml down || true
+            cd ..
+            rm -rf "$PROJECT_PATH"
+            mkdir -p "$PROJECT_PATH"
             else
-              mkdir -p "$PROJECT_PATH"
+            mkdir -p "$PROJECT_PATH"
             fi
-            
             git clone ${{ secrets.REPO_URL }} "$PROJECT_PATH"
             cd "$PROJECT_PATH"
-            git checkout "$GITHUB_REF"
-
+            echo "--- Checking out branch: $BRANCH_NAME ---"
+            git checkout $BRANCH_NAME
+            rm -f docker-compose.override.yml
             echo "$ENV_CONTENT" > .env
             echo "$API_CONFIG" > "./NET_CarRentalSystem/appsettings.${ENV_NAME}.json"
             echo "$SYNC_CONFIG" > "./NET_CarRentalSystem.SyncDataTool/appsettings.${ENV_NAME}.json"
-            
             export GITHUB_REPOSITORY_OWNER=$GH_OWNER_LOWER
             export ASPNETCORE_ENVIRONMENT=$ENV_NAME
-
+            set -a
+            . ./.env
+            set +a
+            echo "--- Pulling Images ---"
             docker compose -f docker-compose.yml pull
+            echo "--- Starting Containers ---"
             docker compose -f docker-compose.yml --env-file .env up -d --force-recreate
             docker image prune -f
-            
             echo "=== DEPLOY SUCCESS ==="

@@ -78,13 +78,13 @@ jobs:
             echo "=== DEPLOYING TO $ENV_NAME (Branch: $BRANCH_NAME) ==="
             echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_USER" --password-stdin
             if [ -d "$PROJECT_PATH" ]; then
-            cd "$PROJECT_PATH"
-            docker compose -f docker-compose.yml down || true
-            cd ..
-            rm -rf "$PROJECT_PATH"
-            mkdir -p "$PROJECT_PATH"
+              cd "$PROJECT_PATH"
+              docker compose -f docker-compose.yml down || true
+              cd ..
+              rm -rf "$PROJECT_PATH"
+              mkdir -p "$PROJECT_PATH"
             else
-            mkdir -p "$PROJECT_PATH"
+              mkdir -p "$PROJECT_PATH"
             fi
             git clone ${{ secrets.REPO_URL }} "$PROJECT_PATH"
             cd "$PROJECT_PATH"

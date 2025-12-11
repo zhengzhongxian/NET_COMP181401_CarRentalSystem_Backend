@@ -63,7 +63,7 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
         }
     }
 
-    [HttpGet("{vehicleId}")]
+    [HttpGet("detail/{vehicleId}")]
     [AllowAnonymous]
     public async Task<IActionResult> GetVehicleDetails(
         Guid vehicleId,

@@ -82,8 +82,8 @@ jobs:
 
             # Ghi ENV file & appsettings
             echo "$ENV_CONTENT" > .env
-            echo "$API_CONFIG" > appsettings.${ENV_NAME}.json
-            echo "$SYNC_CONFIG" > appsettings.${ENV_NAME}.json
+            echo "$API_CONFIG" > .api.config
+            echo "$SYNC_CONFIG" > .sync.config
 
             export ASPNETCORE_ENVIRONMENT=$ENV_NAME
             export GITHUB_REPOSITORY_OWNER=$GH_OWNER_LOWER

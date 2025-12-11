@@ -72,6 +72,7 @@ services:
     volumes:
       - ./https:/https:ro
       - ./logs:/app/Logs
+      - ./appsettings.${ASPNETCORE_ENVIRONMENT}.json:/app/appsettings.${ASPNETCORE_ENVIRONMENT}.json
     networks:
       - renticar-network
 
@@ -87,6 +88,7 @@ services:
       - api
     volumes:
       - ./logs:/app/Logs
+      - ./appsettings.${ASPNETCORE_ENVIRONMENT}.sync.json:/app/appsettings.${ASPNETCORE_ENVIRONMENT}.json
     networks:
       - renticar-network
 

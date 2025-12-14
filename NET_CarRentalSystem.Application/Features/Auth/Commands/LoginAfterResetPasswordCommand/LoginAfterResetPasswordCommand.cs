@@ -2,6 +2,7 @@ using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
+using NET_CarRentalSystem.Shared.CoreHelpers;
 
 namespace NET_CarRentalSystem.Application.Features.Auth.Commands.LoginAfterResetPasswordCommand;
 
@@ -20,7 +21,9 @@ public class LoginAfterResetPasswordCommandHandler(
     public async Task<(string, TokenResponse?)> Handle(LoginAfterResetPasswordCommand request, CancellationToken cancellationToken)
     {
         var tokenParts = request.ResetPasswordToken.Split('.');
-        var decryptedEmail = cryptographyService.DecryptAes(tokenParts[0]);
+        var urlSafeEncryptedEmail = tokenParts[0];
+        var standardBase64 = TokenHelper.FromUrlSafeBase64(urlSafeEncryptedEmail);
+        var decryptedEmail = cryptographyService.DecryptAes(standardBase64);
         
         
         var loginApiRequest = new LoginCommand.LoginCommand()

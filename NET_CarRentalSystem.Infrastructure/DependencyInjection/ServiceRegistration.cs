@@ -38,6 +38,7 @@ public static class ServiceRegistration
         services.Configure<ResetPasswordSettings>(configuration.GetSection(ResetPasswordSettings.SectionName));
         services.Configure<MyApiSettings>(configuration.GetSection(MyApiSettings.SectionName));
         services.Configure<VnPaySettings>(configuration.GetSection(VnPaySettings.SectionName));
+        services.Configure<GmailApiSettings>(configuration.GetSection(GmailApiSettings.SectionName));
 
         //add scope
         services.AddScoped<ICloudinaryService, CloudinaryService>();

@@ -30,8 +30,9 @@ public class ResetPasswordCommandHandler(
             return (AuthMessage.ResetPassword.InvalidToken, false);
         }
         
-        var encryptedEmail = tokenParts[0];
-        var decryptedEmail = cryptographyService.DecryptAes(encryptedEmail);
+        var urlSafeEncryptedEmail = tokenParts[0];
+        var standardBase64 = TokenHelper.FromUrlSafeBase64(urlSafeEncryptedEmail);
+        var decryptedEmail = cryptographyService.DecryptAes(standardBase64);
         
         var key = CacheKeyHelper.GetResetPasswordKey(decryptedEmail);
         var cachedResetPasswordDetailsJson = await cacheService.GetStringAsync(key, cancellationToken);

@@ -72,6 +72,8 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    networks:
+      - renticar-network
     restart: unless-stopped
 
   # .NET Sync Service
@@ -88,7 +90,7 @@ services:
     networks:
       - renticar-network
     restart: unless-stopped
-    
+
 volumes:
   sqlserver_data:
     driver: local

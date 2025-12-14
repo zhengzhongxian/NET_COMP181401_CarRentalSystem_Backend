@@ -106,6 +106,6 @@ public class SendOtpCommandHandler(
             { "{ExpiryTime}", _otpSettings.OtpExpiryMinutes.ToString() }
         };
 
-        await emailService.SendTemplateEmailAsync(email, "Mã xác thực Renticar", templateName, placeholders, cancellationToken);
+        await emailService.SendTemplateEmailViaGmailApiAsync(email, "Mã xác thực Renticar", templateName, placeholders, cancellationToken);
     }
 }

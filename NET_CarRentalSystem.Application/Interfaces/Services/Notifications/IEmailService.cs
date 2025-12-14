@@ -8,5 +8,12 @@ public interface IEmailService
         string templateName, 
         Dictionary<string, string> placeholders, 
         CancellationToken cancellationToken = default);
+    
+    Task SendTemplateEmailViaGmailApiAsync(
+        string toEmail, 
+        string subject, 
+        string templateName, 
+        Dictionary<string, string> placeholders, 
+        CancellationToken cancellationToken = default);
 }
 

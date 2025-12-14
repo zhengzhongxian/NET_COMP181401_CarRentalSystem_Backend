@@ -1,5 +1,5 @@
 using FluentValidation;
-using NET_CarRentalSystem.Application.Models.Storage;
+using NET_CarRentalSystem.Application.Common.Validations;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Validation;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Commands.CreateVehicleCommand;
@@ -26,17 +26,8 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
         RuleFor(x => x.PricePerHour)
             .GreaterThan(0).WithMessage(VehicleValidationMessage.PriceGreaterThanZero);
 
-        RuleFor(x => x.Rating)
-            .InclusiveBetween(0, 5).WithMessage(VehicleValidationMessage.RatingRange);
-
         RuleFor(x => x.Thumbnail)
-            .Must(ValidateFile).When(x => x.Thumbnail != null)
+            .Must(ValidateFile.IsValidate).When(x => x.Thumbnail != null)
             .WithMessage(VehicleValidationMessage.Create.ThumbnailInvalid);
-    }
-
-    private static bool ValidateFile(FileModel? file)
-    {
-        if (file == null) return true;
-        return file.Content.Length > 0 && !string.IsNullOrEmpty(file.FileName);
     }
 }

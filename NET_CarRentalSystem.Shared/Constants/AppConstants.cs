@@ -17,6 +17,7 @@ public static class AppConstants
     public static class Architecture
     {
         public const string ApplicationLayer = "NET_CarRentalSystem.Application";
+        public const string ApiLayer = "NET_CarRentalSystem.API";
     }
 
     public static class CorsPolicy

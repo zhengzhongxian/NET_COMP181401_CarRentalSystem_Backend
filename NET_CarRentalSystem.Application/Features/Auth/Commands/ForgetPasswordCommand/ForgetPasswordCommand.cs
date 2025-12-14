@@ -94,8 +94,7 @@ public class ForgetPasswordCommandHandler(
     private async Task<(string, bool)> CreateAndSendResetPasswordEmail(ForgetPasswordCommand request, string key, string fullName, CancellationToken cancellationToken)
     {
         var encryptedEmail = cryptographyService.EncryptAes(request.Email);
-        var urlSafeEncryptedEmail = TokenHelper.ToUrlSafeBase64(encryptedEmail);
-        var token = urlSafeEncryptedEmail + "." + TokenHelper.GenerateSecureToken();
+        var token = encryptedEmail + "." + TokenHelper.GenerateSecureToken();
         
         var resetPasswordDetails = new ResetPasswordDetailsDto
         {

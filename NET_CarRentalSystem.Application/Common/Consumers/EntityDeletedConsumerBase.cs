@@ -36,11 +36,12 @@ public abstract class EntityDeletedConsumerBase<TEvent, TKey>(
         );
 
         logger.LogInformation(
-            "[{EventType}] Successfully HARD DELETED from {Table}: {Id} at {DeletedAt}",
+            "[{EventType}] Successfully HARD DELETED from {Table}: {Id} at {DeletedAt} by {DeletedBy}",
             eventType,
             TableName,
             msg.Id,
-            DateTime.UtcNow
+            msg.DeletedAt,
+            msg.DeletedBy ?? "System"
         );
     }
 }

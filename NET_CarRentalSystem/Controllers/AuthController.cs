@@ -3,6 +3,7 @@ using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Attributes;
+using NET_CarRentalSystem.API.Extensions;
 using NET_CarRentalSystem.API.Models.Request.Auth;
 using NET_CarRentalSystem.API.Models.Response.Auth;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.ForgetPasswordCommand;
@@ -17,7 +18,9 @@ using NET_CarRentalSystem.Application.Features.Auth.Commands.LogupCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.RefreshTokenCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.ResetPasswordCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtpCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Queries.EmailExists;
 using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
+using NET_CarRentalSystem.Application.Features.Auth.Queries.PhoneNumberExists;
 using NET_CarRentalSystem.Application.Features.Users.Queries.GetUserProfileQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
@@ -94,7 +97,8 @@ namespace NET_CarRentalSystem.API.Controllers
         }
 
         [HttpPost("refresh-token")]
-        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -191,7 +195,8 @@ namespace NET_CarRentalSystem.API.Controllers
 
         [HttpPost("sessions/logout-all-others")]
         [ValidateUserExists]
-        public async Task<IActionResult> LogoutAllOtherSessions([FromBody] LogoutAllOtherSessionsRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> LogoutAllOtherSessions([FromBody] LogoutAllOtherSessionsRequest request,
+            CancellationToken cancellationToken)
         {
             try
             {
@@ -319,7 +324,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     {
                         var ggInfo = mapper.Map<GoogleLoginResponse>(ggloginDto);
                         var ggInfoResponse = ApiResponse.ErrorResult(ggInfo, message, 404);
-                        
+
                         return StatusCode(ggInfoResponse.StatusCode, ggInfoResponse);
                     }
                 }
@@ -373,7 +378,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.GoogleLogup.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -401,7 +406,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.ForgetPassword.Error,
                     StatusCodes.Status500InternalServerError,
                     [e.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -429,7 +434,7 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.ResetPassword.Error,
                     StatusCodes.Status500InternalServerError,
                     [e.Message]);
-                
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
@@ -474,7 +479,63 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.LoginAfterResetPassword.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpGet("check-email-exists")]
+        public async Task<IActionResult> CheckEmailExists([FromQuery] string email,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new EmailExistsCommand { Email = email };
+                var (result, message) = await mediator.Send(command, cancellationToken);
+                if (!result)
+                {
+                    var response = ApiResponse.SuccessResult(message);
+                    return StatusCode(response.StatusCode, response);
+                }
                 
+                var errorResponse = ApiResponse.ErrorResult(message);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+            catch (Exception ex) when (!ex.IsInfrastructureException())
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.CheckEmailExists.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpGet("check-phone-number-exists")]
+        public async Task<IActionResult> CheckPhoneNumberExists([FromQuery] string phoneNumber,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new PhoneNumberExistsCommand { PhoneNumber = phoneNumber };
+                var (result, message) = await mediator.Send(command, cancellationToken);
+                if (!result)
+                {
+                    var response = ApiResponse.SuccessResult(message);
+                    return StatusCode(response.StatusCode, response);
+                }
+                
+                var errorResponse = ApiResponse.ErrorResult(message);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+            catch (Exception ex) when (!ex.IsInfrastructureException())
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.CheckPhoneNumberExists.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }

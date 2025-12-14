@@ -5,7 +5,7 @@ namespace NET_CarRentalSystem.API.Models.Request.Auth;
 public class ResetPasswordRequest
 {
     [Required(ErrorMessage = "Token là bắt buộc.")]
-    [StringLength(100, MinimumLength = 32, ErrorMessage = "Token phải có từ 32 đến 100 ký tự.")]
+    [StringLength(132, MinimumLength = 32, ErrorMessage = "Token phải có từ 32 đến 132 ký tự.")]
     public required string Token { get; set; } = default!;
     
     [Required(ErrorMessage = "Mật khẩu là bắt buộc.")]

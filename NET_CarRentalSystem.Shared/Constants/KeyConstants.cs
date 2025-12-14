@@ -15,7 +15,7 @@ public static class KeyConstants
         public const string JwtSettings = "Authentication:JwtSettings";
         public const string GoogleSettings = "Authentication:GoogleSettings";
         public const string SyncDataToolSettings = "SyncDataToolSettings";
-        public const string EmailSettings = "EmailSettings";
+        public const string EmailSettings = "Notifications:EmailSettings";
         public const string OtpSettings = "Security:OtpSettings";
         public const string RsaSettings = "Security:RsaSettings";
         public const string AesSettings = "Security:AesSettings";
@@ -23,6 +23,7 @@ public static class KeyConstants
         public const string ResetPasswordSettings = "Security:ResetPasswordSettings";
         public const string MyApiSettings = "ApiClient:MyApiSettings";
         public const string VnPaySettings = "Payment:VnPaySettings";
+        public const string GmailApiSettings = "Notifications:GmailApiSettings";
     }
 
     public static class Quartz

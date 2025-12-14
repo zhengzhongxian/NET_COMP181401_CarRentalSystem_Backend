@@ -9,7 +9,8 @@
   <ItemGroup>
     <PackageReference Include="CloudinaryDotNet" Version="1.27.8" />
     <PackageReference Include="Dapper" Version="2.1.66" />
-    <PackageReference Include="Google.Apis.Auth" Version="1.72.0" />
+    <PackageReference Include="Google.Apis.Auth" Version="1.73.0" />
+    <PackageReference Include="Google.Apis.Gmail.v1" Version="1.73.0.3987" />
     <PackageReference Include="MassTransit.EntityFrameworkCore" Version="8.3.0" />
     <PackageReference Include="MassTransit.RabbitMQ" Version="8.5.6-develop.2396" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.Google" Version="8.0.22" />

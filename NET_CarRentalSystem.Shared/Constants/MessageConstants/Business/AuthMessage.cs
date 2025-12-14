@@ -108,4 +108,18 @@ public static class AuthMessage
     {
         public const string Error = Login.Error;
     }
+
+    public static class CheckEmailExists
+    {
+        public const string Error = "Có lỗi xảy ra khi kiểm tra email tồn tại";
+        public const string Existed = "Email đã tồn tại";
+        public const string NotExisted = "Email hợp lệ";
+    }
+    
+    public static class CheckPhoneNumberExists
+    {
+        public const string Error = "Có lỗi xảy ra khi kiểm tra số điện thoại tồn tại";
+        public const string Existed = "Số điện thoại đã tồn tại";
+        public const string NotExisted = "Số điện thoại hợp lệ";
+    }
 }

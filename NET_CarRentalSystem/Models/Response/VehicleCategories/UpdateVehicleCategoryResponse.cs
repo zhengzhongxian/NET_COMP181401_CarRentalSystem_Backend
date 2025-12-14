@@ -4,7 +4,7 @@ public class UpdateVehicleCategoryResponse
 {
     public Guid CategoryId { get; set; }
 
-    public string CategoryCode { get; set; }
+    public string CategoryCode { get; set; } = default!;
 
     public int Seat { get; set; }
 }

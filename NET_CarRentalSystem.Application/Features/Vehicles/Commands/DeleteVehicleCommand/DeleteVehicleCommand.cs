@@ -23,18 +23,24 @@ public class DeleteVehicleCommandHandler(
     {
         return await unitOfWork.ExecuteInTransactionAsync(async (ct) =>
         {
+            var currentUserId = currentUserService.GetUserId()!.Value;
             var vehicle = await unitOfWork.GetWriteRepository<Vehicle>().GetByIdAsync(request.VehicleId, ct);
-
             if (vehicle == null)
                 return false;
+
+            vehicle.DeletedBy = currentUserId.ToString();
+            vehicle.DeletedAt = DateTime.UtcNow;
             
             unitOfWork.GetWriteRepository<Vehicle>().Remove(vehicle);
             await unitOfWork.SaveChangesAsync(ct);
-            
-            var currentUserId = currentUserService.GetUserId()!.Value;
 
             var vehicleDeletedEvent =
-                vehicle.ToDeletedEvent<Vehicle, VehicleDeletedEvent, Guid>(v => new VehicleDeletedEvent{});
+                vehicle.ToDeletedEvent<Vehicle, VehicleDeletedEvent, Guid>(v  => new VehicleDeletedEvent
+                {
+                    DeletedAt = default,
+                    DeletedBy = null,
+                    Id = default
+                });
 
             await publishEndpoint.Publish(vehicleDeletedEvent, ct);
             

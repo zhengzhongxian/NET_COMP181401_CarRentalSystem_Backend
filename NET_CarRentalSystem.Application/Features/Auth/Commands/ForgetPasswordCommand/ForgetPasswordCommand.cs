@@ -75,7 +75,8 @@ public class ForgetPasswordCommandHandler(
     private async Task<(string, bool)> UpdateAndSendResetPasswordEmail(ForgetPasswordCommand request, string key, ResetPasswordDetailsDto cachedResetPasswordDetails, string fullName, CancellationToken cancellationToken)
     {
         var encryptedEmail = cryptographyService.EncryptAes(request.Email);
-        var token = encryptedEmail + "." + TokenHelper.GenerateSecureToken();
+        var urlSafeEncryptedEmail = TokenHelper.ToUrlSafeBase64(encryptedEmail);
+        var token = urlSafeEncryptedEmail + "." + TokenHelper.GenerateSecureToken();
         
         var resetPasswordDetails = new ResetPasswordDetailsDto
         {
@@ -93,7 +94,8 @@ public class ForgetPasswordCommandHandler(
     private async Task<(string, bool)> CreateAndSendResetPasswordEmail(ForgetPasswordCommand request, string key, string fullName, CancellationToken cancellationToken)
     {
         var encryptedEmail = cryptographyService.EncryptAes(request.Email);
-        var token = encryptedEmail + "." + TokenHelper.GenerateSecureToken();
+        var urlSafeEncryptedEmail = TokenHelper.ToUrlSafeBase64(encryptedEmail);
+        var token = urlSafeEncryptedEmail + "." + TokenHelper.GenerateSecureToken();
         
         var resetPasswordDetails = new ResetPasswordDetailsDto
         {
@@ -121,6 +123,6 @@ public class ForgetPasswordCommandHandler(
             { "{ExpiryTime}", _resetPasswordSettings.TokenExpiryMinutes.ToString() }
         };
 
-        await emailService.SendTemplateEmailAsync(requestEmail, "Đặt lại mật khẩu Renticar", templateName, placeholders, cancellationToken);
+        await emailService.SendTemplateEmailViaGmailApiAsync(requestEmail, "Đặt lại mật khẩu Renticar", templateName, placeholders, cancellationToken);
     }
 }

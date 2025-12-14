@@ -29,11 +29,7 @@ public class CreateVehicleCommand : ICommand<Guid>
 
     public string? Description { get; set; }
 
-    public float Rating { get; set; }
-
     public string? ConditionNotes { get; set; }
-
-    public string? RealTimeLocation { get; set; }
 
     public Guid? LocationId { get; set; }
 
@@ -65,10 +61,8 @@ public class CreateVehicleCommandHandler(
                 PricePerHour = request.PricePerHour,
                 Thumbnail = null,
                 Description = request.Description,
-                Rating = request.Rating,
                 Status = VehicleStatus.Available,
                 ConditionNotes = request.ConditionNotes,
-                RealTimeLocation = request.RealTimeLocation,
                 LocationId = request.LocationId,
                 VehicleCategoryId = request.VehicleCategoryId,
                 FuelId = request.FuelId,

@@ -1,0 +1,104 @@
+version: "3.8"
+
+services:
+  # SQL Server Database
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: renticar-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Password123!
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver_data:/var/opt/mssql
+    networks:
+      - renticar-network
+    restart: unless-stopped
+
+  # Redis
+  redis:
+    image: redis:7.2-alpine
+    container_name: renticar-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - renticar-network
+    restart: unless-stopped
+  
+  # RabbitMQ
+  rabbitmq:
+    image: masstransit/rabbitmq:latest
+    container_name: renticar-rabbitmq
+    environment:
+      - RABBITMQ_DEFAULT_USER=blacksun
+      - RABBITMQ_DEFAULT_PASS=vagabond
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes:
+      - rabbitmqdata:/var/lib/rabbitmq
+    networks:
+      - renticar-network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  # .NET API Application
+  api:
+    build:
+      context: ./NET_CarRentalSystem
+      dockerfile: Dockerfile
+    container_name: renticar-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+:80;https://+:443
+      - ASPNETCORE_HTTPS_PORT=2807
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    ports:
+      - "1610:80"
+      - "2807:80"
+    depends_on:
+      sqlserver:
+        condition: service_started
+      redis:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - renticar-network
+    restart: unless-stopped
+
+  # .NET Sync Service
+  syncdatatool:
+    build:
+      context: ./NET_CarRentalSystem.SyncDataTool
+      dockerfile: Dockerfile
+    container_name: renticar-syncdatatool
+    environment:
+      - DOTNET_ENVIRONMENT=Development
+    depends_on:
+      - sqlserver
+      - api
+    networks:
+      - renticar-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver_data:
+    driver: local
+  redis_data:
+    driver: local
+  rabbitmqdata:
+    driver: local
+
+networks:
+  renticar-network:
+    driver: bridge

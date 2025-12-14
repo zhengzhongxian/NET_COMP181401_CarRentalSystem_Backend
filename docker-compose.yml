@@ -1,66 +1,67 @@
 version: "3.8"
 
 services:
-  # SQL Server Database
+  # 1. SQL Server
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: renticar-sqlserver
+    container_name: renticar-sqlserver-${ASPNETCORE_ENVIRONMENT}
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=Password123!
+      - SA_PASSWORD=${SA_PASSWORD}
       - MSSQL_PID=Express
+    restart: always
     ports:
-      - "1433:1433"
+      - "${SQL_PORT}:1433"
     volumes:
-      - sqlserver_data:/var/opt/mssql
+      - ./sqlserver_data_${ASPNETCORE_ENVIRONMENT}:/var/opt/mssql
     networks:
       - renticar-network
-    restart: unless-stopped
 
-  # Redis
+  # 2. Redis
   redis:
     image: redis:7.2-alpine
-    container_name: renticar-redis
+    container_name: renticar-redis-${ASPNETCORE_ENVIRONMENT}
+    restart: always
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
     volumes:
-      - redis_data:/data
+      - ./redis_data_${ASPNETCORE_ENVIRONMENT}:/data
     networks:
       - renticar-network
-    restart: unless-stopped
-  
-  # RabbitMQ
+
+  # 3. RabbitMQ
   rabbitmq:
     image: masstransit/rabbitmq:latest
-    container_name: renticar-rabbitmq
+    container_name: renticar-rabbitmq-${ASPNETCORE_ENVIRONMENT}
     environment:
-      - RABBITMQ_DEFAULT_USER=blacksun
-      - RABBITMQ_DEFAULT_PASS=vagabond
+      - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+      - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
     ports:
-      - "5672:5672"
-      - "15672:15672"
+      - "${RABBITMQ_AMQP_PORT}:5672"
+      - "${RABBITMQ_ADMIN_PORT}:15672"
     volumes:
-      - rabbitmqdata:/var/lib/rabbitmq
+      - ./rabbitmq_data_${ASPNETCORE_ENVIRONMENT}:/var/lib/rabbitmq
     networks:
       - renticar-network
     healthcheck:
-      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
       interval: 10s
       timeout: 10s
       retries: 5
       start_period: 10s
 
-  # .NET API Application
+  # 4. .NET API
   api:
-    build:
-      context: ./NET_CarRentalSystem
-      dockerfile: Dockerfile
-    container_name: renticar-api
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/renticar-api:${ASPNETCORE_ENVIRONMENT}
+    container_name: renticar-api-${ASPNETCORE_ENVIRONMENT}
+    restart: always
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=http://+:80;
+      - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+      - ASPNETCORE_URLS=http://+:80
+    env_file:
+      - .env
     ports:
-      - "1610:80"
+      - "${API_HTTP_PORT}:80"
     depends_on:
       sqlserver:
         condition: service_started
@@ -68,32 +69,40 @@ services:
         condition: service_started
       rabbitmq:
         condition: service_healthy
+    volumes:
+      - ./https:/https:ro
+      - ./logs:/app/Logs
+      - ./appsettings.${ASPNETCORE_ENVIRONMENT}.json:/app/appsettings.${ASPNETCORE_ENVIRONMENT}.json
     networks:
       - renticar-network
-    restart: unless-stopped
 
-  # .NET Sync Service
+  # 5. Sync Tool
   syncdatatool:
-    build:
-      context: ./NET_CarRentalSystem.SyncDataTool
-      dockerfile: Dockerfile
-    container_name: renticar-syncdatatool
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/renticar-sync:${ASPNETCORE_ENVIRONMENT}
+    container_name: renticar-syncdatatool-${ASPNETCORE_ENVIRONMENT}
+    restart: always
     environment:
-      - DOTNET_ENVIRONMENT=Development
+      - DOTNET_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
     depends_on:
       - sqlserver
       - api
+    volumes:
+      - ./logs:/app/Logs
+      - ./appsettings.${ASPNETCORE_ENVIRONMENT}.sync.json:/app/appsettings.${ASPNETCORE_ENVIRONMENT}.json
     networks:
       - renticar-network
-    restart: unless-stopped
 
 volumes:
-  sqlserver_data:
-    driver: local
-  redis_data:
-    driver: local
-  rabbitmqdata:
-    driver: local
+  sqlserver_data_Production:
+  sqlserver_data_Test:
+  sqlserver_data_Development:
+  redis_data_Production:
+  redis_data_Test:
+  redis_data_Development:
+  rabbitmq_data_Production:
+  rabbitmq_data_Test:
+  rabbitmq_data_Development:
+
 
 networks:
   renticar-network:

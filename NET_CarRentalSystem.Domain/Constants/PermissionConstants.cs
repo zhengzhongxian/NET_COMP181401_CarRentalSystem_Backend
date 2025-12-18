@@ -43,6 +43,13 @@ public static class PermissionConstants
         public const string Edit = "Permissions.VehicleCategory.Edit";
         public const string Delete = "Permissions.VehicleCategory.Delete";
     }
+    public static class Locations
+    {
+        public const string View = "Permissions.Locations.View";
+        public const string Create = "Permissions.Locations.Create";
+        public const string Edit = "Permissions.Locations.Edit";
+        public const string Delete = "Permissions.Locations.Delete";
+    }
 
     public static List<string> GetAllPermissions()
     {

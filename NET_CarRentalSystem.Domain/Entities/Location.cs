@@ -19,6 +19,10 @@ public class Location : BaseEntity<Guid>
     public double? Longitude { get; set; }
     
     public string? Description { get; set; }
+    
+    public string? PublicId { get; set; }
+    
+    public string? Thumbnail { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
 

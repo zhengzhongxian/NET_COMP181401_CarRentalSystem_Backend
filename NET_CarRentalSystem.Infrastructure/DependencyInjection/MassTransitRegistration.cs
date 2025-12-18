@@ -2,6 +2,7 @@ using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using NET_CarRentalSystem.Application.Features.Fuels.Consumers;
+using NET_CarRentalSystem.Application.Features.Locations.Consumers;
 using NET_CarRentalSystem.Application.Features.Vehicles.Consumers;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using RabbitKeys = NET_CarRentalSystem.Shared.Constants.KeyConstants.RabbitMq;
@@ -68,6 +69,10 @@ namespace NET_CarRentalSystem.Infrastructure.DependencyInjection
             configurator.AddConsumer<VehicleReadFlatThumbnailUpdatedConsumer>();
             configurator.AddConsumer<VehicleReadFlatImagesUpdatedConsumer>();
             configurator.AddConsumer<VehicleReadFlatAttributesUpdatedConsumer>();
+            configurator.AddConsumer<LocationCreatedConsumer>();
+            configurator.AddConsumer<LocationDeletedConsumer>();
+            configurator.AddConsumer<LocationReadFlatThumbnailUpdatedConsumer>();
+            configurator.AddConsumer<LocationReadFlatUpdatedConsumer>();
         }
     }
 }

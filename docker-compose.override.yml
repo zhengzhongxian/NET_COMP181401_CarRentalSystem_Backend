@@ -58,13 +58,9 @@ services:
     container_name: renticar-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:80;https://+:443
-      - ASPNETCORE_HTTPS_PORT=2807
-      - ASPNETCORE_Kestrel__Certificates__Default__Password=password
-      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+      - ASPNETCORE_URLS=http://+:80
     ports:
       - "1610:80"
-      - "2807:80"
     depends_on:
       sqlserver:
         condition: service_started

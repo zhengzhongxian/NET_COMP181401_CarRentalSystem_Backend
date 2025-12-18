@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 
@@ -11,9 +12,11 @@ using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
 {
     [DbContext(typeof(RenticarReadDbContext))]
-    partial class RenticarReadDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251218153530_Add_Permission_CRUD_ReadDB")]
+    partial class Add_Permission_CRUD_ReadDB
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

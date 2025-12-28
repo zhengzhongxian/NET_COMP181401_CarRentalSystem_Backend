@@ -16,7 +16,11 @@ public class CreateVehicleRequest
 
     public string? Description { get; set; } =  default!;
 
+    public float Rating { get; set; } = default!;
+
     public string? ConditionNotes { get; set; } =  default!;
+
+    public string? RealTimeLocation { get; set; } = default!;
 
     public Guid? LocationId { get; set; } =  default!;
 
@@ -30,4 +34,3 @@ public class CreateVehicleRequest
 
     public IFormFile? ThumbnailFile { get; set; } =  default!;
 }
-

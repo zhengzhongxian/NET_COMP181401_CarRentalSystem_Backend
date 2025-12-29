@@ -20,6 +20,20 @@ public class GetVehicleDetailResponse
     
     public VehicleStatus Status { get; set; }
     
+    public string? Thumbnail { get; set; }
+    
+    public string? Color { get; set; }
+    
+    public int? Mileage { get; set; }
+    
+    public Guid? VehicleCategoryId { get; set; }
+    
+    public Guid? FuelId { get; set; }
+    
+    public Guid? TransmissionId { get; set; }
+    
+    public Guid? LocationId { get; set; }
+    
     public string? VehicleCategoryCode { get; set; }
     
     public string? FuelName { get; set; }

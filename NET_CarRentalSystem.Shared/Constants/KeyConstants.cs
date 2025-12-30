@@ -24,6 +24,8 @@ public static class KeyConstants
         public const string MyApiSettings = "ApiClient:MyApiSettings";
         public const string VnPaySettings = "Payment:VnPaySettings";
         public const string GmailApiSettings = "Notifications:GmailApiSettings";
+        public const string PayOsSettings = "Payment:PayOsSettings";
+        public const string PaymentSyncJob = "Quartz:PaymentSyncJob";
     }
 
     public static class Quartz

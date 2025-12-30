@@ -6,13 +6,13 @@ public class Customer : BaseEntity<Guid>
 {
     public Guid CustomerId { get; set; }
 
-    public string FirstName { get; set; }
+    public string FirstName { get; set; } = default!;
 
-    public string LastName { get; set; }
+    public string LastName { get; set; } = default!;
 
     public DateTime Dob { get; set; }
 
-    public string PhoneNumber { get; set; }
+    public string PhoneNumber { get; set; } = default!;
 
     public string? Address { get; set; }
 
@@ -35,6 +35,8 @@ public class Customer : BaseEntity<Guid>
     public string? DriverLicenseBackUrl { get; set; }
 
     public string? AvatarUrl { get; set; }
+    
+    public int LoyaltyPoints { get; set; }
 
     public Guid? UserId { get; set; }
 

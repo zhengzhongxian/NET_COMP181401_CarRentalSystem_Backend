@@ -94,6 +94,11 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(c => c.DeletedAt)
             .HasColumnName("deleted_at");
 
+        builder.Property(c => c.RowVersion)
+            .HasColumnName("row_version")
+            .IsRowVersion()
+            .ValueGeneratedOnAddOrUpdate();
+
         builder.HasOne(b => b.Vehicle)
             .WithMany(v => v.Bookings)
             .HasForeignKey(b => b.VehicleId)

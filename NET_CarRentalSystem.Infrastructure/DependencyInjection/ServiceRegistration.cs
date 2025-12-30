@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Configurations.ApiClientSettings;
 using NET_CarRentalSystem.Application.Interfaces.Http;
@@ -9,6 +10,7 @@ using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
+using NET_CarRentalSystem.Infrastructure.Configurations;
 using NET_CarRentalSystem.Infrastructure.Http;
 using NET_CarRentalSystem.Infrastructure.Interfaces.Schedulers;
 using NET_CarRentalSystem.Infrastructure.Services.Authentication;
@@ -16,9 +18,11 @@ using NET_CarRentalSystem.Infrastructure.Services.Caching;
 using NET_CarRentalSystem.Infrastructure.Services.HostedService;
 using NET_CarRentalSystem.Infrastructure.Services.Notifications;
 using NET_CarRentalSystem.Infrastructure.Services.Payments;
+using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Jobs;
 using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Schedulers;
 using NET_CarRentalSystem.Infrastructure.Services.Security;
 using NET_CarRentalSystem.Infrastructure.Services.Storage;
+using PayOS;
 
 
 namespace NET_CarRentalSystem.Infrastructure.DependencyInjection;
@@ -39,10 +43,12 @@ public static class ServiceRegistration
         services.Configure<MyApiSettings>(configuration.GetSection(MyApiSettings.SectionName));
         services.Configure<VnPaySettings>(configuration.GetSection(VnPaySettings.SectionName));
         services.Configure<GmailApiSettings>(configuration.GetSection(GmailApiSettings.SectionName));
+        services.Configure<PayOsSettings>(configuration.GetSection(PayOsSettings.SectionName));
+        services.Configure<PaymentSyncJob>(configuration.GetSection(PaymentSyncJob.SectionName));
 
         //add scope
         services.AddScoped<ICloudinaryService, CloudinaryService>();
-        services.AddScoped<ITokenService, TokenService>();
+        services.AddScoped<IPayOsService, PayOsService>();
         services.AddScoped<ICryptographyService, CryptographyService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IIdentityService, IdentityService>();
@@ -50,6 +56,7 @@ public static class ServiceRegistration
         services.AddScoped<IEmailService, EmailService>();
         services.AddScoped<IGoogleService, GoogleService>();
         services.AddScoped<IVnPayService, VnPayService>();
+        services.AddScoped<PaymentStatusSyncJob>();
 
         //http
         services.AddHttpClient<IApiClient, ApiClient>();
@@ -57,11 +64,21 @@ public static class ServiceRegistration
 
         //add singleton
         services.AddSingleton(typeof(IScheduleService<>), typeof(ScheduleService<>));
-
+        services.AddSingleton(sp =>
+        {
+            var payOsSettings = sp.GetRequiredService<IOptions<PayOsSettings>>().Value;
+            return new PayOSClient(
+                clientId: payOsSettings.ClientId,
+                apiKey: payOsSettings.ApiKey,
+                checksumKey: payOsSettings.CheckSumKey
+            );
+        });
+        
         //add transient
 
         //hosted service
         services.AddHostedService<CheckToolAliveService>();
+        services.AddHostedService<PaymentStatusSyncService>();
 
         return services;
     }

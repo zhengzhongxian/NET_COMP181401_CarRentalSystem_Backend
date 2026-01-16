@@ -46,6 +46,11 @@ public class ReadRepository<T>(RenticarReadDbContext readDbContext) : IReadRepos
         return await readDbContext.Set<T>().FindAsync([id], cancellationToken);
     }
     
+    public async Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default)
+    {
+        return await readDbContext.Set<T>().FindAsync([id], cancellationToken);
+    }
+    
 
     public async Task<List<T>> FindAsync(Expression<Func<T, bool>> predicate, CancellationToken cancellationToken = default)
     {

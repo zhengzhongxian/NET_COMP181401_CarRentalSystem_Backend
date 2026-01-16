@@ -65,6 +65,8 @@ public class TransactionProcessingLogConfiguration : IEntityTypeConfiguration<Tr
 
         builder.HasIndex(t => t.Status)
             .HasDatabaseName("IX_transaction_processing_logs_status");
+
+        builder.HasQueryFilter(t => !t.PaymentTransaction.IsDeleted);
     }
 }
 

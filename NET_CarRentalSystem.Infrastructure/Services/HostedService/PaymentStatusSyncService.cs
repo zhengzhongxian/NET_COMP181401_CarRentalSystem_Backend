@@ -41,9 +41,6 @@ public class PaymentStatusSyncService(
                 _paymentSyncConfig.JobName, _paymentSyncConfig.CronExpression);
 
             using var scope = serviceProvider.CreateScope();
-            
-            PaymentStatusSyncJob.SetServiceProvider(scope.ServiceProvider);
-            
             var scheduleService = scope.ServiceProvider.GetRequiredService<IScheduleService<PaymentStatusSyncJob>>();
             
             var jobDataMap = new JobDataMap

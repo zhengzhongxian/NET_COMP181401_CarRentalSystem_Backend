@@ -89,7 +89,7 @@ public class GoogleLogupCommandHandler(
         var userLogin = new UserLogin
         {
             LoginProvider = LoginProvider.Google,
-            ProviderKey = userId.ToString(),
+            ProviderKey = payload.GoogleUserId,
             ProviderDisplayName = nameof(LoginProvider.Google),
             UserId = user.Id
         };

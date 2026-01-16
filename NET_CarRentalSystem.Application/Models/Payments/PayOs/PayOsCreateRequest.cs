@@ -1,5 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-
 namespace NET_CarRentalSystem.Application.Models.Payments.PayOs;
 
 public class PayOsCreateRequest

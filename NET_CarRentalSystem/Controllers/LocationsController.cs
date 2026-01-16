@@ -13,6 +13,7 @@ using NET_CarRentalSystem.Application.Features.Locations.Queries.GetLocationsPag
 using NET_CarRentalSystem.Application.Models.Storage;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
+using NET_CarRentalSystem.Shared.Pagination;
 using NET_CarRentalSystem.Shared.Wrapper;
 
 namespace NET_CarRentalSystem.API.Controllers;
@@ -22,31 +23,21 @@ namespace NET_CarRentalSystem.API.Controllers;
 public class LocationsController(ISender sender, IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    public async Task<IActionResult> GetAllPaged([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, CancellationToken cancellationToken = default)
+    public async Task<IActionResult> GetAllPaged([FromQuery] GetLocationsPagedRequest request, CancellationToken cancellationToken = default)
     {
         try
         {
+            var queryParams = mapper.Map<GetLocationsPagedQueryParams>(request);
             var query = new GetLocationsPagedQuery
             {
-                PageNumber = pageNumber,
-                PageSize = pageSize
+                RequestParams = queryParams
             };
 
-            var pagedLocations = await sender.Send(query, cancellationToken);
-
-            var response = new GetLocationsPagedResponse
-            {
-                Items = mapper.Map<List<GetLocationResponse>>(pagedLocations.Items),
-                CurrentPage = pagedLocations.CurrentPage,
-                TotalPages = pagedLocations.TotalPages,
-                PageSize = pagedLocations.PageSize,
-                TotalCount = pagedLocations.TotalCount,
-                HasPrevious = pagedLocations.HasPrevious,
-                HasNext = pagedLocations.HasNext
-            };
-
+            var result = await sender.Send(query, cancellationToken);
+            
+            var pagedResponse = mapper.Map<PagedResponse<GetLocationResponse>>(result);
             var apiResponse = ApiResponse.SuccessResult(
-                response,
+                pagedResponse,
                 LocationMessage.Get.Success
             );
 

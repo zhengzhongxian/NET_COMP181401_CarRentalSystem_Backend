@@ -5,7 +5,7 @@ using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
 
-public class SystemSettingConfiguration
+public class SystemSettingConfiguration : IEntityTypeConfiguration<SystemSetting>
 {
     public void Configure(EntityTypeBuilder<SystemSetting> builder)
     {

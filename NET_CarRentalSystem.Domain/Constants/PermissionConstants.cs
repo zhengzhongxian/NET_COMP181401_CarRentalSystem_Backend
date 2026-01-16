@@ -10,14 +10,21 @@ public static class PermissionConstants
         public const string Create = "Permissions.Vehicles.Create";
         public const string Edit = "Permissions.Vehicles.Edit";
         public const string Delete = "Permissions.Vehicles.Delete";
+        public const string SendEmail = "Permissions.Vehicles.SendEmail";
     }
     
     public static class Bookings
     {
         public const string View = "Permissions.Bookings.View";
+        public const string ViewDetail = "Permissions.Bookings.ViewDetail";
         public const string Create = "Permissions.Bookings.Create";
         public const string Edit = "Permissions.Bookings.Edit";
-        public const string Delete = "Permissions.Bookings.Delete";
+        public const string SwapVehicleModel = "Permissions.Bookings.SwapVehicleModel";
+        public const string Cancel = "Permissions.Bookings.Cancel";
+        public const string GenerateContract = "Permissions.Bookings.GenerateContract";
+        public const string ExportContract = "Permissions.Bookings.ExportContract";
+        public const string UpdateFinalPayment = "Permissions.Bookings.UpdateFinalPayment";
+        public const string CreateFinalPayment = "Permissions.Bookings.CreateFinalPayment";
     }
 
     public static class Fuels
@@ -49,6 +56,19 @@ public static class PermissionConstants
         public const string Create = "Permissions.Locations.Create";
         public const string Edit = "Permissions.Locations.Edit";
         public const string Delete = "Permissions.Locations.Delete";
+    }
+    
+    public static class RefundRequests
+    {
+        public const string View = "Permissions.RefundRequests.View";
+        public const string Approve = "Permissions.RefundRequests.Approve";
+        public const string Reject = "Permissions.RefundRequests.Reject";
+    }
+
+    public static class Violations
+    {
+        public const string View = "Permissions.Violations.View";
+        public const string Resolve = "Permissions.Violations.Resolve";
     }
 
     public static List<string> GetAllPermissions()

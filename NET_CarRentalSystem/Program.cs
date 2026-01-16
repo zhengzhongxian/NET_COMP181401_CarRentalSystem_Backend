@@ -14,11 +14,17 @@ services.AddProjectServices(configuration);
 
 services.AddWebApiServices(configuration);
 
+services.AddRateLimitingServices();
+
 services.AddEndpointsApiExplorer();
 
 var app = builder.Build();
 
+app.InitializeQueryExecutor();
+
 _ = app.ApplyMigrationsAsync();
+
+app.InitializeRediSearchIndex();
 
 app.UseStaticFiles();
 app.UseSwagger();
@@ -28,6 +34,7 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseMiddleware<GlobalInfrastructureMiddleware>();
+app.UseRateLimitingMiddleware();
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseCors(AppConstants.CorsPolicy.DefaultCorsPolicy);

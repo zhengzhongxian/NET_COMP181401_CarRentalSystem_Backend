@@ -30,6 +30,48 @@ public class PayOsGetPaymentLinkResponse
 
     [JsonPropertyName("canceledAt")]
     public string? CanceledAt { get; set; }
+
+    [JsonPropertyName("transactions")]
+    public List<PaymentTransactionInfo>? Transactions { get; set; }
+}
+
+/// <summary>
+/// Thông tin transaction từ PayOS
+/// </summary>
+public class PaymentTransactionInfo
+{
+    [JsonPropertyName("reference")]
+    public string? Reference { get; set; }
+
+    [JsonPropertyName("amount")]
+    public long Amount { get; set; }
+
+    [JsonPropertyName("accountNumber")]
+    public string? AccountNumber { get; set; }
+
+    [JsonPropertyName("description")]
+    public string? Description { get; set; }
+
+    [JsonPropertyName("transactionDateTime")]
+    public string? TransactionDateTime { get; set; }
+
+    [JsonPropertyName("counterAccountBankId")]
+    public string? CounterAccountBankId { get; set; }
+
+    [JsonPropertyName("counterAccountBankName")]
+    public string? CounterAccountBankName { get; set; }
+
+    [JsonPropertyName("counterAccountName")]
+    public string? CounterAccountName { get; set; }
+
+    [JsonPropertyName("counterAccountNumber")]
+    public string? CounterAccountNumber { get; set; }
+
+    [JsonPropertyName("virtualAccountName")]
+    public string? VirtualAccountName { get; set; }
+
+    [JsonPropertyName("virtualAccountNumber")]
+    public string? VirtualAccountNumber { get; set; }
 }
 
 

@@ -2,7 +2,7 @@
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class Customer : BaseEntity<Guid>
+public class Customer : BaseEntity<Guid>, IRowVersion
 {
     public Guid CustomerId { get; set; }
 
@@ -24,6 +24,8 @@ public class Customer : BaseEntity<Guid>
 
     public string? CccdFrontUrl { get; set; }
 
+    public byte[] RowVersion { get; set; } = [];
+
     public string? CccdBackUrl { get; set; }
 
     public string? DriverLicenseId { get; set; }
@@ -37,6 +39,10 @@ public class Customer : BaseEntity<Guid>
     public string? AvatarUrl { get; set; }
     
     public int LoyaltyPoints { get; set; }
+
+    public bool IsRenting { get; set; } = false;
+
+    public bool HasActiveViolation { get; set; } = false;
 
     public Guid? UserId { get; set; }
 

@@ -19,9 +19,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\Bookings\Consumers\" />
-    <Folder Include="Features\Bookings\Events\" />
     <Folder Include="Features\Bookings\Queries\" />
+    <Folder Include="Features\Payments\Commands\" />
+    <Folder Include="Interfaces\Services\Documents\" />
   </ItemGroup>
 
 </Project>

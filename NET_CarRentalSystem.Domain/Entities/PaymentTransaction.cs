@@ -1,12 +1,11 @@
 using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Enums;
-using TransactionStatus = NET_CarRentalSystem.Domain.Enums.TransactionStatus;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class PaymentTransaction : BaseEntity<Guid>
+public class PaymentTransaction : BaseEntity<Guid>, IRowVersion
 {
-    public long TransactionCode { get; set; } = default!;
+    public long TransactionCode { get; set; }
     
     public Guid BookingId { get; set; }
     
@@ -27,6 +26,8 @@ public class PaymentTransaction : BaseEntity<Guid>
     public byte[] RowVersion { get; set; } = [];
 
     public virtual Booking Booking { get; set; } = default!;
-    
+
     public virtual ICollection<TransactionProcessingLog> ProcessingLogs { get; set; } = new List<TransactionProcessingLog>();
+
+    public virtual BookingViolation? ViolationPayment { get; set; }
 }

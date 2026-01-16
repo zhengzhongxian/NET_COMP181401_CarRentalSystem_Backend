@@ -78,9 +78,29 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
         builder.Property(c => c.AvatarUrl)
             .HasColumnName("avatar_url");
 
+        builder.Property(c => c.LoyaltyPoints)
+            .HasColumnName("loyalty_points")
+            .IsRequired()
+            .HasDefaultValue(0);
+
+        builder.Property(c => c.IsRenting)
+            .HasColumnName("is_renting")
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(c => c.HasActiveViolation)
+            .HasColumnName("has_active_violation")
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.HasIndex(c => c.PhoneNumber).IsUnique();
         builder.HasIndex(c => c.CccdNumber).IsUnique();
         builder.HasIndex(c => c.DriverLicenseId).IsUnique();
+
+        builder.Property(c => c.RowVersion)
+            .HasColumnName("row_version")
+            .IsRowVersion()
+            .ValueGeneratedOnAddOrUpdate();
 
         builder.HasQueryFilter(c => c.User == null || !c.User.IsDeleted);
 

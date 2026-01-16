@@ -17,12 +17,21 @@ public interface IReadRepository<T> where T : class
     IQueryable<T> GetQueryable(Expression<Func<T, bool>>? filter, string includeProperties = "");
 
     /// <summary>
-    /// Lấy một entity theo ID duy nhất.
+    /// Lấy một entity theo ID duy nhất (Guid).
     /// </summary>
     /// <param name="id">ID của entity.</param>
     /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
     /// <returns>Entity tìm thấy hoặc null nếu không tìm thấy.</returns>
     Task<T?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
+    
+    /// <summary>
+    /// Lấy một entity theo ID với kiểu dữ liệu linh hoạt (int, string, Guid, etc.).
+    /// </summary>
+    /// <typeparam name="TKey">Kiểu dữ liệu của ID.</typeparam>
+    /// <param name="id">ID của entity.</param>
+    /// <param name="cancellationToken">Token để hủy bỏ thao tác.</param>
+    /// <returns>Entity tìm thấy hoặc null nếu không tìm thấy.</returns>
+    Task<T?> GetByIdAsync<TKey>(TKey id, CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Tìm kiếm các entity dựa trên một điều kiện lọc và trả về dưới dạng một List.
@@ -86,6 +95,7 @@ public interface IReadRepository<T> where T : class
         Expression<Func<T, bool>>? filter = null,
         string includeProperties = "",
         CancellationToken cancellationToken = default);
+
 
     /// <summary>
     /// Kiểm tra xem có bất kỳ entity nào thỏa mãn điều kiện không.

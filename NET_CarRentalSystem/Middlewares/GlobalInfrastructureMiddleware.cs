@@ -18,12 +18,12 @@ public class GlobalInfrastructureMiddleware(ILogger<GlobalInfrastructureMiddlewa
         catch (ValidationException validationEx)
         {
             logger.LogWarning("Validation Error: {Errors}", string.Join(", ", validationEx.Errors.Select(e => e.ErrorMessage)));
-            
+
             var errors = validationEx.Errors.Select(e => e.ErrorMessage).ToList();
-            
+
             await WriteErrorAsync(
-                context, 
-                StatusCodes.Status400BadRequest, 
+                context,
+                StatusCodes.Status400BadRequest,
                 "Dữ liệu đầu vào không hợp lệ",
                 errors);
         }
@@ -40,7 +40,7 @@ public class GlobalInfrastructureMiddleware(ILogger<GlobalInfrastructureMiddlewa
         catch (InvalidOperationException invalidEx)
         {
             logger.LogWarning("Invalid Operation: {Message}", invalidEx.Message);
-            await WriteErrorAsync(context, StatusCodes.Status400BadRequest, "Invalid Operation", [invalidEx.Message]);
+            await WriteErrorAsync(context, StatusCodes.Status400BadRequest, "Invalid Operation", new List<string> { invalidEx.Message });
         }
         catch (DbUpdateConcurrencyException)
         {
@@ -69,7 +69,7 @@ public class GlobalInfrastructureMiddleware(ILogger<GlobalInfrastructureMiddlewa
         if (dbEx.InnerException is not SqlException sqlEx)
         {
             logger.LogError("Generic Database Update Error: {Message}", dbEx.Message);
-            await WriteErrorAsync(context, StatusCodes.Status400BadRequest, DatabaseErrorMessage.UpdateError, [dbEx.Message]);
+            await WriteErrorAsync(context, StatusCodes.Status400BadRequest, DatabaseErrorMessage.UpdateError, new List<string> { dbEx.Message });
             return;
         }
 
@@ -96,7 +96,7 @@ public class GlobalInfrastructureMiddleware(ILogger<GlobalInfrastructureMiddlewa
             _ => (StatusCodes.Status400BadRequest, DatabaseErrorMessage.General)
         };
 
-        await WriteErrorAsync(context, statusCode, message, [sqlEx.Message]);
+        await WriteErrorAsync(context, statusCode, message, new List<string> { sqlEx.Message });
     }
 
     private static async Task WriteErrorAsync(HttpContext context, int statusCode, string message, List<string>? errors = null)

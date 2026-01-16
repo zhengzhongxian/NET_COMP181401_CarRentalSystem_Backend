@@ -1,6 +1,8 @@
-﻿namespace NET_CarRentalSystem.Domain.Entities;
+﻿using NET_CarRentalSystem.Domain.Common;
 
-public class Transmission
+namespace NET_CarRentalSystem.Domain.Entities;
+
+public class Transmission : IRowVersion
 {
     public Guid TransmissionId { get; set; }
 
@@ -11,4 +13,6 @@ public class Transmission
     public string? Description { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
+    
+    public byte[]? RowVersion { get; set; }
 }

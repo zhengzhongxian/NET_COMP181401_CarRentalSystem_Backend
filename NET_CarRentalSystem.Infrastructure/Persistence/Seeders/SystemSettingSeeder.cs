@@ -93,6 +93,34 @@ public static class SystemSettingSeeder
                 SettingKey = SystemSettingConstants.BookingSettings.DepositRatio,
                 SettingValue = "0.3",
                 Description = "Default deposit ratio for all bookings (0.3 = 30%)"
+            },
+            new SystemSetting
+            {
+                Id = Guid.Parse("019b50de-f123-7a4b-9c12-d3e4f5a6b789"),
+                SettingKey = SystemSettingConstants.BookingSettings.LatePenaltyRatio,
+                SettingValue = "0.1",
+                Description = "Late penalty ratio per day (0.1 = 10% of booking price per day late)"
+            },
+            new SystemSetting
+            {
+                Id = Guid.Parse("019b50df-1234-7abc-8def-123456789001"),
+                SettingKey = SystemSettingConstants.CancellationSettings.MaxCancellationsPerMonth,
+                SettingValue = "3",
+                Description = "Maximum number of booking cancellations allowed per month"
+            },
+            new SystemSetting
+            {
+                Id = Guid.Parse("019b50df-2345-7bcd-9ef0-234567890012"),
+                SettingKey = SystemSettingConstants.CancellationSettings.RefundableHoursLimit,
+                SettingValue = "24",
+                Description = "Number of hours after booking creation within which refund is allowed"
+            },
+            new SystemSetting
+            {
+                Id = Guid.Parse("019b50df-4567-7def-1234-456789001234"),
+                SettingKey = SystemSettingConstants.BookingSettings.LoyaltyPointsPerBooking,
+                SettingValue = "100",
+                Description = "Loyalty points awarded per completed booking (default: 100 points)"
             }
         ];
     }

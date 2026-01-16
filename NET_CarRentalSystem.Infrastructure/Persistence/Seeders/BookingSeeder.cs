@@ -37,15 +37,11 @@ public static class BookingSeeder
 				StartDate = start,
 				EndDate = end,
 				ActualEndDate = (i % 5 == 0) ? end.AddHours(2) : null,
-				LatePenaltyRatio = 0.0m,
-				DepositRatio = 0.1m,
 				TotalPrice = 24 * (20 + (i % 60)),
 				MileageStart = 1000 * i,
 				FuelLevelEnd = (i % 2 == 0) ? 80 : 60,
 				FuelPrice = (i % 3 == 0) ? 200000 : null,
 				ConditionNotes = null,
-				PickupLocationId = locations[i % locations.Length],
-				ReturnLocationId = locations[(i + 1) % locations.Length],
 				CreatedAt = now,
 				UpdatedAt = now
 			});

@@ -10,8 +10,6 @@ public static class VehicleValidationMessage
     public const string ModelMaxLength = "Mẫu xe không được vượt quá 50 ký tự";
     public const string MileageNegative = "Số km đã đi không được âm";
     public const string PriceGreaterThanZero = "Giá thuê mỗi giờ phải lớn hơn 0";
-    public const string RatingRange = "Đánh giá phải từ 0 đến 5 sao";
-    public const string StatusInvalid = "Trạng thái xe không hợp lệ";
 
     public static class Create
     {
@@ -37,4 +35,10 @@ public static class VehicleValidationMessage
         public const string AttributeValueRequired = "Giá trị thuộc tính là bắt buộc";
     }
 
+    public static class AddVehicleModels
+    {
+        public const string VehicleModelsRequired = "Danh sách chiếc xe không được để trống";
+        public const string VehicleModelsMinCount = "Vui lòng cung cấp ít nhất một chiếc xe";
+        public const string AllNumberPlatesRequired = "Tất cả các chiếc xe phải có biển số";
+    }
 }

@@ -46,10 +46,28 @@ public static class CacheKeyHelper
     public const string VehicleSearchIndexName = "idx:vehicles";
     
     /// <summary>
+    /// Redis index name for vehicle vector search (HNSW)
+    /// </summary>
+    public const string VehicleVectorIndexName = "idx:vehicles-vector";
+    
+    /// <summary>
+    /// Redis key prefix for vehicle vector documents
+    /// </summary>
+    public const string VehicleVectorKeyPrefix = "vehicle:vector:";
+    
+    /// <summary>
     /// Get Redis key for a vehicle document
     /// </summary>
     public static string GetVehicleSearchKey(Guid vehicleId)
     {
         return $"{VehicleSearchKeyPrefix}{vehicleId}";
+    }
+    
+    /// <summary>
+    /// Get Redis key for a vehicle vector document
+    /// </summary>
+    public static string GetVehicleVectorKey(Guid vehicleId)
+    {
+        return $"{VehicleVectorKeyPrefix}{vehicleId}";
     }
 }

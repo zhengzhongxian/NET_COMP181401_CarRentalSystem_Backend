@@ -15,6 +15,7 @@ public class WebhookLogConfiguration : IEntityTypeConfiguration<WebhookLog>
 
         builder.Property(w => w.EventType)
             .HasColumnName("event_type")
+            .HasConversion<string>()
             .HasMaxLength(100)
             .IsRequired();
 

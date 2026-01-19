@@ -11,6 +11,8 @@ public class UpdateAllSystemSettingsCommand : ICommand<bool>
 {
     public required BookingSettingsDto BookingSettings { get; set; }
     
+    public required CancellationSettingsDto CancellationSettings { get; set; }
+    
     public required MembershipThresholdsDto MembershipThresholds { get; set; }
     
     public required MembershipDiscountsDto MembershipDiscounts { get; set; }
@@ -26,19 +28,18 @@ public class UpdateAllSystemSettingsCommandHandler(IUnitOfWork unitOfWork) : IRe
                 .GetAsync(cancellationToken: ct);
 
             // Update Booking Settings
-            var depositSetting = settings.FirstOrDefault(s => s.SettingKey == SystemSettingConstants.BookingSettings.DepositRatio);
-            if (depositSetting is not null)
-            {
-                depositSetting.SettingValue = request.BookingSettings.DepositRatio.ToString("G", System.Globalization.CultureInfo.InvariantCulture);
-                unitOfWork.GetWriteRepository<SystemSetting>().Update(depositSetting);
-            }
+            UpdateSetting(settings, SystemSettingConstants.BookingSettings.DepositRatio, 
+                request.BookingSettings.DepositRatio.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+            UpdateSetting(settings, SystemSettingConstants.BookingSettings.LatePenaltyRatio, 
+                request.BookingSettings.LatePenaltyRatio.ToString("G", System.Globalization.CultureInfo.InvariantCulture));
+            UpdateSetting(settings, SystemSettingConstants.BookingSettings.LoyaltyPointsPerBooking, 
+                request.BookingSettings.LoyaltyPointsPerBooking.ToString());
 
-            var latePenaltySetting = settings.FirstOrDefault(s => s.SettingKey == SystemSettingConstants.BookingSettings.LatePenaltyRatio);
-            if (latePenaltySetting is not null)
-            {
-                latePenaltySetting.SettingValue = request.BookingSettings.LatePenaltyRatio.ToString("G", System.Globalization.CultureInfo.InvariantCulture);
-                unitOfWork.GetWriteRepository<SystemSetting>().Update(latePenaltySetting);
-            }
+            // Update Cancellation Settings
+            UpdateSetting(settings, SystemSettingConstants.CancellationSettings.MaxCancellationsPerMonth, 
+                request.CancellationSettings.MaxCancellationsPerMonth.ToString());
+            UpdateSetting(settings, SystemSettingConstants.CancellationSettings.RefundableHoursLimit, 
+                request.CancellationSettings.RefundableHoursLimit.ToString());
 
             // Update Membership Thresholds
             UpdateSetting(settings, SystemSettingConstants.MembershipThresholds.Bronze, request.MembershipThresholds.Bronze.ToString());

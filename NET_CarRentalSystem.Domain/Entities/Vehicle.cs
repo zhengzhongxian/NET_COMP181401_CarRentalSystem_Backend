@@ -4,9 +4,9 @@ namespace NET_CarRentalSystem.Domain.Entities;
 
 public class Vehicle : BaseEntity<Guid>, IRowVersion
 {
-    public string Manufacturer { get; set; }
+    public string Manufacturer { get; set; } = default!;
 
-    public string Model { get; set; }
+    public string Model { get; set; } = default!;
 
     public string? Color { get; set; }
 
@@ -20,7 +20,7 @@ public class Vehicle : BaseEntity<Guid>, IRowVersion
 
     public string? Metadata { get; set; }
 
-    public int AvailableCount { get; set; } = 0;
+    public int AvailableCount { get; set; }
 
     public byte[] RowVersion { get; set; } = [];
 

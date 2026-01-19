@@ -76,5 +76,9 @@ public class VehicleSearchParams : PagedRequest
     
     public List<string>? AttributeKeywords { get; set; }
     
-    public List<string>? ExcludeAttributeKeywords { get; set; }  // Attributes to exclude (negation)
+    public List<string>? ExcludeAttributeKeywords { get; set; }
+
+    public bool UseVectorSearch { get; set; } = false;
+    
+    public bool UseTwoStageSearch { get; set; } = false;
 }

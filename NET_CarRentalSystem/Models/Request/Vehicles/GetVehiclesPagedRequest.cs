@@ -17,4 +17,8 @@ public class GetVehiclesPagedRequest : PagedRequest
     public decimal? MaxPrice { get; set; }
     
     public bool UseAi { get; set; } = false;
+    
+    public bool UseVectorSearch { get; set; } = false;
+    
+    public bool UseTwoStageSearch { get; set; } = false;
 }

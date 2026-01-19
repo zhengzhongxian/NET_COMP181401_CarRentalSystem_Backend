@@ -21,4 +21,8 @@ public class GetVehiclesPagedQueryParams : PagedParams
     public List<string>? AttributeKeywords { get; set; }
     
     public List<string>? ExcludeAttributeKeywords { get; set; }
+    
+    public bool UseVectorSearch { get; set; } = false;
+    
+    public bool UseTwoStageSearch { get; set; } = false;
 }

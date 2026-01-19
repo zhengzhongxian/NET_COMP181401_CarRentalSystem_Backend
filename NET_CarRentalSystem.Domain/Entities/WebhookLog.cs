@@ -5,7 +5,7 @@ namespace NET_CarRentalSystem.Domain.Entities;
 
 public class WebhookLog : BaseEntity<Guid>
 {
-    public string EventType { get; set; } = string.Empty;
+    public WebhookEventType EventType { get; set; }
     
     public string Payload { get; set; } = string.Empty;
     

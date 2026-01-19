@@ -18,6 +18,15 @@ public class BookingSettingsDto
     public decimal DepositRatio { get; set; }
     
     public decimal LatePenaltyRatio { get; set; }
+    
+    public int LoyaltyPointsPerBooking { get; set; }
+}
+
+public class CancellationSettingsDto
+{
+    public int MaxCancellationsPerMonth { get; set; }
+    
+    public int RefundableHoursLimit { get; set; }
 }
 
 public class MembershipThresholdsDto
@@ -49,6 +58,8 @@ public class MembershipDiscountsDto
 public class AllSystemSettingsDto
 {
     public BookingSettingsDto BookingSettings { get; set; } = new();
+    
+    public CancellationSettingsDto CancellationSettings { get; set; } = new();
     
     public MembershipThresholdsDto MembershipThresholds { get; set; } = new();
     

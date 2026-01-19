@@ -117,13 +117,13 @@ public class RefundEmailEventConsumer(
 
             var emailData = new Dictionary<string, string>
             {
-                { "CustomerName", $"{customer.FirstName} {customer.LastName}" },
-                { "BookingId", booking.BookingId.ToString() },
-                { "VehicleName", vehicleName },
-                { "RefundAmount", @event.Amount.ToString("N0") + " VND" },
-                { "CancellationReason", @event.Reason ?? "Không có lý do" },
-                { "ProcessingTime", "3-5 ngày làm việc" },
-                { "AppUrl", appUrl }
+                { "{{CustomerName}}", $"{customer.FirstName} {customer.LastName}" },
+                { "{{BookingId}}", booking.BookingId.ToString() },
+                { "{{VehicleName}}", vehicleName },
+                { "{{RefundAmount}}", @event.Amount.ToString("N0") + " VND" },
+                { "{{CancellationReason}}", @event.Reason ?? "Không có lý do" },
+                { "{{ProcessingTime}}", "3-5 ngày làm việc" },
+                { "{{AppUrl}}", appUrl }
             };
             
             await emailService.SendTemplateEmailViaGmailApiAsync(
@@ -162,9 +162,9 @@ public class RefundEmailEventConsumer(
 
             var emailData = new Dictionary<string, string>
             {
-                { "CustomerName", $"{customer.FirstName} {customer.LastName}" },
-                { "RefundAmount", @event.Amount.ToString("N0") + " VND" },
-                { "AppUrl", appUrl }
+                { "{{CustomerName}}", $"{customer.FirstName} {customer.LastName}" },
+                { "{{RefundAmount}}", @event.Amount.ToString("N0") + " VND" },
+                { "{{AppUrl}}", appUrl }
             };
             
             await emailService.SendTemplateEmailViaGmailApiAsync(

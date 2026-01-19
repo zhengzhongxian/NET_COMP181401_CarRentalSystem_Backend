@@ -16,6 +16,17 @@ public class SystemSettingResponse
 public class BookingSettingsResponse
 {
     public decimal DepositRatio { get; set; }
+    
+    public decimal LatePenaltyRatio { get; set; }
+    
+    public int LoyaltyPointsPerBooking { get; set; }
+}
+
+public class CancellationSettingsResponse
+{
+    public int MaxCancellationsPerMonth { get; set; }
+    
+    public int RefundableHoursLimit { get; set; }
 }
 
 public class MembershipThresholdsResponse
@@ -47,6 +58,8 @@ public class MembershipDiscountsResponse
 public class AllSystemSettingsResponse
 {
     public BookingSettingsResponse BookingSettings { get; set; } = new();
+    
+    public CancellationSettingsResponse CancellationSettings { get; set; } = new();
     
     public MembershipThresholdsResponse MembershipThresholds { get; set; } = new();
     

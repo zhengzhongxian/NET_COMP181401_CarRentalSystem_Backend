@@ -21,7 +21,13 @@ public class GetAllSystemSettingsQueryHandler(IUnitOfWork unitOfWork) : IRequest
             BookingSettings = new BookingSettingsDto
             {
                 DepositRatio = GetDecimalValue(settings, SystemSettingConstants.BookingSettings.DepositRatio, 0.3m),
-                LatePenaltyRatio = GetDecimalValue(settings, SystemSettingConstants.BookingSettings.LatePenaltyRatio, 0.1m)
+                LatePenaltyRatio = GetDecimalValue(settings, SystemSettingConstants.BookingSettings.LatePenaltyRatio, 0.1m),
+                LoyaltyPointsPerBooking = GetIntValue(settings, SystemSettingConstants.BookingSettings.LoyaltyPointsPerBooking, 100)
+            },
+            CancellationSettings = new CancellationSettingsDto
+            {
+                MaxCancellationsPerMonth = GetIntValue(settings, SystemSettingConstants.CancellationSettings.MaxCancellationsPerMonth, 3),
+                RefundableHoursLimit = GetIntValue(settings, SystemSettingConstants.CancellationSettings.RefundableHoursLimit, 24)
             },
             MembershipThresholds = new MembershipThresholdsDto
             {

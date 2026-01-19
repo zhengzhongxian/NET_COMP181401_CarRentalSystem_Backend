@@ -21,6 +21,30 @@ public class UpdateBookingSettingsValidator : AbstractValidator<BookingSettingsD
             .GreaterThanOrEqualTo(0)
             .LessThanOrEqualTo(1)
             .WithMessage(SystemSettingValidationMessage.LatePenaltyRatio.InvalidRange);
+
+        RuleFor(x => x.LoyaltyPointsPerBooking)
+            .NotEmpty()
+            .WithMessage(SystemSettingValidationMessage.LoyaltyPointsPerBooking.Required)
+            .GreaterThan(0)
+            .WithMessage(SystemSettingValidationMessage.LoyaltyPointsPerBooking.MustBePositive);
+    }
+}
+
+public class UpdateCancellationSettingsValidator : AbstractValidator<CancellationSettingsDto>
+{
+    public UpdateCancellationSettingsValidator()
+    {
+        RuleFor(x => x.MaxCancellationsPerMonth)
+            .NotEmpty()
+            .WithMessage(SystemSettingValidationMessage.MaxCancellationsPerMonth.Required)
+            .GreaterThan(0)
+            .WithMessage(SystemSettingValidationMessage.MaxCancellationsPerMonth.MustBePositive);
+
+        RuleFor(x => x.RefundableHoursLimit)
+            .NotEmpty()
+            .WithMessage(SystemSettingValidationMessage.RefundableHoursLimit.Required)
+            .GreaterThan(0)
+            .WithMessage(SystemSettingValidationMessage.RefundableHoursLimit.MustBePositive);
     }
 }
 
@@ -127,6 +151,10 @@ public class UpdateAllSystemSettingsCommandValidator : AbstractValidator<UpdateA
             .NotNull()
             .SetValidator(new UpdateBookingSettingsValidator());
 
+        RuleFor(x => x.CancellationSettings)
+            .NotNull()
+            .SetValidator(new UpdateCancellationSettingsValidator());
+
         RuleFor(x => x.MembershipThresholds)
             .NotNull()
             .SetValidator(new UpdateMembershipThresholdsValidator());
@@ -135,7 +163,6 @@ public class UpdateAllSystemSettingsCommandValidator : AbstractValidator<UpdateA
             .NotNull()
             .SetValidator(new UpdateMembershipDiscountsValidator());
 
-        // Validate toàn bộ command - check if tất cả giá trị có thể quy đổi về string rồi parse lại mà không lỗi
         RuleFor(x => x)
             .Custom((cmd, context) =>
             {
@@ -146,6 +173,15 @@ public class UpdateAllSystemSettingsCommandValidator : AbstractValidator<UpdateA
                     
                     ValidateDecimalConversion(cmd.BookingSettings.LatePenaltyRatio, 
                         SystemSettingValidationMessage.LatePenaltyRatio.ConversionError, context);
+                    
+                    ValidateIntConversion(cmd.BookingSettings.LoyaltyPointsPerBooking, 
+                        SystemSettingValidationMessage.LoyaltyPointsPerBooking.ConversionError, context);
+
+                    // Test Cancellation Settings
+                    ValidateIntConversion(cmd.CancellationSettings.MaxCancellationsPerMonth, 
+                        SystemSettingValidationMessage.MaxCancellationsPerMonth.ConversionError, context);
+                    ValidateIntConversion(cmd.CancellationSettings.RefundableHoursLimit, 
+                        SystemSettingValidationMessage.RefundableHoursLimit.ConversionError, context);
 
                     // Test Thresholds
                     ValidateIntConversion(cmd.MembershipThresholds.Bronze, 
@@ -194,5 +230,3 @@ public class UpdateAllSystemSettingsCommandValidator : AbstractValidator<UpdateA
         }
     }
 }
-
-

@@ -10,6 +10,17 @@ public class UpdateSystemSettingRequest
 public class UpdateBookingSettingsRequest
 {
     public decimal DepositRatio { get; set; }
+    
+    public decimal LatePenaltyRatio { get; set; }
+    
+    public int LoyaltyPointsPerBooking { get; set; }
+}
+
+public class UpdateCancellationSettingsRequest
+{
+    public int MaxCancellationsPerMonth { get; set; }
+    
+    public int RefundableHoursLimit { get; set; }
 }
 
 public class UpdateMembershipThresholdsRequest
@@ -41,6 +52,8 @@ public class UpdateMembershipDiscountsRequest
 public class UpdateAllSystemSettingsRequest
 {
     public UpdateBookingSettingsRequest BookingSettings { get; set; } = new();
+    
+    public UpdateCancellationSettingsRequest CancellationSettings { get; set; } = new();
     
     public UpdateMembershipThresholdsRequest MembershipThresholds { get; set; } = new();
     

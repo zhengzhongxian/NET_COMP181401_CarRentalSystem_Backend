@@ -9,6 +9,7 @@ using NET_CarRentalSystem.Application.Features.SystemSettings.Commands.UpdateSys
 using NET_CarRentalSystem.Application.Features.SystemSettings.Queries.GetAllSystemSettingsQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
+using NET_CarRentalSystem.Domain.Constants;
 
 namespace NET_CarRentalSystem.API.Controllers;
 
@@ -19,7 +20,7 @@ public class SystemSettingsController(
     IMapper mapper) : ControllerBase
 {
     [HttpGet]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetAllSystemSettings(CancellationToken cancellationToken)
     {
         try
@@ -44,7 +45,7 @@ public class SystemSettingsController(
     }
     
     [HttpPut]
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> UpdateAllSystemSettings(
         [FromBody] UpdateAllSystemSettingsRequest request,
         CancellationToken cancellationToken)

@@ -52,4 +52,19 @@
     <ProjectReference Include="..\NET_CarRentalSystem.Application\NET_CarRentalSystem.Application.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Update="Services\Search\VehicleSearchService.Mapper.cs">
+      <DependentUpon>VehicleSearchService.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Services\Search\VehicleSearchService.Vector.cs">
+      <DependentUpon>VehicleSearchService.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Services\Search\VehicleSearchService.Scoring.cs">
+      <DependentUpon>VehicleSearchService.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Services\Search\VehicleSearchService.Facets.cs">
+      <DependentUpon>VehicleSearchService.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
 </Project>

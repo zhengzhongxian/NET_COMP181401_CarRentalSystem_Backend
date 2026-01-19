@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Features.Payments.Events;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
+using NET_CarRentalSystem.Application.Models.DTOs.BookingImageDTOs.Get;
 using NET_CarRentalSystem.Application.Models.DTOs.VehicleImageDTOs;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
@@ -169,11 +170,9 @@ public class PaymentEmailEventConsumer(
                 "[PaymentEmailEventConsumer] Preparing full payment email. Email={Email}, BookingId={BookingId}, Amount={Amount}VND",
                 customer.User!.Email, booking.BookingId, @event.Amount);
 
-            var bookingImages = (await unitOfWork.GetReadRepository<BookingImage>()
-                .GetAsync(
-                    filter: bi => bi.BookingId == @event.BookingId,
-                    cancellationToken: cancellationToken
-                )).ToList();
+            var bookingImages = string.IsNullOrEmpty(booking.BookingImagesJson)
+                ? []
+                : booking.BookingImagesJson.FromJson<List<GetBookingImageDto>>() ?? [];
 
             logger.LogInformation("[PaymentEmailEventConsumer] Retrieved {ImageCount} booking images for BookingId={BookingId}",
                 bookingImages.Count, booking.BookingId);
@@ -254,12 +253,12 @@ public class PaymentEmailEventConsumer(
         return html;
     }
 
-    private static string GenerateBookingImagesHtml(List<BookingImage> images)
+    private static string GenerateBookingImagesHtml(List<GetBookingImageDto> images)
     {
         if (images.Count == 0)
             return "<p style='margin: 20px 0; color: #999; font-size: 13px;'>Không có hình ảnh booking</p>";
 
-        var html = "<h3 style='margin: 30px 0 15px 0; font-size: 16px; font-weight: 700; color: #0d9488; text-transform: uppercase;'>Hình ảnh xe khi trả</h3>";
+        var html = "<h3 style='margin: 30px 0 15px 0; font-size: 16px; font-weight: 700; color: #0d9488; text-transform: uppercase;'>Hình ảnh xe khi lấy</h3>";
         html += "<table role='presentation' width='100%' cellpadding='0' cellspacing='0' border='1' style='margin-bottom: 25px; border-collapse: collapse; border: 1px solid #333333;'>";
         
         for (var i = 0; i < images.Count; i++)

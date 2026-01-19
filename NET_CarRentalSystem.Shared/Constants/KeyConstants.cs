@@ -28,6 +28,7 @@ public static class KeyConstants
         public const string PayOsSettings = "Payment:PayOsSettings";
         public const string PaymentSyncJob = "Quartz:PaymentSyncJob";
         public const string RefundProcessingJob = "Quartz:RefundProcessingJob";
+        public const string ReturnDeadlineReminderJob = "Quartz:ReturnDeadlineReminderJob";
         public const string GeminiSettings = "GeminiSettings";
         public const string EmbeddingSettings = "EmbeddingSettings";
     }

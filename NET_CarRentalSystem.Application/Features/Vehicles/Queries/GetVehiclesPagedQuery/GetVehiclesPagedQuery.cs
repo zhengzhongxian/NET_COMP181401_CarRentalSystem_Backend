@@ -88,13 +88,18 @@ public class GetVehiclesPagedQueryHandler(
             MaxPrice = query.MaxPrice,
             Status = query.Status,
             AttributeKeywords = query.AttributeKeywords,
+            ExcludeAttributeKeywords = query.ExcludeAttributeKeywords,
+            UseVectorSearch = query.UseVectorSearch,
+            UseTwoStageSearch = query.UseTwoStageSearch,
             SortBy = query.SortBy,
             SortDirection = query.SortDirection,
             PageNumber = query.PageNumber,
             PageSize = query.PageSize
         };
 
-        var result = await vehicleSearchService.SearchAsync(searchParams, cancellationToken);
+        var result = query.UseTwoStageSearch
+            ? await vehicleSearchService.TwoStageSearchAsync(searchParams, cancellationToken)
+            : await vehicleSearchService.SearchAsync(searchParams, cancellationToken);
 
         var vehicles = result.Items.Select(doc => new GetVehicleDto
         {
@@ -168,7 +173,6 @@ public class GetVehiclesPagedQueryHandler(
             parameters["FuelId"] = query.FuelId.Value;
         }
 
-        // Fix: Use EXISTS subquery for LocationId since it exists in vehicle_models, not vehicle_read_flat
         if (query.LocationId.HasValue)
         {
             whereConditions.Add(@"EXISTS (

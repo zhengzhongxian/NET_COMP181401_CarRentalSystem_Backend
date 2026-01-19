@@ -18,6 +18,27 @@ public static class SystemSettingValidationMessage
         public const string ConversionError = "Tỷ lệ phạt trễ không thể chuyển đổi định dạng";
     }
 
+    public static class LoyaltyPointsPerBooking
+    {
+        public const string Required = "Điểm thưởng mỗi lần đặt là bắt buộc";
+        public const string MustBePositive = "Điểm thưởng phải lớn hơn 0";
+        public const string ConversionError = "Điểm thưởng không thể chuyển đổi định dạng";
+    }
+
+    public static class MaxCancellationsPerMonth
+    {
+        public const string Required = "Số lần hủy tối đa là bắt buộc";
+        public const string MustBePositive = "Số lần hủy tối đa phải lớn hơn 0";
+        public const string ConversionError = "Số lần hủy tối đa không thể chuyển đổi định dạng";
+    }
+
+    public static class RefundableHoursLimit
+    {
+        public const string Required = "Giới hạn giờ hoàn tiền là bắt buộc";
+        public const string MustBePositive = "Giới hạn giờ hoàn tiền phải lớn hơn 0";
+        public const string ConversionError = "Giới hạn giờ hoàn tiền không thể chuyển đổi định dạng";
+    }
+
     public static class MembershipThreshold
     {
         public const string Required = "Ngưỡng hội viên là bắt buộc";

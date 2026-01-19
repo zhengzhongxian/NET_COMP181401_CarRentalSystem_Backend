@@ -10,6 +10,7 @@ using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Documents;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
+using NET_CarRentalSystem.Application.Interfaces.Services.Search;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -28,6 +29,7 @@ using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Schedulers;
 using NET_CarRentalSystem.Infrastructure.Services.Security;
 using NET_CarRentalSystem.Infrastructure.Services.Storage;
 using NET_CarRentalSystem.Infrastructure.Services.AI;
+using NET_CarRentalSystem.Infrastructure.Services.Search;
 using PayOS;
 
 
@@ -52,6 +54,7 @@ public static class ServiceRegistration
         services.Configure<PayOsSettings>(configuration.GetSection(PayOsSettings.SectionName));
         services.Configure<PaymentSyncJob>(configuration.GetSection(PaymentSyncJob.SectionName)); 
         services.Configure<RefundProcessingJobConfig>(configuration.GetSection(RefundProcessingJobConfig.SectionName));
+        services.Configure<ReturnDeadlineReminderJobConfig>(configuration.GetSection(ReturnDeadlineReminderJobConfig.SectionName));
         services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
         services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
         services.Configure<GeminiSettings>(configuration.GetSection(GeminiSettings.SectionName));
@@ -75,6 +78,8 @@ public static class ServiceRegistration
         services.AddScoped<IGeminiService, GeminiService>();
         services.AddScoped<PaymentStatusSyncJob>();
         services.AddScoped<RefundProcessingJob>();
+        services.AddScoped<ReturnDeadlineReminderJob>();
+        services.AddScoped<INotificationHub, NotificationHubService>();
 
         //http
         services.AddHttpClient<IApiClient, ApiClient>();
@@ -92,6 +97,7 @@ public static class ServiceRegistration
             );
         });
         services.AddSingleton<IEmbeddingService, OnnxEmbeddingService>();
+        services.AddSingleton<IVehicleSearchService, VehicleSearchService>();
         
         //add transient
 
@@ -99,6 +105,10 @@ public static class ServiceRegistration
         services.AddHostedService<CheckToolAliveService>();
         services.AddHostedService<PaymentStatusSyncService>();
         services.AddHostedService<RefundProcessingService>();
+        services.AddHostedService<ReturnDeadlineReminderService>();
+
+        //signalR
+        services.AddSignalR();
 
         return services;
     }

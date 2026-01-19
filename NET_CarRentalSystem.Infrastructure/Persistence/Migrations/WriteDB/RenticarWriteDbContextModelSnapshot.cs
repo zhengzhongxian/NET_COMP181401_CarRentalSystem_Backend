@@ -200,9 +200,23 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("booking_id")
                         .HasDefaultValueSql("NEWSEQUENTIALID()");
 
+                    b.Property<DateTime?>("AcceptedTermsAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("accepted_terms_at");
+
+                    b.Property<string>("AcceptedTermsVersion")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("accepted_terms_version");
+
                     b.Property<DateTime?>("ActualEndDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("actual_end_date");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("cancellation_reason");
 
                     b.Property<string>("ConditionNotes")
                         .HasColumnType("nvarchar(max)")
@@ -241,9 +255,18 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("datetime2")
                         .HasColumnName("end_date");
 
+                    b.Property<string>("FileName")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("file_name");
+
                     b.Property<int?>("FuelLevelEnd")
                         .HasColumnType("int")
                         .HasColumnName("fuel_level_end");
+
+                    b.Property<int>("FuelLevelStart")
+                        .HasColumnType("int")
+                        .HasColumnName("fuel_level_start");
 
                     b.Property<decimal?>("FuelPrice")
                         .HasColumnType("decimal(18, 2)")
@@ -257,6 +280,10 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("decimal(5, 2)")
                         .HasColumnName("late_penalty_ratio");
 
+                    b.Property<int?>("MileageEnd")
+                        .HasColumnType("int")
+                        .HasColumnName("mileage_end");
+
                     b.Property<int>("MileageStart")
                         .HasColumnType("int")
                         .HasColumnName("mileage_start");
@@ -269,9 +296,27 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("return_location_id");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
+
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2")
                         .HasColumnName("start_date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("SwapReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("swap_reason");
 
                     b.Property<decimal>("TotalPrice")
                         .HasColumnType("decimal(18, 2)")
@@ -289,6 +334,10 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("uniqueidentifier")
                         .HasColumnName("vehicle_id");
 
+                    b.Property<Guid>("VehicleModelId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_model_id");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
@@ -299,3715 +348,241 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("bookings", (string)null);
+                    b.HasIndex("VehicleModelId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001001"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 1000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000001")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001002"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 2000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000002")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001003"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 3000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000003")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001004"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 4000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000004")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001005"),
-                            ActualEndDate = new DateTime(2025, 12, 19, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 5000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000005")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001006"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 6000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000006")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001007"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 7000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000007")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001008"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 8000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000008")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001009"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 9000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000009")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001010"),
-                            ActualEndDate = new DateTime(2025, 12, 12, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 10000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000010")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001011"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 11000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000011")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001012"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 12000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000012")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001013"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 13000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000013")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001014"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 14000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000014")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001015"),
-                            ActualEndDate = new DateTime(2025, 12, 5, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 15000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000015")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001016"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 16000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000016")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001017"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 17000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000017")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001018"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 18000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000018")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001019"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 19000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000019")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001020"),
-                            ActualEndDate = new DateTime(2025, 12, 5, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 20000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000020")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001021"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 21000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 984m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000021")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001022"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 22000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 26, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1008m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000022")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001023"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 23000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1032m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000023")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001024"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 24000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1056m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000024")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001025"),
-                            ActualEndDate = new DateTime(2025, 11, 28, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 25000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1080m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000025")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001026"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 26000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1104m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000026")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001027"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 27000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1128m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000027")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001028"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 28000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1152m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000028")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001029"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 29000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1176m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000029")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001030"),
-                            ActualEndDate = new DateTime(2025, 12, 21, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 30000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1200m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000030")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001031"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 31000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1224m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000031")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001032"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 32000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1248m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000032")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001033"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 33000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1272m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000033")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001034"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 34000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1296m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000034")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001035"),
-                            ActualEndDate = new DateTime(2025, 12, 14, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 35000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1320m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000035")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001036"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 36000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1344m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000036")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001037"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 37000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1368m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000037")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001038"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 38000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1392m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000038")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001039"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 39000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1416m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000039")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001040"),
-                            ActualEndDate = new DateTime(2025, 12, 14, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 40000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1440m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000040")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001041"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 41000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1464m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000041")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001042"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 42000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1488m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000042")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001043"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 43000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1512m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000043")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001044"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 44000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1536m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000044")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001045"),
-                            ActualEndDate = new DateTime(2025, 12, 7, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 45000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1560m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000045")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001046"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 46000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1584m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000046")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001047"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 47000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1608m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000047")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001048"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 48000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1632m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000048")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001049"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 49000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1656m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000049")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001050"),
-                            ActualEndDate = new DateTime(2025, 11, 30, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 50000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1680m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000050")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001051"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 51000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1704m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000051")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001052"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 52000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 26, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1728m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000052")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001053"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 53000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1752m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000053")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001054"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 54000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1776m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000054")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001055"),
-                            ActualEndDate = new DateTime(2025, 11, 30, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 55000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1800m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000055")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001056"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 56000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1824m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000056")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001057"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 57000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1848m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000057")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001058"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 58000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1872m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000058")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001059"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 59000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1896m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000059")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001060"),
-                            ActualEndDate = new DateTime(2025, 12, 23, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 60000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 480m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000060")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001061"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 61000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000061")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001062"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 62000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000062")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001063"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 63000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000063")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001064"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 64000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000064")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001065"),
-                            ActualEndDate = new DateTime(2025, 12, 16, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 65000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000065")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001066"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 66000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000066")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001067"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 67000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000067")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001068"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 68000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000068")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001069"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 69000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000069")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001070"),
-                            ActualEndDate = new DateTime(2025, 12, 9, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 70000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000070")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001071"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 71000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000071")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001072"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 72000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000072")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001073"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 73000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000073")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001074"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 74000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000074")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001075"),
-                            ActualEndDate = new DateTime(2025, 12, 9, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 75000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000075")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001076"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 76000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000076")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001077"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 77000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000077")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001078"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 78000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000078")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001079"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 79000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000079")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001080"),
-                            ActualEndDate = new DateTime(2025, 12, 2, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 80000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000080")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001081"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 81000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 984m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000081")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001082"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 82000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 26, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1008m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000082")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001083"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 83000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1032m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000083")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001084"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 84000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1056m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000084")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001085"),
-                            ActualEndDate = new DateTime(2025, 11, 25, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 85000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1080m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000085")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001086"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 86000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1104m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000086")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001087"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 87000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1128m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000087")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001088"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 88000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1152m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000088")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001089"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 89000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1176m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000089")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001090"),
-                            ActualEndDate = new DateTime(2025, 12, 25, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 90000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1200m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000090")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001091"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 91000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1224m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000091")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001092"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 92000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1248m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000092")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001093"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 93000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1272m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000093")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001094"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 94000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1296m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000094")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001095"),
-                            ActualEndDate = new DateTime(2025, 12, 18, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 95000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1320m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000095")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001096"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 96000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1344m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000096")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001097"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 97000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1368m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000097")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001098"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 98000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1392m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000098")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001099"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 99000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1416m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000099")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001100"),
-                            ActualEndDate = new DateTime(2025, 12, 11, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 100000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1440m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000100")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001101"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 101000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1464m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000101")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001102"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 102000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1488m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000102")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001103"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 103000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1512m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000103")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001104"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 104000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1536m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000104")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001105"),
-                            ActualEndDate = new DateTime(2025, 12, 4, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 105000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1560m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000105")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001106"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 106000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1584m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000106")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001107"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 107000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1608m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000107")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001108"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 108000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1632m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000108")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001109"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 109000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1656m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000109")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001110"),
-                            ActualEndDate = new DateTime(2025, 12, 4, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 110000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1680m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000110")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001111"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 111000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1704m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000111")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001112"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 112000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 26, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1728m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000112")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001113"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 113000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1752m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000113")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001114"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 114000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1776m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000114")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001115"),
-                            ActualEndDate = new DateTime(2025, 11, 27, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 115000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1800m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000115")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001116"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 116000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1824m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000116")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001117"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 117000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1848m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000117")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001118"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 118000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1872m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000118")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001119"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 119000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1896m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000119")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001120"),
-                            ActualEndDate = new DateTime(2025, 12, 20, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 120000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 480m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000120")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001121"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 121000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000121")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001122"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 122000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000122")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001123"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 123000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000123")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001124"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 124000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000124")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001125"),
-                            ActualEndDate = new DateTime(2025, 12, 20, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 125000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000125")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001126"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 126000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000126")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001127"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 127000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000127")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001128"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 128000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000128")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001129"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 129000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000129")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001130"),
-                            ActualEndDate = new DateTime(2025, 12, 13, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 130000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000130")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001131"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 131000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000131")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001132"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 132000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000132")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001133"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 133000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000133")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001134"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 134000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000134")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001135"),
-                            ActualEndDate = new DateTime(2025, 12, 6, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 135000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000135")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001136"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 136000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000136")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001137"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 137000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000137")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001138"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 138000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000138")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001139"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 139000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000139")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001140"),
-                            ActualEndDate = new DateTime(2025, 11, 29, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 140000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000140")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001141"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 141000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 984m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000141")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001142"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 142000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 26, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1008m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000142")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001143"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 143000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1032m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000143")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001144"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 144000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1056m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000144")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001145"),
-                            ActualEndDate = new DateTime(2025, 11, 29, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 145000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1080m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000145")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001146"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 146000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1104m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000146")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001147"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 147000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1128m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000147")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001148"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 148000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1152m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000148")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001149"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 149000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1176m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000149")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001150"),
-                            ActualEndDate = new DateTime(2025, 12, 22, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 150000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1200m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000150")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001151"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 151000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1224m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000151")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001152"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 152000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1248m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000152")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001153"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 153000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1272m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000153")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001154"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 154000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1296m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000154")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001155"),
-                            ActualEndDate = new DateTime(2025, 12, 15, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 155000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1320m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000155")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001156"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 156000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1344m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000156")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001157"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 157000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1368m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000157")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001158"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 158000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1392m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000158")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001159"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 159000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1416m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000159")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001160"),
-                            ActualEndDate = new DateTime(2025, 12, 15, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 160000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1440m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000160")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001161"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 161000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1464m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000161")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001162"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 162000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1488m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000162")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001163"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 163000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1512m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000163")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001164"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 164000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1536m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000164")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001165"),
-                            ActualEndDate = new DateTime(2025, 12, 8, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 165000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1560m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000165")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001166"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 166000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1584m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000166")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001167"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 167000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1608m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000167")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001168"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 168000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1632m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000168")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001169"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 169000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1656m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000169")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001170"),
-                            ActualEndDate = new DateTime(2025, 12, 1, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 170000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1680m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000170")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001171"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 171000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 27, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1704m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000171")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001172"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 172000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 26, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1728m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000172")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001173"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 173000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 25, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1752m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000173")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001174"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 174000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1776m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000174")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001175"),
-                            ActualEndDate = new DateTime(2025, 11, 24, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 175000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 23, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1800m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000175")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001176"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 176000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 22, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1824m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000176")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001177"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 177000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 11, 21, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1848m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000177")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001178"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 178000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 20, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1872m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000178")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001179"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 11, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 179000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 19, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 1896m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000179")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001180"),
-                            ActualEndDate = new DateTime(2025, 12, 24, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 180000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 480m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000180")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001181"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 24, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 181000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 504m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000181")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001182"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 182000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 16, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 528m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000182")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001183"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 183000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 15, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 552m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000183")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001184"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 184000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 14, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 576m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000184")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001185"),
-                            ActualEndDate = new DateTime(2025, 12, 17, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 185000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 13, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 600m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000185")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001186"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 186000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 12, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 624m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000186")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001187"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 187000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 11, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 648m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000187")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001188"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 17, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 188000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 672m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000188")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001189"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 189000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 9, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 696m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000189")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001190"),
-                            ActualEndDate = new DateTime(2025, 12, 10, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 190000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 8, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 720m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000190")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001191"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 191000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 7, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 744m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000191")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001192"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 192000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 6, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 768m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000192")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001193"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 193000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 5, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 792m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000193")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001194"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 194000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 12, 4, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 816m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000194")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001195"),
-                            ActualEndDate = new DateTime(2025, 12, 10, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 10, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 195000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 840m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000195")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001196"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 196000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 12, 2, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 864m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000196")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001197"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000002"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 197000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            StartDate = new DateTime(2025, 12, 1, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 888m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000197")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001198"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000003"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            FuelPrice = 200000m,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 198000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            StartDate = new DateTime(2025, 11, 30, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 912m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000198")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001199"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000004"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 60,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 199000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            StartDate = new DateTime(2025, 11, 29, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 936m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000199")
-                        },
-                        new
-                        {
-                            Id = new Guid("10000000-0000-0000-0000-000000001200"),
-                            ActualEndDate = new DateTime(2025, 12, 3, 17, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            CustomerId = new Guid("00000000-0000-0000-0000-000000000001"),
-                            DepositRatio = 0.1m,
-                            EndDate = new DateTime(2025, 12, 3, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            FuelLevelEnd = 80,
-                            IsDeleted = false,
-                            LatePenaltyRatio = 0.0m,
-                            MileageStart = 200000,
-                            PickupLocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            ReturnLocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            StartDate = new DateTime(2025, 11, 28, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            TotalPrice = 960m,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 181, DateTimeKind.Utc).AddTicks(5833),
-                            VehicleId = new Guid("00000000-0000-0000-0000-000000000200")
-                        });
+                    b.ToTable("bookings", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("image_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("display_order");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("PublicId")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("public_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .HasDatabaseName("IX_booking_images_booking_id");
+
+                    b.HasIndex("PublicId")
+                        .HasDatabaseName("IX_booking_images_public_id");
+
+                    b.ToTable("booking_images", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingInsurance", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_insurance_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<Guid>("InsurancePackageId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("insurance_package_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("price");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("InsurancePackageId");
+
+                    b.ToTable("booking_insurances", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingViolation", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("violation_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Details")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)")
+                        .HasColumnName("details");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<Guid?>("PaymentTransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("payment_transaction_id");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("resolved_at");
+
+                    b.Property<string>("ResolvedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("resolved_by");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("ViolationType")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("violation_type");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.HasIndex("PaymentTransactionId")
+                        .IsUnique()
+                        .HasFilter("[payment_transaction_id] IS NOT NULL");
+
+                    b.ToTable("booking_violations", (string)null);
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Customer", b =>
@@ -4088,11 +663,23 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("first_name");
 
+                    b.Property<bool>("HasActiveViolation")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("has_active_violation");
+
                     b.Property<Guid>("Id")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
+
+                    b.Property<bool>("IsRenting")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_renting");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -4100,11 +687,24 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("last_name");
 
+                    b.Property<int>("LoyaltyPoints")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("loyalty_points");
+
                     b.Property<string>("PhoneNumber")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("nvarchar(150)")
                         .HasColumnName("phone_number");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -4144,18 +744,22 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "0s7H23SQolvCsrWr20Orjw==",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             Dob = new DateTime(1995, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl1-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseFrontUrl = "https://example.com/dl1-front.jpg",
                             DriverLicenseId = "A12345601",
                             FirstName = "An",
+                            HasActiveViolation = false,
                             Id = new Guid("00000000-0000-0000-0000-000000000000"),
                             IsDeleted = false,
+                            IsRenting = false,
                             LastName = "Nguyen",
+                            LoyaltyPoints = 0,
                             PhoneNumber = "fupEgUxoPV44LCKJSY7JLw==",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
@@ -4167,18 +771,22 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2014, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "cVXHyBreralnzAB1L4PQPg==",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             Dob = new DateTime(1992, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl2-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseFrontUrl = "https://example.com/dl2-front.jpg",
                             DriverLicenseId = "A12345602",
                             FirstName = "Binh",
+                            HasActiveViolation = false,
                             Id = new Guid("00000000-0000-0000-0000-000000000000"),
                             IsDeleted = false,
+                            IsRenting = false,
                             LastName = "Tran",
+                            LoyaltyPoints = 0,
                             PhoneNumber = "8JAbpw+SbCGaHGhEfWg3g==",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
@@ -4190,18 +798,22 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2016, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = " MK+LCGCQBxHbW7CoM5pipw==",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             Dob = new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl3-back.jpg",
                             DriverLicenseExpiry = new DateTime(2031, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseFrontUrl = "https://example.com/dl3-front.jpg",
                             DriverLicenseId = "A12345603",
                             FirstName = "Chi",
+                            HasActiveViolation = false,
                             Id = new Guid("00000000-0000-0000-0000-000000000000"),
                             IsDeleted = false,
+                            IsRenting = false,
                             LastName = "Le",
+                            LoyaltyPoints = 0,
                             PhoneNumber = "Ha5ZLxongotYMMoHd5FJxg==",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -4213,18 +825,22 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2013, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "c3UJRjSHiGUa76qRID5QIg==",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             Dob = new DateTime(1990, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl4-back.jpg",
                             DriverLicenseExpiry = new DateTime(2032, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseFrontUrl = "https://example.com/dl4-front.jpg",
                             DriverLicenseId = "A12345604",
                             FirstName = "Dũng",
+                            HasActiveViolation = false,
                             Id = new Guid("00000000-0000-0000-0000-000000000000"),
                             IsDeleted = false,
+                            IsRenting = false,
                             LastName = "Bú Cu",
+                            LoyaltyPoints = 0,
                             PhoneNumber = "BFW3YFm70nX+X+CmDyqtrQ==",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 184, DateTimeKind.Utc).AddTicks(3003),
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(862),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
@@ -4267,6 +883,10 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("updated_at");
@@ -4283,29 +903,152 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 185, DateTimeKind.Utc).AddTicks(3494),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(6955),
                             Description = "Sử dụng xăng",
                             IsDeleted = false,
                             Name = "Gasoline",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 185, DateTimeKind.Utc).AddTicks(3494)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(6955)
                         },
                         new
                         {
                             Id = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 185, DateTimeKind.Utc).AddTicks(3494),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(6955),
                             Description = "Sử dụng dầu Diesel",
                             IsDeleted = false,
                             Name = "Diesel",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 185, DateTimeKind.Utc).AddTicks(3494)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(6955)
                         },
                         new
                         {
                             Id = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 185, DateTimeKind.Utc).AddTicks(3494),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(6955),
                             Description = "Sử dụng năng lượng điện",
                             IsDeleted = false,
                             Name = "Electric",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 185, DateTimeKind.Utc).AddTicks(3494)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 921, DateTimeKind.Utc).AddTicks(6955)
+                        });
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.InsurancePackage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("insurance_package_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<decimal>("CoverageAmount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("coverage_amount");
+
+                    b.Property<string>("CoverageDetails")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("coverage_details");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("DisplayOrder")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("display_order");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("name");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("price");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("insurance_packages", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000001"),
+                            CoverageAmount = 50000000m,
+                            CoverageDetails = "- Bảo hiểm trách nhiệm dân sự bên thứ 3\n- Thiệt hại tài sản tối đa 50 triệu\n- Chi phí y tế cơ bản\n- Hỗ trợ pháp lý 24/7",
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(4412),
+                            Description = "Bảo hiểm trách nhiệm dân sự bắt buộc, bảo vệ bạn trước các chi phí pháp lý cơ bản.",
+                            DisplayOrder = 1,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Bảo hiểm cơ bản",
+                            Price = 50000m
+                        },
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000002"),
+                            CoverageAmount = 100000000m,
+                            CoverageDetails = "- Tất cả quyền lợi gói Cơ bản\n- Bảo hiểm vật chất xe\n- Bảo hiểm tai nạn lái xe và hành khách\n- Hỗ trợ cứu hộ 24/7\n- Không khấu trừ khi xảy ra sự cố",
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(4417),
+                            Description = "Bảo vệ toàn diện cho xe và hành khách với mức bồi thường cao hơn.",
+                            DisplayOrder = 2,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Bảo hiểm tiêu chuẩn",
+                            Price = 100000m
+                        },
+                        new
+                        {
+                            Id = new Guid("10000000-0000-0000-0000-000000000003"),
+                            CoverageAmount = 200000000m,
+                            CoverageDetails = "- Tất cả quyền lợi gói Tiêu chuẩn\n- Bảo hiểm mất trộm xe\n- Bảo hiểm thiên tai, hỏa hoạn\n- Xe thay thế khi sửa chữa\n- Bồi thường không giới hạn cho bên thứ 3\n- Hỗ trợ VIP 24/7",
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(4419),
+                            Description = "Gói bảo hiểm toàn diện nhất với mức bồi thường tối đa và nhiều quyền lợi đặc biệt.",
+                            DisplayOrder = 3,
+                            IsActive = true,
+                            IsDeleted = false,
+                            Name = "Bảo hiểm cao cấp",
+                            Price = 200000m
                         });
                 });
 
@@ -4379,6 +1122,10 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Property<string>("PublicId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Thumbnail")
                         .HasColumnType("nvarchar(max)");
 
@@ -4400,57 +1147,330 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
                             Address = "123 Lê Lợi, P. Bến Nghé",
                             City = "Hồ Chí Minh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912),
                             IsDeleted = false,
                             Latitude = 10.7758,
                             Longitude = 106.702,
                             Name = "Chi nhánh Quận 1",
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "02838123456",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
                             Address = "456 Xuân Thủy, P. Dịch Vọng Hậu",
                             City = "Hà Nội",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912),
                             IsDeleted = false,
                             Latitude = 21.036000000000001,
                             Longitude = 105.782,
                             Name = "Chi nhánh Cầu Giấy",
                             OpeningHours = "7:30 - 19:30",
                             PhoneNumber = "02439123456",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             Address = "789 Hùng Vương, Hải Châu",
                             City = "Đà Nẵng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912),
                             IsDeleted = false,
                             Latitude = 16.054400000000001,
                             Longitude = 108.2022,
                             Name = "Chi nhánh Hải Châu",
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "023639123456",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000004"),
                             Address = "12 Trần Phú, Lộc Thọ",
                             City = "Khánh Hòa",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912),
                             IsDeleted = false,
                             Latitude = 12.238799999999999,
                             Longitude = 109.19670000000001,
                             Name = "Chi nhánh Nha Trang",
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "025839123456",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 186, DateTimeKind.Utc).AddTicks(1177)
+                            RowVersion = new byte[0],
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 922, DateTimeKind.Utc).AddTicks(9912)
                         });
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("transaction_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("ExternalTransactionId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("external_transaction_id");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Note")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("note");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("payment_date");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("payment_method");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<long>("TransactionCode")
+                        .HasColumnType("bigint")
+                        .HasColumnName("transaction_code");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("transaction_type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("payment_transactions", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.RefundProcessingLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ErrorMessage")
+                        .IsRequired()
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("error_message");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime>("LastAttemptAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_attempt_at");
+
+                    b.Property<Guid>("RefundRequestId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("refund_request_id");
+
+                    b.Property<string>("ResolutionNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("resolution_notes");
+
+                    b.Property<DateTime?>("ResolvedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("resolved_at");
+
+                    b.Property<Guid?>("ResolvedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("resolved_by");
+
+                    b.Property<int>("RetryCount")
+                        .HasColumnType("int")
+                        .HasColumnName("retry_count");
+
+                    b.Property<string>("StackTrace")
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)")
+                        .HasColumnName("stack_trace");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CreatedAt")
+                        .HasDatabaseName("IX_refund_processing_logs_created_at");
+
+                    b.HasIndex("RefundRequestId")
+                        .HasDatabaseName("IX_refund_processing_logs_refund_request_id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_refund_processing_logs_status");
+
+                    b.ToTable("refund_processing_logs", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.RefundRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("refund_request_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("AdminNotes")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("admin_notes");
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTime?>("ApprovedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("approved_at");
+
+                    b.Property<Guid?>("ApprovedBy")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("approved_by");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("created_by");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("processed_at");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("reason");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("refund_requests", (string)null);
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Role", b =>
@@ -4521,7 +1541,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
-                            ConcurrencyStamp = "07a8ac69-f288-44ee-969e-4fd791f608ac",
+                            ConcurrencyStamp = "f26255c4-c46d-4a71-931f-0bcc6c2d2d3c",
                             IsDeleted = false,
                             Name = "Admin",
                             NormalizedName = "ADMIN"
@@ -4529,7 +1549,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
-                            ConcurrencyStamp = "cce5098d-03d5-476d-8626-7e3d1cc3fc84",
+                            ConcurrencyStamp = "ead118c3-2af0-4347-b30f-0274c1e30e6a",
                             IsDeleted = false,
                             Name = "Manager",
                             NormalizedName = "MANAGER"
@@ -4537,7 +1557,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
-                            ConcurrencyStamp = "35fe0149-ef3d-40f4-8260-2618042ab521",
+                            ConcurrencyStamp = "3a4de326-b84a-44eb-b8dd-0dc6c9b29af2",
                             IsDeleted = false,
                             Name = "Staff",
                             NormalizedName = "STAFF"
@@ -4545,7 +1565,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
-                            ConcurrencyStamp = "215195f9-b124-45c3-8493-2d772eda4fc1",
+                            ConcurrencyStamp = "32ed60b4-37ee-42d4-9a59-5ae9690f4c57",
                             IsDeleted = false,
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
@@ -4582,270 +1602,728 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.HasData(
                         new
                         {
-                            Id = new Guid("298fe0d5-78ad-48e9-b28c-3a4fcfda9b5a"),
+                            Id = new Guid("65640c29-acdd-4d0c-af30-38190b133922"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("ac097d57-4227-4927-800d-3d46733d91ca"),
+                            Id = new Guid("0b0f4c89-2cad-42ef-9df0-cea3b2ec0435"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("6f8947cf-9817-43a4-8188-80fca2e1bca0"),
+                            Id = new Guid("eae7a2ca-abc1-4e5f-bdeb-ffa26da4bd77"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("a80e632e-c835-4330-be60-8d1f1e3d1230"),
+                            Id = new Guid("9c8b6e1f-64bd-4c45-8305-29b637b30613"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("2a9032b6-4a17-48e1-8fb9-78dfa532f339"),
+                            Id = new Guid("549ea549-733d-4695-9f0e-c36287be5074"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Vehicles.SendEmail",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("ce8877df-4259-48d8-8af9-1a7512b6f17b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("535ecd7c-1baf-4c0e-8c4b-a560d7ee8233"),
+                            Id = new Guid("aa336c04-29b0-476b-b51b-ae2615bc09ee"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.ViewDetail",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("d3415c52-0dfa-4ada-86e5-81d91300c65d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("27241f67-8432-4153-9b15-d6d10e28ec93"),
+                            Id = new Guid("ca6b20a2-8e46-479e-b857-038cc2fff7e5"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("450b6fdb-d0dc-4374-8862-3e7d271edaee"),
+                            Id = new Guid("a1057dbe-bd82-495e-a3b4-593329e2daa1"),
                             ClaimType = "Permission",
-                            ClaimValue = "Permissions.Bookings.Delete",
+                            ClaimValue = "Permissions.Bookings.SwapVehicleModel",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("dff84c57-31f0-4682-9198-5ed6b412b05b"),
+                            Id = new Guid("a0dbda00-aa24-45dc-92fb-7d9729853508"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.Cancel",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("03404b29-97a8-4494-b4d3-19879513128a"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.GenerateContract",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("f25f6cbd-db5a-40cd-8d1e-eb6809d2ae34"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.ExportContract",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("3ccbb09c-8871-4bed-8e71-fdb421a11cef"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.UpdateFinalPayment",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("15c4c12e-113f-458b-983e-e1d4be8a3612"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.CreateFinalPayment",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("9b3884cc-5238-43db-84e8-49bd8d2b4ee2"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("0f74e021-8524-49b3-82e0-7d71498f0da8"),
+                            Id = new Guid("f318d23b-4357-4ba1-8155-da2df99f7cc5"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("452fb784-b9e2-49ca-92ea-0cb590c7bebc"),
+                            Id = new Guid("dd2bf7eb-d95a-40d4-b5b0-aac171c2bcd3"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("f4d4fdbe-b6be-4f18-bee8-f108606de661"),
+                            Id = new Guid("b9125164-5770-4fab-a2cd-c6eaf592b381"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("fef8939d-6b32-4394-be56-665f95e82005"),
+                            Id = new Guid("75428196-e119-43e9-a4f7-7f6f86395aa0"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("05a6574f-a49b-4391-b112-bf473be4d78b"),
+                            Id = new Guid("1c8b4213-95a9-43a4-9d8a-b94118b34afe"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8c7b6f91-8431-45d1-9efb-7f6761e52841"),
+                            Id = new Guid("42bdc91f-0c43-44ee-b263-939361c4a23a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b3fe668e-ad00-4218-9789-c281bfc3b31c"),
+                            Id = new Guid("bd3864fa-f875-4ccf-bd6e-c18c46fdea67"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b919e309-c0f8-4be3-8094-79260a085c6c"),
+                            Id = new Guid("9c66b95f-4ba6-4490-952e-5ad3fc4d0f73"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("2e4fc06c-7f50-4ad3-9d53-98b7c5d33230"),
+                            Id = new Guid("edadfdf6-d789-4431-9086-c3820f436cd3"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("36d3e157-1a2e-4cc7-bb9b-3d2540a1cab0"),
+                            Id = new Guid("f2018946-e116-43fa-8041-50c497ad5f10"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("286e09d8-5908-4ee6-8bd2-c76dafb7e5a3"),
+                            Id = new Guid("49912b36-4cb1-4237-aad4-978ffc54a1d6"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("59b04ec2-fc44-4109-b479-cba60e2f1af9"),
+                            Id = new Guid("367f1d11-b4e2-4a58-8d37-7d89710e59cc"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b6b12ca8-7303-4c87-9c33-0c00cae38ee8"),
+                            Id = new Guid("eda2e815-90aa-456f-9b55-bb9f2d78208e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("fe3cf65e-c0a0-4877-b992-46ba2fbef58b"),
+                            Id = new Guid("f15a04ab-fc87-4966-a167-7a7e1d514a11"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("e43aaa06-12ae-4846-b6d8-c09b70bcbb34"),
+                            Id = new Guid("3da198e8-4cc8-4b77-8e89-78ca937a3836"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("366e93e0-aac1-4bad-b952-1a2deec14e61"),
+                            Id = new Guid("2545f108-94a9-49af-ba05-947b967b3e0a"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.RefundRequests.View",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("fa08fdd4-ebe3-40e1-ac50-89aa08d70733"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.RefundRequests.Approve",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("bd14f6d8-010a-4e2c-8e34-33d51c0af301"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.RefundRequests.Reject",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("9ce2e82d-6402-480a-93ef-bfd2d3f761f1"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Violations.View",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("8ed82692-2763-4ed8-8d50-b8ebd4cd73a0"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Violations.Resolve",
+                            RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
+                        },
+                        new
+                        {
+                            Id = new Guid("ba9c8ed4-de0b-4c2e-b3f4-404f2f40bb7d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("b9f0c289-a553-4de7-92bb-394628d58a09"),
+                            Id = new Guid("9d0a5391-6cc9-4112-82e4-735010a05ff4"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("063b5f36-7e35-4f6d-902e-cf65106f92f9"),
+                            Id = new Guid("1843392f-e1dc-42bc-abfb-62708db93b0d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("516cf530-e76a-496b-b93b-0f20ccd7a497"),
+                            Id = new Guid("1a575e08-8448-48c2-8795-2e17b9d29280"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("966f2121-ab18-4e54-a611-29226ba61f47"),
+                            Id = new Guid("f00af35e-84c3-4f3a-88a6-e360a531324e"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.ViewDetail",
+                            RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
+                        },
+                        new
+                        {
+                            Id = new Guid("330369c6-cd62-417d-b1bf-5ac505ee03d3"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("5e10d18c-71ff-477e-a97e-2f2c1ad89d86"),
+                            Id = new Guid("bbc7a74f-5acf-46b3-ae4e-00afccaf4f2a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("c82a52d1-d2a9-4924-a260-2b4e33f80c35"),
+                            Id = new Guid("c0a94522-baad-4f4e-b733-017ed2619752"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("a87f92be-7f1e-4586-be49-f32c309b7ab3"),
+                            Id = new Guid("24f45003-7764-471d-b5e1-4e8ce3f7bb70"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("f0b2923a-56c2-4e33-a906-42aa0d9cd812"),
+                            Id = new Guid("b303793a-7c7a-4687-bfed-3976d807b5fa"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("e08ff82a-1d81-422a-9f56-575feb8aa51f"),
+                            Id = new Guid("9390320f-d871-4728-b7f4-0ee8ca1a8e28"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("99b7a943-38bf-4aa8-8330-b3374345e1b0"),
+                            Id = new Guid("7160a5c8-b39b-4587-bce6-b3e69ab3abeb"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("73849a98-511d-41be-8a39-326305cda8a6"),
+                            Id = new Guid("7a1a7cf0-4687-49e9-b2e3-87ffba1b9f0b"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.ViewDetail",
+                            RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
+                        },
+                        new
+                        {
+                            Id = new Guid("57b86131-ae03-4567-860f-37b07a66f399"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("a490632c-3d1d-49cd-b5f5-8e44dd8bef30"),
+                            Id = new Guid("9e71bb54-86f4-48d6-bbff-ed713e86e942"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         },
                         new
                         {
-                            Id = new Guid("071b9eb7-e6bf-4001-b698-98466ee71a62"),
+                            Id = new Guid("7a20fecb-6687-4c87-9d80-935421318046"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
+                            RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
+                        },
+                        new
+                        {
+                            Id = new Guid("c8be08aa-89f3-4c7b-9c67-4480a5cae901"),
+                            ClaimType = "Permission",
+                            ClaimValue = "Permissions.Bookings.Cancel",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         });
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.SystemSetting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("setting_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SettingKey")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("setting_key");
+
+                    b.Property<string>("SettingValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("setting_value");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SettingKey")
+                        .IsUnique();
+
+                    b.ToTable("system_settings", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("019b5088-3895-7376-9e27-14a43c0df1d3"),
+                            Description = "Points required for Bronze tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipThresholds.Bronze",
+                            SettingValue = "10000"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-5aa1-70c5-954e-307f367c0ff2"),
+                            Description = "Points required for Silver tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipThresholds.Silver",
+                            SettingValue = "20000"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-6c4e-728e-b019-30b10d351c72"),
+                            Description = "Points required for Gold tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipThresholds.Gold",
+                            SettingValue = "30000"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-870d-72a6-9ab1-eadf6bf04999"),
+                            Description = "Points required for Platinum tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipThresholds.Platinum",
+                            SettingValue = "50000"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-9d8d-7041-83e3-ebc01f9d0a47"),
+                            Description = "Points required for Diamond tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipThresholds.Diamond",
+                            SettingValue = "100000"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-c214-77e3-8e6d-7b68b0ee7f90"),
+                            Description = "Discount ratio for Bronze tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipDiscounts.Bronze",
+                            SettingValue = "0"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-e037-780b-98f8-b1dd868ca193"),
+                            Description = "Discount ratio for Silver tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipDiscounts.Silver",
+                            SettingValue = "0.05"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5088-f455-70e7-818f-341025ede937"),
+                            Description = "Discount ratio for Gold tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipDiscounts.Gold",
+                            SettingValue = "0.1"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5089-05bb-739e-a4d3-bae8cff04983"),
+                            Description = "Discount ratio for Platinum tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipDiscounts.Platinum",
+                            SettingValue = "0.15"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b5089-20ac-7253-85c6-3a4367442414"),
+                            Description = "Discount ratio for Diamond tier",
+                            IsDeleted = false,
+                            SettingKey = "MembershipDiscounts.Diamond",
+                            SettingValue = "0.2"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b50de-de75-72d8-88b9-a28c3da7fc00"),
+                            Description = "Default deposit ratio for all bookings (0.3 = 30%)",
+                            IsDeleted = false,
+                            SettingKey = "BookingSettings.DepositRatio",
+                            SettingValue = "0.3"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b50de-f123-7a4b-9c12-d3e4f5a6b789"),
+                            Description = "Late penalty ratio per day (0.1 = 10% of booking price per day late)",
+                            IsDeleted = false,
+                            SettingKey = "BookingSettings.LatePenaltyRatio",
+                            SettingValue = "0.1"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b50df-1234-7abc-8def-123456789001"),
+                            Description = "Maximum number of booking cancellations allowed per month",
+                            IsDeleted = false,
+                            SettingKey = "CancellationSettings.MaxCancellationsPerMonth",
+                            SettingValue = "3"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b50df-2345-7bcd-9ef0-234567890012"),
+                            Description = "Number of hours after booking creation within which refund is allowed",
+                            IsDeleted = false,
+                            SettingKey = "CancellationSettings.RefundableHoursLimit",
+                            SettingValue = "24"
+                        },
+                        new
+                        {
+                            Id = new Guid("019b50df-4567-7def-1234-456789001234"),
+                            Description = "Loyalty points awarded per completed booking (default: 100 points)",
+                            IsDeleted = false,
+                            SettingKey = "BookingSettings.LoyaltyPointsPerBooking",
+                            SettingValue = "100"
+                        });
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.TermsAndConditions", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("terms_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("content");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<DateTime>("EffectiveDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("effective_date");
+
+                    b.Property<bool>("IsActive")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(true)
+                        .HasColumnName("is_active");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("title");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("version");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Type", "Version", "IsActive");
+
+                    b.ToTable("terms_and_conditions", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("20000000-0000-0000-0000-000000000001"),
+                            Content = "<h2>1. ĐIỀU KIỆN THUÊ XE</h2>\r\n<p>Khách hàng phải đáp ứng các điều kiện sau:</p>\r\n<ul>\r\n    <li>Tuổi từ 21 trở lên</li>\r\n    <li>Có giấy phép lái xe hợp lệ còn hiệu lực ít nhất 1 năm</li>\r\n    <li>Có CCCD/CMND còn hiệu lực</li>\r\n    <li>Đặt cọc theo quy định</li>\r\n</ul>\r\n\r\n<h2>2. QUY ĐỊNH VỀ ĐẶT CỌC</h2>\r\n<p>Khách hàng phải đặt cọc 30% giá trị hợp đồng khi đặt xe. Tiền cọc sẽ được hoàn trả sau khi trả xe và kiểm tra tình trạng xe.</p>\r\n\r\n<h2>3. TRÁCH NHIỆM CỦA KHÁCH HÀNG</h2>\r\n<ul>\r\n    <li>Sử dụng xe đúng mục đích đã đăng ký</li>\r\n    <li>Không cho người khác mượn xe</li>\r\n    <li>Không sử dụng xe vào mục đích vi phạm pháp luật</li>\r\n    <li>Bảo quản xe cẩn thận, không hút thuốc trong xe</li>\r\n    <li>Đổ đúng loại nhiên liệu theo quy định</li>\r\n    <li>Trả xe đúng hạn và đúng địa điểm</li>\r\n</ul>\r\n\r\n<h2>4. PHÍ PHẠT</h2>\r\n<ul>\r\n    <li>Trả xe trễ: 50.000đ/giờ (tối đa 500.000đ/ngày)</li>\r\n    <li>Thiếu xăng: Theo giá thị trường + 20% phí dịch vụ</li>\r\n    <li>Hư hỏng xe: Theo đánh giá thực tế</li>\r\n    <li>Mất xe: Đền bù 100% giá trị xe</li>\r\n</ul>\r\n\r\n<h2>5. CHÍNH SÁCH HỦY ĐẶT XE</h2>\r\n<ul>\r\n    <li>Hủy trước 24h: Hoàn 100% tiền cọc</li>\r\n    <li>Hủy trong vòng 24h: Hoàn 50% tiền cọc</li>\r\n    <li>Không đến nhận xe: Mất 100% tiền cọc</li>\r\n</ul>\r\n\r\n<h2>6. ĐIỀU KHOẢN KHÁC</h2>\r\n<p>Renticar có quyền từ chối cho thuê xe nếu khách hàng không đáp ứng các điều kiện trên hoặc có hành vi không phù hợp.</p>",
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 930, DateTimeKind.Utc).AddTicks(3992),
+                            EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Title = "Điều Khoản và Điều Kiện Thuê Xe",
+                            Type = "Booking",
+                            Version = "v1.0.0"
+                        },
+                        new
+                        {
+                            Id = new Guid("20000000-0000-0000-0000-000000000002"),
+                            Content = "<h2>1. PHẠM VI BẢO HIỂM</h2>\r\n<p>Bảo hiểm chỉ có hiệu lực trong thời gian thuê xe và trong phạm vi lãnh thổ Việt Nam.</p>\r\n\r\n<h2>2. CÁC TRƯỜNG HỢP ĐƯỢC BẢO HIỂM</h2>\r\n<ul>\r\n    <li>Tai nạn giao thông</li>\r\n    <li>Va chạm với phương tiện khác</li>\r\n    <li>Thiệt hại do thiên tai (gói Premium)</li>\r\n    <li>Mất trộm xe (gói Premium)</li>\r\n</ul>\r\n\r\n<h2>3. CÁC TRƯỜNG HỢP KHÔNG ĐƯỢC BẢO HIỂM</h2>\r\n<ul>\r\n    <li>Lái xe khi say rượu bia hoặc sử dụng chất kích thích</li>\r\n    <li>Cố ý gây thiệt hại</li>\r\n    <li>Sử dụng xe vào mục đích bất hợp pháp</li>\r\n    <li>Cho người không có giấy phép lái xe</li>\r\n</ul>\r\n\r\n<h2>4. THỦ TỤC YÊU CẦU BỒI THƯỜNG</h2>\r\n<p>Khi xảy ra sự cố, khách hàng cần:</p>\r\n<ul>\r\n    <li>Liên hệ hotline ngay lập tức</li>\r\n    <li>Không di chuyển xe khỏi hiện trường (nếu có thể)</li>\r\n    <li>Chụp ảnh hiện trường</li>\r\n    <li>Lập biên bản với cơ quan chức năng (nếu cần)</li>\r\n</ul>",
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 930, DateTimeKind.Utc).AddTicks(3999),
+                            EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Title = "Điều Khoản Bảo Hiểm Xe",
+                            Type = "Insurance",
+                            Version = "v1.0.0"
+                        },
+                        new
+                        {
+                            Id = new Guid("20000000-0000-0000-0000-000000000003"),
+                            Content = "<h2>1. GIỚI THIỆU</h2>\r\n<p>Chào mừng bạn đến với Renticar - dịch vụ cho thuê xe hàng đầu Việt Nam.</p>\r\n\r\n<h2>2. QUYỀN RIÊNG TƯ</h2>\r\n<p>Chúng tôi cam kết bảo vệ thông tin cá nhân của khách hàng theo quy định của pháp luật.</p>\r\n\r\n<h2>3. QUYỀN SỞ HỮU TRÍ TUỆ</h2>\r\n<p>Tất cả nội dung trên website thuộc quyền sở hữu của Renticar.</p>\r\n\r\n<h2>4. LIÊN HỆ</h2>\r\n<p>Mọi thắc mắc xin liên hệ:</p>\r\n<ul>\r\n    <li>Hotline: 1900 xxxx</li>\r\n    <li>Email: support@renticar.vn</li>\r\n</ul>",
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 930, DateTimeKind.Utc).AddTicks(4001),
+                            EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            IsActive = true,
+                            IsDeleted = false,
+                            Title = "Điều Khoản Sử Dụng Chung",
+                            Type = "General",
+                            Version = "v1.0.0"
+                        });
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.TransactionProcessingLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("log_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("ErrorCategory")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("error_category");
+
+                    b.Property<string>("ErrorMessage")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("error_message");
+
+                    b.Property<DateTime>("LastAttemptAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_attempt_at");
+
+                    b.Property<Guid>("PaymentTransactionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("transaction_id");
+
+                    b.Property<string>("RawResponse")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("raw_response");
+
+                    b.Property<int>("RetryCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("retry_count");
+
+                    b.Property<string>("StackTrace")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("stack_trace");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("TransactionCode")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("transaction_code");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PaymentTransactionId")
+                        .HasDatabaseName("IX_transaction_processing_logs_transaction_id");
+
+                    b.HasIndex("Status")
+                        .HasDatabaseName("IX_transaction_processing_logs_status");
+
+                    b.HasIndex("TransactionCode")
+                        .HasDatabaseName("IX_transaction_processing_logs_transaction_code");
+
+                    b.ToTable("transaction_processing_logs", (string)null);
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Transmission", b =>
@@ -4871,6 +2349,9 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("name");
+
+                    b.Property<byte[]>("RowVersion")
+                        .HasColumnType("varbinary(max)");
 
                     b.HasKey("TransmissionId");
 
@@ -4932,6 +2413,10 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("password");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<string>("Status")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -4965,49 +2450,53 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             Email = "admin@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$vqoSyY9ckE7a4X51WuVG3u6L8tisbWgME8jg2x1j3CeXx/sbZv/22",
+                            Password = "$2a$11$Xua416vtXD8uAT4b8uvpUOyphUwHvxEylaYV70DSLehNpvbdeUy9e",
+                            RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             UserName = "admin"
                         },
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             Email = "staff1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$sXGBJi9J1.z5KteTF1SDe.0O29TEjkYZpc5SXIJFrC8CRDkDKvAju",
+                            Password = "$2a$11$F/ux2AY0sZV2ekwT4f4/yeyzZgq8GAiIdNl0I18qe6Xb3Xf8d2Jze",
+                            RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             UserName = "staff1"
                         },
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             Email = "customer1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$8uNHx3YU./g4ftayuhep1eMio1bIVQ7Ww1tzOcHsieM7i/Xj8GVju",
+                            Password = "$2a$11$53IqffFIUaaaI9QN2cFxyeEvREwO6Lw1JrUx17qbHa0jtxmHGLScS",
+                            RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             UserName = "customer1"
                         },
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             Email = "customer2@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$Vuxidbt2ECkGpY1M4r6eFeeQbQZg6a1RXFKqZiueJ5UziLts0uniG",
+                            Password = "$2a$11$DvonV/9qSzAu0L6H0FlW3.8J2J6MvWa405J/IiqD2W5QZ./LWb3YG",
+                            RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 56, 192, DateTimeKind.Utc).AddTicks(2254),
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 22, 941, DateTimeKind.Utc).AddTicks(6385),
                             UserName = "customer2"
                         });
                 });
@@ -5106,25 +2595,25 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.HasData(
                         new
                         {
-                            UserRoleId = new Guid("a446ed1c-998e-4862-bfee-f4e4ff6859c3"),
+                            UserRoleId = new Guid("f4c41f8a-6d87-4763-b4aa-8e2cdbfd7a6c"),
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            UserRoleId = new Guid("d62f74fc-3e4e-485c-9190-b17fdce01724"),
+                            UserRoleId = new Guid("772fa868-14bf-4dd5-8933-7d5ce5587d4c"),
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            UserRoleId = new Guid("9b69c5f8-4374-4046-96c0-a82c7e256c65"),
+                            UserRoleId = new Guid("4505dc4a-f547-4b5a-ba80-e4b010184e70"),
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            UserRoleId = new Guid("dc12fca9-d22e-49d2-a148-322e3390630f"),
+                            UserRoleId = new Guid("e58dd993-8e4d-4282-bd1e-9157e359d9e3"),
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         });
@@ -5225,14 +2714,16 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("vehicle_id")
                         .HasDefaultValueSql("NEWSEQUENTIALID()");
 
+                    b.Property<int>("AvailableCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("available_count");
+
                     b.Property<string>("Color")
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)")
                         .HasColumnName("color");
-
-                    b.Property<string>("ConditionNotes")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("condition_notes");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2")
@@ -5262,14 +2753,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
-                    b.Property<DateTime?>("LastCheckoutAt")
-                        .HasColumnType("datetime2")
-                        .HasColumnName("last_checkout_at");
-
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uniqueidentifier")
-                        .HasColumnName("location_id");
-
                     b.Property<string>("Manufacturer")
                         .IsRequired()
                         .HasMaxLength(100)
@@ -5280,21 +2763,11 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("metadata");
 
-                    b.Property<int>("Mileage")
-                        .HasColumnType("int")
-                        .HasColumnName("mileage");
-
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)")
                         .HasColumnName("model");
-
-                    b.Property<string>("NumberPlate")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("nvarchar(20)")
-                        .HasColumnName("number_plate");
 
                     b.Property<decimal>("PricePerHour")
                         .HasColumnType("decimal(18, 2)")
@@ -5304,15 +2777,12 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("real")
                         .HasColumnName("rating");
 
-                    b.Property<string>("RealTimeLocation")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("real_time_location");
-
-                    b.Property<string>("Status")
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)")
-                        .HasColumnName("status");
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
 
                     b.Property<string>("Thumbnail")
                         .HasColumnType("nvarchar(max)")
@@ -5338,3818 +2808,11 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasIndex("FuelId");
 
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("NumberPlate")
-                        .IsUnique();
-
                     b.HasIndex("TransmissionId");
 
                     b.HasIndex("VehicleCategoryId");
 
                     b.ToTable("vehicles", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000001"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 1000,
-                            Model = "Everest",
-                            NumberPlate = "11A-101.11",
-                            PricePerHour = 21m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000002"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 2000,
-                            Model = "Accent",
-                            NumberPlate = "12A-102.12",
-                            PricePerHour = 22m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000003"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 3000,
-                            Model = "Seltos",
-                            NumberPlate = "13A-103.13",
-                            PricePerHour = 23m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000004"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 4000,
-                            Model = "Vios",
-                            NumberPlate = "14A-104.14",
-                            PricePerHour = 24m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000005"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 5000,
-                            Model = "Everest",
-                            NumberPlate = "15A-105.15",
-                            PricePerHour = 25m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000006"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 6000,
-                            Model = "Accent",
-                            NumberPlate = "16A-106.16",
-                            PricePerHour = 26m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000007"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 7000,
-                            Model = "Seltos",
-                            NumberPlate = "17A-107.17",
-                            PricePerHour = 27m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000008"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 8000,
-                            Model = "Vios",
-                            NumberPlate = "18A-108.18",
-                            PricePerHour = 28m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000009"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 9000,
-                            Model = "Everest",
-                            NumberPlate = "19A-109.19",
-                            PricePerHour = 29m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000010"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 10000,
-                            Model = "Accent",
-                            NumberPlate = "20A-110.20",
-                            PricePerHour = 30m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000011"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 11000,
-                            Model = "Seltos",
-                            NumberPlate = "21A-111.21",
-                            PricePerHour = 31m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000012"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 12000,
-                            Model = "Vios",
-                            NumberPlate = "22A-112.22",
-                            PricePerHour = 32m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000013"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 13000,
-                            Model = "Everest",
-                            NumberPlate = "23A-113.23",
-                            PricePerHour = 33m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000014"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 14000,
-                            Model = "Accent",
-                            NumberPlate = "24A-114.24",
-                            PricePerHour = 34m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000015"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 15000,
-                            Model = "Seltos",
-                            NumberPlate = "25A-115.25",
-                            PricePerHour = 35m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000016"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 16000,
-                            Model = "Vios",
-                            NumberPlate = "26A-116.26",
-                            PricePerHour = 36m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000017"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 17000,
-                            Model = "Everest",
-                            NumberPlate = "27A-117.27",
-                            PricePerHour = 37m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000018"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 18000,
-                            Model = "Accent",
-                            NumberPlate = "28A-118.28",
-                            PricePerHour = 38m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000019"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 19000,
-                            Model = "Seltos",
-                            NumberPlate = "29A-119.29",
-                            PricePerHour = 39m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000020"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 20000,
-                            Model = "Vios",
-                            NumberPlate = "30A-120.30",
-                            PricePerHour = 40m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000021"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 21000,
-                            Model = "Everest",
-                            NumberPlate = "31A-121.31",
-                            PricePerHour = 41m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000022"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 22000,
-                            Model = "Accent",
-                            NumberPlate = "32A-122.32",
-                            PricePerHour = 42m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000023"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 23000,
-                            Model = "Seltos",
-                            NumberPlate = "33A-123.33",
-                            PricePerHour = 43m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000024"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 24000,
-                            Model = "Vios",
-                            NumberPlate = "34A-124.34",
-                            PricePerHour = 44m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000025"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 25000,
-                            Model = "Everest",
-                            NumberPlate = "35A-125.35",
-                            PricePerHour = 45m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000026"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 26000,
-                            Model = "Accent",
-                            NumberPlate = "36A-126.36",
-                            PricePerHour = 46m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000027"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 27000,
-                            Model = "Seltos",
-                            NumberPlate = "37A-127.37",
-                            PricePerHour = 47m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000028"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 28000,
-                            Model = "Vios",
-                            NumberPlate = "38A-128.38",
-                            PricePerHour = 48m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000029"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 29000,
-                            Model = "Everest",
-                            NumberPlate = "39A-129.39",
-                            PricePerHour = 49m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000030"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 30000,
-                            Model = "Accent",
-                            NumberPlate = "40A-130.40",
-                            PricePerHour = 50m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000031"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 31000,
-                            Model = "Seltos",
-                            NumberPlate = "41A-131.41",
-                            PricePerHour = 51m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000032"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 32000,
-                            Model = "Vios",
-                            NumberPlate = "42A-132.42",
-                            PricePerHour = 52m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000033"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 33000,
-                            Model = "Everest",
-                            NumberPlate = "43A-133.43",
-                            PricePerHour = 53m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000034"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 34000,
-                            Model = "Accent",
-                            NumberPlate = "44A-134.44",
-                            PricePerHour = 54m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000035"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 35000,
-                            Model = "Seltos",
-                            NumberPlate = "45A-135.45",
-                            PricePerHour = 55m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000036"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 36000,
-                            Model = "Vios",
-                            NumberPlate = "46A-136.46",
-                            PricePerHour = 56m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000037"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 37000,
-                            Model = "Everest",
-                            NumberPlate = "47A-137.47",
-                            PricePerHour = 57m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000038"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 38000,
-                            Model = "Accent",
-                            NumberPlate = "48A-138.48",
-                            PricePerHour = 58m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000039"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 39000,
-                            Model = "Seltos",
-                            NumberPlate = "49A-139.49",
-                            PricePerHour = 59m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000040"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 40000,
-                            Model = "Vios",
-                            NumberPlate = "50A-140.50",
-                            PricePerHour = 60m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000041"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 41000,
-                            Model = "Everest",
-                            NumberPlate = "51A-141.51",
-                            PricePerHour = 61m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000042"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 42000,
-                            Model = "Accent",
-                            NumberPlate = "52A-142.52",
-                            PricePerHour = 62m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000043"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 43000,
-                            Model = "Seltos",
-                            NumberPlate = "53A-143.53",
-                            PricePerHour = 63m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000044"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 44000,
-                            Model = "Vios",
-                            NumberPlate = "54A-144.54",
-                            PricePerHour = 64m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000045"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 45000,
-                            Model = "Everest",
-                            NumberPlate = "55A-145.55",
-                            PricePerHour = 65m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000046"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 46000,
-                            Model = "Accent",
-                            NumberPlate = "56A-146.56",
-                            PricePerHour = 66m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000047"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 47000,
-                            Model = "Seltos",
-                            NumberPlate = "57A-147.57",
-                            PricePerHour = 67m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000048"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 48000,
-                            Model = "Vios",
-                            NumberPlate = "58A-148.58",
-                            PricePerHour = 68m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000049"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 49000,
-                            Model = "Everest",
-                            NumberPlate = "59A-149.59",
-                            PricePerHour = 69m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000050"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 50000,
-                            Model = "Accent",
-                            NumberPlate = "10A-150.60",
-                            PricePerHour = 70m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000051"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 51000,
-                            Model = "Seltos",
-                            NumberPlate = "11A-151.61",
-                            PricePerHour = 71m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000052"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 52000,
-                            Model = "Vios",
-                            NumberPlate = "12A-152.62",
-                            PricePerHour = 72m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000053"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 53000,
-                            Model = "Everest",
-                            NumberPlate = "13A-153.63",
-                            PricePerHour = 73m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000054"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 54000,
-                            Model = "Accent",
-                            NumberPlate = "14A-154.64",
-                            PricePerHour = 74m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000055"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 55000,
-                            Model = "Seltos",
-                            NumberPlate = "15A-155.65",
-                            PricePerHour = 75m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000056"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 56000,
-                            Model = "Vios",
-                            NumberPlate = "16A-156.66",
-                            PricePerHour = 76m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000057"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 57000,
-                            Model = "Everest",
-                            NumberPlate = "17A-157.67",
-                            PricePerHour = 77m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000058"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 58000,
-                            Model = "Accent",
-                            NumberPlate = "18A-158.68",
-                            PricePerHour = 78m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000059"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 59000,
-                            Model = "Seltos",
-                            NumberPlate = "19A-159.69",
-                            PricePerHour = 79m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000060"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 60000,
-                            Model = "Vios",
-                            NumberPlate = "20A-160.70",
-                            PricePerHour = 20m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000061"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 61000,
-                            Model = "Everest",
-                            NumberPlate = "21A-161.71",
-                            PricePerHour = 21m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000062"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 62000,
-                            Model = "Accent",
-                            NumberPlate = "22A-162.72",
-                            PricePerHour = 22m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000063"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 63000,
-                            Model = "Seltos",
-                            NumberPlate = "23A-163.73",
-                            PricePerHour = 23m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000064"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 64000,
-                            Model = "Vios",
-                            NumberPlate = "24A-164.74",
-                            PricePerHour = 24m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000065"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 65000,
-                            Model = "Everest",
-                            NumberPlate = "25A-165.75",
-                            PricePerHour = 25m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000066"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 66000,
-                            Model = "Accent",
-                            NumberPlate = "26A-166.76",
-                            PricePerHour = 26m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000067"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 67000,
-                            Model = "Seltos",
-                            NumberPlate = "27A-167.77",
-                            PricePerHour = 27m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000068"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 68000,
-                            Model = "Vios",
-                            NumberPlate = "28A-168.78",
-                            PricePerHour = 28m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000069"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 69000,
-                            Model = "Everest",
-                            NumberPlate = "29A-169.79",
-                            PricePerHour = 29m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000070"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 70000,
-                            Model = "Accent",
-                            NumberPlate = "30A-170.80",
-                            PricePerHour = 30m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000071"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 71000,
-                            Model = "Seltos",
-                            NumberPlate = "31A-171.81",
-                            PricePerHour = 31m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000072"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 72000,
-                            Model = "Vios",
-                            NumberPlate = "32A-172.82",
-                            PricePerHour = 32m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000073"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 73000,
-                            Model = "Everest",
-                            NumberPlate = "33A-173.83",
-                            PricePerHour = 33m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000074"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 74000,
-                            Model = "Accent",
-                            NumberPlate = "34A-174.84",
-                            PricePerHour = 34m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000075"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 75000,
-                            Model = "Seltos",
-                            NumberPlate = "35A-175.85",
-                            PricePerHour = 35m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000076"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 76000,
-                            Model = "Vios",
-                            NumberPlate = "36A-176.86",
-                            PricePerHour = 36m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000077"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 77000,
-                            Model = "Everest",
-                            NumberPlate = "37A-177.87",
-                            PricePerHour = 37m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000078"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 78000,
-                            Model = "Accent",
-                            NumberPlate = "38A-178.88",
-                            PricePerHour = 38m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000079"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 79000,
-                            Model = "Seltos",
-                            NumberPlate = "39A-179.89",
-                            PricePerHour = 39m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000080"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 80000,
-                            Model = "Vios",
-                            NumberPlate = "40A-180.90",
-                            PricePerHour = 40m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000081"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 81000,
-                            Model = "Everest",
-                            NumberPlate = "41A-181.91",
-                            PricePerHour = 41m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000082"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 82000,
-                            Model = "Accent",
-                            NumberPlate = "42A-182.92",
-                            PricePerHour = 42m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000083"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 83000,
-                            Model = "Seltos",
-                            NumberPlate = "43A-183.93",
-                            PricePerHour = 43m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000084"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 84000,
-                            Model = "Vios",
-                            NumberPlate = "44A-184.94",
-                            PricePerHour = 44m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000085"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 85000,
-                            Model = "Everest",
-                            NumberPlate = "45A-185.95",
-                            PricePerHour = 45m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000086"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 86000,
-                            Model = "Accent",
-                            NumberPlate = "46A-186.96",
-                            PricePerHour = 46m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000087"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 87000,
-                            Model = "Seltos",
-                            NumberPlate = "47A-187.97",
-                            PricePerHour = 47m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000088"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 88000,
-                            Model = "Vios",
-                            NumberPlate = "48A-188.98",
-                            PricePerHour = 48m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000089"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 89000,
-                            Model = "Everest",
-                            NumberPlate = "49A-189.99",
-                            PricePerHour = 49m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000090"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 90000,
-                            Model = "Accent",
-                            NumberPlate = "50A-190.10",
-                            PricePerHour = 50m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000091"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 91000,
-                            Model = "Seltos",
-                            NumberPlate = "51A-191.11",
-                            PricePerHour = 51m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000092"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 92000,
-                            Model = "Vios",
-                            NumberPlate = "52A-192.12",
-                            PricePerHour = 52m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000093"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 93000,
-                            Model = "Everest",
-                            NumberPlate = "53A-193.13",
-                            PricePerHour = 53m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000094"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 94000,
-                            Model = "Accent",
-                            NumberPlate = "54A-194.14",
-                            PricePerHour = 54m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000095"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 95000,
-                            Model = "Seltos",
-                            NumberPlate = "55A-195.15",
-                            PricePerHour = 55m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000096"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 96000,
-                            Model = "Vios",
-                            NumberPlate = "56A-196.16",
-                            PricePerHour = 56m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000097"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 97000,
-                            Model = "Everest",
-                            NumberPlate = "57A-197.17",
-                            PricePerHour = 57m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000098"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 98000,
-                            Model = "Accent",
-                            NumberPlate = "58A-198.18",
-                            PricePerHour = 58m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000099"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 99000,
-                            Model = "Seltos",
-                            NumberPlate = "59A-199.19",
-                            PricePerHour = 59m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000100"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 100000,
-                            Model = "Vios",
-                            NumberPlate = "10A-200.20",
-                            PricePerHour = 60m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000101"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 101000,
-                            Model = "Everest",
-                            NumberPlate = "11A-201.21",
-                            PricePerHour = 61m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000102"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 102000,
-                            Model = "Accent",
-                            NumberPlate = "12A-202.22",
-                            PricePerHour = 62m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000103"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 103000,
-                            Model = "Seltos",
-                            NumberPlate = "13A-203.23",
-                            PricePerHour = 63m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000104"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 104000,
-                            Model = "Vios",
-                            NumberPlate = "14A-204.24",
-                            PricePerHour = 64m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000105"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 105000,
-                            Model = "Everest",
-                            NumberPlate = "15A-205.25",
-                            PricePerHour = 65m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000106"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 106000,
-                            Model = "Accent",
-                            NumberPlate = "16A-206.26",
-                            PricePerHour = 66m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000107"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 107000,
-                            Model = "Seltos",
-                            NumberPlate = "17A-207.27",
-                            PricePerHour = 67m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000108"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 108000,
-                            Model = "Vios",
-                            NumberPlate = "18A-208.28",
-                            PricePerHour = 68m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000109"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 109000,
-                            Model = "Everest",
-                            NumberPlate = "19A-209.29",
-                            PricePerHour = 69m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000110"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 110000,
-                            Model = "Accent",
-                            NumberPlate = "20A-210.30",
-                            PricePerHour = 70m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000111"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 111000,
-                            Model = "Seltos",
-                            NumberPlate = "21A-211.31",
-                            PricePerHour = 71m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000112"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 112000,
-                            Model = "Vios",
-                            NumberPlate = "22A-212.32",
-                            PricePerHour = 72m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000113"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 113000,
-                            Model = "Everest",
-                            NumberPlate = "23A-213.33",
-                            PricePerHour = 73m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000114"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 114000,
-                            Model = "Accent",
-                            NumberPlate = "24A-214.34",
-                            PricePerHour = 74m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000115"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 115000,
-                            Model = "Seltos",
-                            NumberPlate = "25A-215.35",
-                            PricePerHour = 75m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000116"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 116000,
-                            Model = "Vios",
-                            NumberPlate = "26A-216.36",
-                            PricePerHour = 76m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000117"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 117000,
-                            Model = "Everest",
-                            NumberPlate = "27A-217.37",
-                            PricePerHour = 77m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000118"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 118000,
-                            Model = "Accent",
-                            NumberPlate = "28A-218.38",
-                            PricePerHour = 78m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000119"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 119000,
-                            Model = "Seltos",
-                            NumberPlate = "29A-219.39",
-                            PricePerHour = 79m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000120"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 120000,
-                            Model = "Vios",
-                            NumberPlate = "30A-220.40",
-                            PricePerHour = 20m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000121"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 121000,
-                            Model = "Everest",
-                            NumberPlate = "31A-221.41",
-                            PricePerHour = 21m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000122"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 122000,
-                            Model = "Accent",
-                            NumberPlate = "32A-222.42",
-                            PricePerHour = 22m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000123"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 123000,
-                            Model = "Seltos",
-                            NumberPlate = "33A-223.43",
-                            PricePerHour = 23m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000124"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 124000,
-                            Model = "Vios",
-                            NumberPlate = "34A-224.44",
-                            PricePerHour = 24m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000125"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 125000,
-                            Model = "Everest",
-                            NumberPlate = "35A-225.45",
-                            PricePerHour = 25m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000126"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 126000,
-                            Model = "Accent",
-                            NumberPlate = "36A-226.46",
-                            PricePerHour = 26m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000127"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 127000,
-                            Model = "Seltos",
-                            NumberPlate = "37A-227.47",
-                            PricePerHour = 27m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000128"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 128000,
-                            Model = "Vios",
-                            NumberPlate = "38A-228.48",
-                            PricePerHour = 28m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000129"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 129000,
-                            Model = "Everest",
-                            NumberPlate = "39A-229.49",
-                            PricePerHour = 29m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000130"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 130000,
-                            Model = "Accent",
-                            NumberPlate = "40A-230.50",
-                            PricePerHour = 30m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000131"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 131000,
-                            Model = "Seltos",
-                            NumberPlate = "41A-231.51",
-                            PricePerHour = 31m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000132"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 132000,
-                            Model = "Vios",
-                            NumberPlate = "42A-232.52",
-                            PricePerHour = 32m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000133"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 133000,
-                            Model = "Everest",
-                            NumberPlate = "43A-233.53",
-                            PricePerHour = 33m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000134"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 134000,
-                            Model = "Accent",
-                            NumberPlate = "44A-234.54",
-                            PricePerHour = 34m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000135"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 135000,
-                            Model = "Seltos",
-                            NumberPlate = "45A-235.55",
-                            PricePerHour = 35m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000136"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 136000,
-                            Model = "Vios",
-                            NumberPlate = "46A-236.56",
-                            PricePerHour = 36m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000137"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 137000,
-                            Model = "Everest",
-                            NumberPlate = "47A-237.57",
-                            PricePerHour = 37m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000138"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 138000,
-                            Model = "Accent",
-                            NumberPlate = "48A-238.58",
-                            PricePerHour = 38m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000139"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 139000,
-                            Model = "Seltos",
-                            NumberPlate = "49A-239.59",
-                            PricePerHour = 39m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000140"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 140000,
-                            Model = "Vios",
-                            NumberPlate = "50A-240.60",
-                            PricePerHour = 40m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000141"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 141000,
-                            Model = "Everest",
-                            NumberPlate = "51A-241.61",
-                            PricePerHour = 41m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000142"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 142000,
-                            Model = "Accent",
-                            NumberPlate = "52A-242.62",
-                            PricePerHour = 42m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000143"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 143000,
-                            Model = "Seltos",
-                            NumberPlate = "53A-243.63",
-                            PricePerHour = 43m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000144"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 144000,
-                            Model = "Vios",
-                            NumberPlate = "54A-244.64",
-                            PricePerHour = 44m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000145"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 145000,
-                            Model = "Everest",
-                            NumberPlate = "55A-245.65",
-                            PricePerHour = 45m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000146"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 146000,
-                            Model = "Accent",
-                            NumberPlate = "56A-246.66",
-                            PricePerHour = 46m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000147"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 147000,
-                            Model = "Seltos",
-                            NumberPlate = "57A-247.67",
-                            PricePerHour = 47m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000148"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 148000,
-                            Model = "Vios",
-                            NumberPlate = "58A-248.68",
-                            PricePerHour = 48m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000149"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 149000,
-                            Model = "Everest",
-                            NumberPlate = "59A-249.69",
-                            PricePerHour = 49m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000150"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 150000,
-                            Model = "Accent",
-                            NumberPlate = "10A-250.70",
-                            PricePerHour = 50m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000151"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 151000,
-                            Model = "Seltos",
-                            NumberPlate = "11A-251.71",
-                            PricePerHour = 51m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000152"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 152000,
-                            Model = "Vios",
-                            NumberPlate = "12A-252.72",
-                            PricePerHour = 52m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000153"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 153000,
-                            Model = "Everest",
-                            NumberPlate = "13A-253.73",
-                            PricePerHour = 53m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000154"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 154000,
-                            Model = "Accent",
-                            NumberPlate = "14A-254.74",
-                            PricePerHour = 54m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000155"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 155000,
-                            Model = "Seltos",
-                            NumberPlate = "15A-255.75",
-                            PricePerHour = 55m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000156"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 156000,
-                            Model = "Vios",
-                            NumberPlate = "16A-256.76",
-                            PricePerHour = 56m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000157"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 157000,
-                            Model = "Everest",
-                            NumberPlate = "17A-257.77",
-                            PricePerHour = 57m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000158"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 158000,
-                            Model = "Accent",
-                            NumberPlate = "18A-258.78",
-                            PricePerHour = 58m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000159"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 159000,
-                            Model = "Seltos",
-                            NumberPlate = "19A-259.79",
-                            PricePerHour = 59m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000160"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 160000,
-                            Model = "Vios",
-                            NumberPlate = "20A-260.80",
-                            PricePerHour = 60m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000161"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 161000,
-                            Model = "Everest",
-                            NumberPlate = "21A-261.81",
-                            PricePerHour = 61m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000162"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 162000,
-                            Model = "Accent",
-                            NumberPlate = "22A-262.82",
-                            PricePerHour = 62m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000163"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 163000,
-                            Model = "Seltos",
-                            NumberPlate = "23A-263.83",
-                            PricePerHour = 63m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000164"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 164000,
-                            Model = "Vios",
-                            NumberPlate = "24A-264.84",
-                            PricePerHour = 64m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000165"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 165000,
-                            Model = "Everest",
-                            NumberPlate = "25A-265.85",
-                            PricePerHour = 65m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000166"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 166000,
-                            Model = "Accent",
-                            NumberPlate = "26A-266.86",
-                            PricePerHour = 66m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000167"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 167000,
-                            Model = "Seltos",
-                            NumberPlate = "27A-267.87",
-                            PricePerHour = 67m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000168"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 168000,
-                            Model = "Vios",
-                            NumberPlate = "28A-268.88",
-                            PricePerHour = 68m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000169"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 169000,
-                            Model = "Everest",
-                            NumberPlate = "29A-269.89",
-                            PricePerHour = 69m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000170"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 170000,
-                            Model = "Accent",
-                            NumberPlate = "30A-270.90",
-                            PricePerHour = 70m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000171"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 171000,
-                            Model = "Seltos",
-                            NumberPlate = "31A-271.91",
-                            PricePerHour = 71m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000172"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 172000,
-                            Model = "Vios",
-                            NumberPlate = "32A-272.92",
-                            PricePerHour = 72m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000173"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 173000,
-                            Model = "Everest",
-                            NumberPlate = "33A-273.93",
-                            PricePerHour = 73m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000174"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 174000,
-                            Model = "Accent",
-                            NumberPlate = "34A-274.94",
-                            PricePerHour = 74m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000175"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 175000,
-                            Model = "Seltos",
-                            NumberPlate = "35A-275.95",
-                            PricePerHour = 75m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000176"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 176000,
-                            Model = "Vios",
-                            NumberPlate = "36A-276.96",
-                            PricePerHour = 76m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000177"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 177000,
-                            Model = "Everest",
-                            NumberPlate = "37A-277.97",
-                            PricePerHour = 77m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000178"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 178000,
-                            Model = "Accent",
-                            NumberPlate = "38A-278.98",
-                            PricePerHour = 78m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000179"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 179000,
-                            Model = "Seltos",
-                            NumberPlate = "39A-279.99",
-                            PricePerHour = 79m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000180"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 180000,
-                            Model = "Vios",
-                            NumberPlate = "40A-280.10",
-                            PricePerHour = 20m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000181"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 181000,
-                            Model = "Everest",
-                            NumberPlate = "41A-281.11",
-                            PricePerHour = 21m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000182"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 182000,
-                            Model = "Accent",
-                            NumberPlate = "42A-282.12",
-                            PricePerHour = 22m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000183"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 183000,
-                            Model = "Seltos",
-                            NumberPlate = "43A-283.13",
-                            PricePerHour = 23m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000184"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 184000,
-                            Model = "Vios",
-                            NumberPlate = "44A-284.14",
-                            PricePerHour = 24m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000185"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 185000,
-                            Model = "Everest",
-                            NumberPlate = "45A-285.15",
-                            PricePerHour = 25m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000186"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 186000,
-                            Model = "Accent",
-                            NumberPlate = "46A-286.16",
-                            PricePerHour = 26m,
-                            Rating = 4.1f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000187"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 187000,
-                            Model = "Seltos",
-                            NumberPlate = "47A-287.17",
-                            PricePerHour = 27m,
-                            Rating = 4.2f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000188"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 188000,
-                            Model = "Vios",
-                            NumberPlate = "48A-288.18",
-                            PricePerHour = 28m,
-                            Rating = 4.3f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000189"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 189000,
-                            Model = "Everest",
-                            NumberPlate = "49A-289.19",
-                            PricePerHour = 29m,
-                            Rating = 4.4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000190"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 190000,
-                            Model = "Accent",
-                            NumberPlate = "50A-290.20",
-                            PricePerHour = 30m,
-                            Rating = 4.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000191"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 191000,
-                            Model = "Seltos",
-                            NumberPlate = "51A-291.21",
-                            PricePerHour = 31m,
-                            Rating = 4.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000192"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 192000,
-                            Model = "Vios",
-                            NumberPlate = "52A-292.22",
-                            PricePerHour = 32m,
-                            Rating = 4.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000193"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 193000,
-                            Model = "Everest",
-                            NumberPlate = "53A-293.23",
-                            PricePerHour = 33m,
-                            Rating = 4.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000194"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 194000,
-                            Model = "Accent",
-                            NumberPlate = "54A-294.24",
-                            PricePerHour = 34m,
-                            Rating = 4.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000195"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 195000,
-                            Model = "Seltos",
-                            NumberPlate = "55A-295.25",
-                            PricePerHour = 35m,
-                            Rating = 3.5f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000196"),
-                            Color = "Đen",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 196000,
-                            Model = "Vios",
-                            NumberPlate = "56A-296.26",
-                            PricePerHour = 36m,
-                            Rating = 3.6f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000197"),
-                            Color = "Trắng",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000002"),
-                            Manufacturer = "Ford",
-                            Mileage = 197000,
-                            Model = "Everest",
-                            NumberPlate = "57A-297.27",
-                            PricePerHour = 37m,
-                            Rating = 3.7f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000198"),
-                            Color = "Đỏ",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000003"),
-                            Manufacturer = "Hyundai",
-                            Mileage = 198000,
-                            Model = "Accent",
-                            NumberPlate = "58A-298.28",
-                            PricePerHour = 38m,
-                            Rating = 3.8f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000199"),
-                            Color = "Xanh",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000004"),
-                            Manufacturer = "Kia",
-                            Mileage = 199000,
-                            Model = "Seltos",
-                            NumberPlate = "59A-299.29",
-                            PricePerHour = 39m,
-                            Rating = 3.9f,
-                            Status = "Available",
-                            TransmissionId = new Guid("b2c3d4e5-f6a7-b8c9-d0e1-f2a3b4c5d6e7"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04")
-                        },
-                        new
-                        {
-                            Id = new Guid("00000000-0000-0000-0000-000000000200"),
-                            Color = "Bạc",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            FuelId = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            IsDeleted = false,
-                            LocationId = new Guid("10000000-0000-0000-0000-000000000001"),
-                            Manufacturer = "Toyota",
-                            Mileage = 200000,
-                            Model = "Vios",
-                            NumberPlate = "10A-300.30",
-                            PricePerHour = 40m,
-                            Rating = 4f,
-                            Status = "Available",
-                            TransmissionId = new Guid("a1b2c3d4-e5f6-a7b8-c9d0-e1f2a3b4c5d6"),
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 207, DateTimeKind.Utc).AddTicks(7117),
-                            VehicleCategoryId = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01")
-                        });
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleAttribute", b =>
@@ -9250,6 +2913,10 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnType("bit")
                         .HasColumnName("is_deleted");
 
+                    b.Property<byte[]>("RowVersion")
+                        .IsRequired()
+                        .HasColumnType("varbinary(max)");
+
                     b.Property<int>("Seat")
                         .HasColumnType("int")
                         .HasColumnName("seat");
@@ -9271,41 +2938,45 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01"),
                             CategoryCode = "SEDAN",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187),
                             Description = "Xe sedan 4-5 chỗ, phổ thông",
                             IsDeleted = false,
+                            RowVersion = new byte[0],
                             Seat = 5,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245)
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02"),
                             CategoryCode = "SUV",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187),
                             Description = "Xe thể thao đa dụng, gầm cao",
                             IsDeleted = false,
+                            RowVersion = new byte[0],
                             Seat = 7,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245)
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03"),
                             CategoryCode = "HATCHBACK",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187),
                             Description = "Xe cỡ nhỏ cho đô thị",
                             IsDeleted = false,
+                            RowVersion = new byte[0],
                             Seat = 5,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245)
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04"),
                             CategoryCode = "MINIVAN",
-                            CreatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245),
+                            CreatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187),
                             Description = "Xe gia đình, rộng rãi",
                             IsDeleted = false,
+                            RowVersion = new byte[0],
                             Seat = 7,
-                            UpdatedAt = new DateTime(2025, 12, 18, 15, 31, 57, 203, DateTimeKind.Utc).AddTicks(245)
+                            UpdatedAt = new DateTime(2026, 1, 15, 14, 52, 23, 504, DateTimeKind.Utc).AddTicks(5187)
                         });
                 });
 
@@ -9375,6 +3046,249 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         });
                 });
 
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_model_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("ConditionNotes")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("condition_notes");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<DateTime?>("LastAvailableAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("last_available_at");
+
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("location_id");
+
+                    b.Property<int>("Mileage")
+                        .HasColumnType("int")
+                        .HasColumnName("mileage");
+
+                    b.Property<string>("NumberPlate")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)")
+                        .HasColumnName("number_plate");
+
+                    b.Property<string>("RealTimeLocation")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("real_time_location");
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .IsRequired()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("rowversion")
+                        .HasColumnName("row_version");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<Guid>("VehicleId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("NumberPlate")
+                        .IsUnique()
+                        .HasFilter("[number_plate] IS NOT NULL");
+
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("vehicle_models", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleReturnImage", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("return_image_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .IsRequired()
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("description");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("int")
+                        .HasColumnName("display_order");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("image_url");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("PublicId")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("public_id");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId");
+
+                    b.ToTable("vehicle_return_images", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.WebhookLog", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("webhook_log_id");
+
+                    b.Property<long>("Amount")
+                        .HasColumnType("bigint")
+                        .HasColumnName("amount");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ErrorCode")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("error_code");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("event_type");
+
+                    b.Property<bool>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false)
+                        .HasColumnName("is_deleted");
+
+                    b.Property<long>("OrderCode")
+                        .HasColumnType("bigint")
+                        .HasColumnName("order_code");
+
+                    b.Property<string>("Payload")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("payload");
+
+                    b.Property<DateTime?>("ProcessedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("processed_at");
+
+                    b.Property<string>("ProcessedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("processed_by");
+
+                    b.Property<string>("Reference")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("reference");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("updated_by");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("webhook_logs", (string)null);
+                });
+
             modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
                 {
                     b.HasOne("MassTransit.EntityFrameworkCoreIntegration.OutboxState", null)
@@ -9396,19 +3310,25 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .IsRequired();
 
                     b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "PickupLocation")
-                        .WithMany("PickupsFromLocation")
+                        .WithMany()
                         .HasForeignKey("PickupLocationId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "ReturnLocation")
-                        .WithMany("ReturnsToLocation")
+                        .WithMany()
                         .HasForeignKey("ReturnLocationId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("NET_CarRentalSystem.Domain.Entities.Vehicle", "Vehicle")
                         .WithMany("Bookings")
                         .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.VehicleModel", "VehicleModel")
+                        .WithMany("Bookings")
+                        .HasForeignKey("VehicleModelId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -9419,6 +3339,55 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Navigation("ReturnLocation");
 
                     b.Navigation("Vehicle");
+
+                    b.Navigation("VehicleModel");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingImage", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
+                        .WithMany("BookingImages")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingInsurance", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
+                        .WithMany("BookingInsurances")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.InsurancePackage", "InsurancePackage")
+                        .WithMany("BookingInsurances")
+                        .HasForeignKey("InsurancePackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("InsurancePackage");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingViolation", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
+                        .WithMany("Violations")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", "PaymentTransaction")
+                        .WithOne("ViolationPayment")
+                        .HasForeignKey("NET_CarRentalSystem.Domain.Entities.BookingViolation", "PaymentTransactionId");
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("PaymentTransaction");
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Customer", b =>
@@ -9430,6 +3399,29 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
+                        .WithMany("Transactions")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.RefundProcessingLog", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.RefundRequest", "RefundRequest")
+                        .WithMany()
+                        .HasForeignKey("RefundRequestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("FK_refund_processing_logs_refund_requests_refund_request_id");
+
+                    b.Navigation("RefundRequest");
+                });
+
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.RoleClaim", b =>
                 {
                     b.HasOne("NET_CarRentalSystem.Domain.Entities.Role", "Role")
@@ -9439,6 +3431,17 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .IsRequired();
 
                     b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.TransactionProcessingLog", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", "PaymentTransaction")
+                        .WithMany("ProcessingLogs")
+                        .HasForeignKey("PaymentTransactionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PaymentTransaction");
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserClaim", b =>
@@ -9511,11 +3514,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasForeignKey("FuelId")
                         .OnDelete(DeleteBehavior.SetNull);
 
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "Location")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
                     b.HasOne("NET_CarRentalSystem.Domain.Entities.Transmission", "Transmission")
                         .WithMany("Vehicles")
                         .HasForeignKey("TransmissionId")
@@ -9527,8 +3525,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Fuel");
-
-                    b.Navigation("Location");
 
                     b.Navigation("Transmission");
 
@@ -9557,6 +3553,48 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Navigation("Vehicle");
                 });
 
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleModel", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "Location")
+                        .WithMany("VehicleModels")
+                        .HasForeignKey("LocationId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Vehicle", "Vehicle")
+                        .WithMany("VehicleModels")
+                        .HasForeignKey("VehicleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Location");
+
+                    b.Navigation("Vehicle");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleReturnImage", b =>
+                {
+                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
+                        .WithMany("VehicleReturnImages")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Booking", b =>
+                {
+                    b.Navigation("BookingImages");
+
+                    b.Navigation("BookingInsurances");
+
+                    b.Navigation("Transactions");
+
+                    b.Navigation("VehicleReturnImages");
+
+                    b.Navigation("Violations");
+                });
+
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Bookings");
@@ -9567,13 +3605,21 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Navigation("Vehicles");
                 });
 
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.InsurancePackage", b =>
+                {
+                    b.Navigation("BookingInsurances");
+                });
+
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Location", b =>
                 {
-                    b.Navigation("PickupsFromLocation");
+                    b.Navigation("VehicleModels");
+                });
 
-                    b.Navigation("ReturnsToLocation");
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", b =>
+                {
+                    b.Navigation("ProcessingLogs");
 
-                    b.Navigation("Vehicles");
+                    b.Navigation("ViolationPayment");
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Role", b =>
@@ -9610,11 +3656,18 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.Navigation("VehicleAttributes");
 
                     b.Navigation("VehicleImages");
+
+                    b.Navigation("VehicleModels");
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleCategory", b =>
                 {
                     b.Navigation("Vehicles");
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleModel", b =>
+                {
+                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }

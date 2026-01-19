@@ -17,12 +17,24 @@ public abstract class RenticarBaseDbContext(
     public DbSet<Transmission> Transmissions => Set<Transmission>();
     public DbSet<Location> Locations => Set<Location>();
     public DbSet<Booking> Bookings => Set<Booking>();
-    public DbSet<VehicleImage> VehicleImages => Set<VehicleImage>();
-    public DbSet<VehicleAttribute> VehicleAttributes => Set<VehicleAttribute>();
+    public DbSet<BookingImage> BookingImages => Set<BookingImage>();
+    public DbSet<PaymentTransaction> PaymentTransactions => Set<PaymentTransaction>();
+    public DbSet<TransactionProcessingLog> TransactionProcessingLogs => Set<TransactionProcessingLog>();
+    public DbSet<RefundRequest> RefundRequests => Set<RefundRequest>();
+    public DbSet<RefundProcessingLog> RefundProcessingLogs => Set<RefundProcessingLog>();
     public DbSet<User> Users => Set<User>();
     public DbSet<Customer> Customers => Set<Customer>();
-
+    public DbSet<Role> Roles => Set<Role>();
+    public DbSet<RoleClaim> RoleClaims => Set<RoleClaim>();
+    public DbSet<UserRole> UserRoles => Set<UserRole>();
+    public DbSet<UserClaim> UserClaims => Set<UserClaim>();
+    public DbSet<UserLogin> UserLogins => Set<UserLogin>();
     public DbSet<UserSession> UserSessions => Set<UserSession>();
+    public DbSet<SystemSetting> SystemSettings => Set<SystemSetting>();
+    public DbSet<WebhookLog> WebhookLogs => Set<WebhookLog>();
+    public DbSet<VehicleModel> VehicleModels => Set<VehicleModel>();
+    public DbSet<VehicleImage> VehicleImages => Set<VehicleImage>();
+    public DbSet<VehicleAttribute> VehicleAttributes => Set<VehicleAttribute>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -16,6 +16,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Seeders
                     PermissionConstants.Vehicles.Create,
                     PermissionConstants.Vehicles.Edit,
                     PermissionConstants.Bookings.View,
+                    PermissionConstants.Bookings.ViewDetail,
                     PermissionConstants.Bookings.Edit,
                     PermissionConstants.Fuels.Create,
                     PermissionConstants.Fuels.Edit,
@@ -27,13 +28,15 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Seeders
                 [
                     PermissionConstants.Vehicles.View,
                     PermissionConstants.Bookings.View,
+                    PermissionConstants.Bookings.ViewDetail,
                     PermissionConstants.Bookings.Create
                 ],
                 
                 [RoleSeeder.CustomerRoleId] =
                 [
                     PermissionConstants.Bookings.Create,
-                    PermissionConstants.Bookings.View
+                    PermissionConstants.Bookings.View,
+                    PermissionConstants.Bookings.Cancel
                 ]
             };
         }

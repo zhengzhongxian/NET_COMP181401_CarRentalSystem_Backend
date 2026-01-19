@@ -33,20 +33,11 @@ public class DeleteLocationCommandHandler(
             if (location == null)
                 return (LocationMessage.Delete.NotFound, false);
 
-            var vehiclesCount = await unitOfWork.GetReadRepository<Vehicle>()
+            var vehiclesCount = await unitOfWork.GetReadRepository<VehicleModel>()
                 .CountAsync(v => v.LocationId == request.LocationId, ct);
                 
             if (vehiclesCount > 0)
                 return (LocationMessage.Delete.HasVehicles, false);
-
-            var pickupsCount = await unitOfWork.GetReadRepository<Booking>()
-                .CountAsync(b => b.PickupLocationId == request.LocationId, ct);
-                
-            var returnsCount = await unitOfWork.GetReadRepository<Booking>()
-                .CountAsync(b => b.ReturnLocationId == request.LocationId, ct);
-
-            if (pickupsCount > 0 || returnsCount > 0)
-                return (LocationMessage.Delete.HasBookings, false);
 
             if (!string.IsNullOrEmpty(location.PublicId))
             {

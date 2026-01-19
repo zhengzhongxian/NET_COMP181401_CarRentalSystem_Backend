@@ -1,8 +1,10 @@
 using MassTransit;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using NET_CarRentalSystem.Application.Features.Bookings.Consumers;
 using NET_CarRentalSystem.Application.Features.Fuels.Consumers;
 using NET_CarRentalSystem.Application.Features.Locations.Consumers;
+using NET_CarRentalSystem.Application.Features.Payments.Consumers;
 using NET_CarRentalSystem.Application.Features.Vehicles.Consumers;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 using RabbitKeys = NET_CarRentalSystem.Shared.Constants.KeyConstants.RabbitMq;
@@ -52,6 +54,26 @@ namespace NET_CarRentalSystem.Infrastructure.DependencyInjection
                         h.Username(username);
                         h.Password(password);
                     });
+                    
+
+                    cfg.UseMessageRetry(r => 
+                    {
+                        r.Intervals(
+                            TimeSpan.FromSeconds(1),
+                            TimeSpan.FromSeconds(5),
+                            TimeSpan.FromSeconds(15),
+                            TimeSpan.FromSeconds(30)
+                        );
+                    });
+                    
+                    cfg.UseDelayedRedelivery(r =>
+                    {
+                        r.Intervals(
+                            TimeSpan.FromMinutes(5),
+                            TimeSpan.FromMinutes(30),
+                            TimeSpan.FromHours(1)
+                        );
+                    });
 
                     cfg.ConfigureEndpoints(context);
                 });
@@ -69,10 +91,17 @@ namespace NET_CarRentalSystem.Infrastructure.DependencyInjection
             configurator.AddConsumer<VehicleReadFlatThumbnailUpdatedConsumer>();
             configurator.AddConsumer<VehicleReadFlatImagesUpdatedConsumer>();
             configurator.AddConsumer<VehicleReadFlatAttributesUpdatedConsumer>();
+            configurator.AddConsumer<VehicleReadFlatModelsUpdatedConsumer>();
             configurator.AddConsumer<LocationCreatedConsumer>();
             configurator.AddConsumer<LocationDeletedConsumer>();
             configurator.AddConsumer<LocationReadFlatThumbnailUpdatedConsumer>();
             configurator.AddConsumer<LocationReadFlatUpdatedConsumer>();
+            configurator.AddConsumer<BookingReadFlatCreatedConsumer>();
+            configurator.AddConsumer<BookingReadFlatUpdatedConsumer>();
+            configurator.AddConsumer<PaymentEmailEventConsumer>();
+            configurator.AddConsumer<RefundEmailEventConsumer>();
+            configurator.AddConsumer<RefundProcessingFailedAlertConsumer>();
+            configurator.AddConsumer<PendingTransactionsRefundNoticeConsumer>();
         }
     }
 }

@@ -7,6 +7,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 public sealed class RenticarReadDbContext : RenticarBaseDbContext
 {
     public DbSet<VehicleReadFlat> VehicleReadFlats => Set<VehicleReadFlat>();
+    public DbSet<BookingReadFlat> BookingReadFlats => Set<BookingReadFlat>();
     
     public RenticarReadDbContext(
         DbContextOptions<RenticarReadDbContext> options, 

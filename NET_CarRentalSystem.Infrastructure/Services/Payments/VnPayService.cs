@@ -11,7 +11,7 @@ public class VnPayService(IOptions<VnPaySettings> config, IApiClient apiClient) 
 {
     private readonly VnPaySettings _settings = config.Value;
 
-    public async Task<string> GeneratePaymentQrCodeAsync(decimal amount, string description)
+    public async Task<string> GeneratePaymentQrCodeAsync(decimal amount, string description, DateTime? expireDate = null)
     {
         var requestBody = new VietQrRequest
         {
@@ -21,7 +21,7 @@ public class VnPayService(IOptions<VnPaySettings> config, IApiClient apiClient) 
             Amount = amount,
             AddInfo = description,
             Format = "text",
-            Template = _settings.Template
+            Template = _settings.Template,
         };
 
         var headers = new Dictionary<string, string>

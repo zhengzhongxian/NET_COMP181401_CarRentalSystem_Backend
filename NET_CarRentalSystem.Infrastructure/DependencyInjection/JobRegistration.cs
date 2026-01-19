@@ -18,5 +18,6 @@ public static class JobRegistration
         
         //di job
         services.AddTransient<CheckToolAliveJob>();
+        services.AddTransient<ReturnDeadlineReminderJob>();
     }
 }

@@ -18,4 +18,10 @@
     <PackageReference Include="MediatR" Version="11.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Features\Bookings\Queries\" />
+    <Folder Include="Features\Payments\Commands\" />
+    <Folder Include="Interfaces\Services\Documents\" />
+  </ItemGroup>
+
 </Project>

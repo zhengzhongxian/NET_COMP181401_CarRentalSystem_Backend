@@ -1,7 +1,6 @@
 ﻿using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
-using NET_CarRentalSystem.Domain.Entities;
 
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
@@ -19,7 +18,6 @@ public sealed class RenticarWriteDbContext : RenticarBaseDbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        modelBuilder.Ignore<VehicleReadFlat>();
         modelBuilder.AddInboxStateEntity();
         modelBuilder.AddOutboxMessageEntity();
         modelBuilder.AddOutboxStateEntity();

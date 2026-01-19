@@ -12,6 +12,7 @@ public static class KeyConstants
     public static class ConfigurationSections
     {
         public const string CloudinarySettings = "CloudinarySettings";
+        public const string MinioSettings = "MinioSettings";
         public const string JwtSettings = "Authentication:JwtSettings";
         public const string GoogleSettings = "Authentication:GoogleSettings";
         public const string SyncDataToolSettings = "SyncDataToolSettings";
@@ -24,6 +25,12 @@ public static class KeyConstants
         public const string MyApiSettings = "ApiClient:MyApiSettings";
         public const string VnPaySettings = "Payment:VnPaySettings";
         public const string GmailApiSettings = "Notifications:GmailApiSettings";
+        public const string PayOsSettings = "Payment:PayOsSettings";
+        public const string PaymentSyncJob = "Quartz:PaymentSyncJob";
+        public const string RefundProcessingJob = "Quartz:RefundProcessingJob";
+        public const string ReturnDeadlineReminderJob = "Quartz:ReturnDeadlineReminderJob";
+        public const string GeminiSettings = "GeminiSettings";
+        public const string EmbeddingSettings = "EmbeddingSettings";
     }
 
     public static class Quartz
@@ -48,5 +55,20 @@ public static class KeyConstants
         public const string VirtualHost = "RabbitMQ:VirtualHost";
         public const string Username = "RabbitMQ:Username";
         public const string Password = "RabbitMQ:Password";
+    }
+
+    public static class FinalPaymentSettings
+    {
+        public const string MaxImageWidth = "Payment:FinalPayment:MaxImageWidth";
+        public const string MaxImageHeight = "Payment:FinalPayment:MaxImageHeight";
+        public const string ImageQuality = "Payment:FinalPayment:ImageQuality";
+    }
+    
+    public static string EmailRedirectUrl => "EmailRedirectUrl";
+
+    public static class QrReturnVehicleUrl
+    {
+        public const string ExpireInSecond = "QrReturnVehicleUrl:ExpireInSecond";
+        public const string BaseUrl = "QrReturnVehicleUrl:BaseUrl";
     }
 }

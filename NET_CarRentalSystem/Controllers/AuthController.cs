@@ -6,6 +6,7 @@ using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Extensions;
 using NET_CarRentalSystem.API.Models.Request.Auth;
 using NET_CarRentalSystem.API.Models.Response.Auth;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.ChangePasswordCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.ForgetPasswordCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLoginCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Commands.GoogLogupCommand;
@@ -378,6 +379,40 @@ namespace NET_CarRentalSystem.API.Controllers
                     AuthMessage.GoogleLogup.Error,
                     StatusCodes.Status500InternalServerError,
                     [ex.Message]);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("change-password")]
+        [ValidateUserExists]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new ChangePasswordCommand
+                {
+                    CurrentPassword = request.CurrentPassword,
+                    NewPassword = request.NewPassword
+                };
+                
+                var (message, success) = await mediator.Send(command, cancellationToken);
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception e)
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    AuthMessage.ChangePassword.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [e.Message]);
 
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }

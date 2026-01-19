@@ -70,5 +70,35 @@ public static class VehicleMessage
         public const string Error = "Đã xảy ra lỗi khi xóa thuộc tính xe";
         public const string NotFound = "Không tìm thấy xe hoặc thuộc tính để xóa";
     }
+
+    public static class AddVehicleModels
+    {
+        public const string Success = "Thêm danh sách chiếc xe thành công.";
+        public const string Error = "Có lỗi xảy ra khi thêm danh sách chiếc xe.";
+        public const string NotFound = "Không tìm thấy model xe để thêm chiếc xe.";
+        public const string DuplicateNumberPlate = "Biển số xe đã tồn tại.";
+    }
+
+    public static class UpdateVehicleModels
+    {
+        public const string Success = "Cập nhật chiếc xe thành công.";
+        public const string Error = "Có lỗi xảy ra khi cập nhật chiếc xe.";
+        public const string NotFound = "Không tìm thấy model xe hoặc chiếc xe để cập nhật.";
+        public const string DuplicateNumberPlate = "Biển số xe đã tồn tại.";
+    }
+
+    public static class DeleteVehicleModels
+    {
+        public const string Success = "Xóa chiếc xe thành công.";
+        public const string Error = "Có lỗi xảy ra khi xóa chiếc xe.";
+        public const string NotFound = "Không tìm thấy model xe hoặc chiếc xe để xóa.";
+    }
+
+    public static class GetAvailableForSwap
+    {
+        public const string Success = "Lấy danh sách xe có sẵn để đổi thành công.";
+        public const string Error = "Có lỗi xảy ra khi lấy danh sách xe có sẵn để đổi.";
+        public const string NotFound = "Không tìm thấy xe model cũ.";
+    }
 }
 

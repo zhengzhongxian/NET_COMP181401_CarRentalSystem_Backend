@@ -1,4 +1,3 @@
-using MassTransit;
 using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Common.Consumers;
 using NET_CarRentalSystem.Application.Features.Vehicles.Events;

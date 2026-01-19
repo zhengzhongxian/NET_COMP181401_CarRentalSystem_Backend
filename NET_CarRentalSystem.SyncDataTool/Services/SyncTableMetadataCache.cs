@@ -43,7 +43,16 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
         await using var connection = new SqlConnection(_writeDbConnection);
         await connection.OpenAsync(token);
 
-        const string query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = 'dbo' AND TABLE_NAME = @TableName";
+        // Exclude timestamp/rowversion columns and computed columns
+        const string query = @"
+            SELECT c.COLUMN_NAME 
+            FROM INFORMATION_SCHEMA.COLUMNS c
+            WHERE c.TABLE_SCHEMA = 'dbo' 
+              AND c.TABLE_NAME = @TableName
+              AND c.DATA_TYPE != 'timestamp'
+              AND COLUMNPROPERTY(OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME), c.COLUMN_NAME, 'IsComputed') = 0
+            ORDER BY c.ORDINAL_POSITION";
+            
         var columns = (await connection.QueryAsync<string>(new CommandDefinition(query, new { TableName = tableName }, cancellationToken: token))).AsList();
 
         if (columns.Count == 0)

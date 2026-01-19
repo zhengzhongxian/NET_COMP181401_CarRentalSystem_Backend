@@ -6,6 +6,15 @@ public static class AppConstants
     {
         public const string Otp = "OtpEmail.html";
         public const string ResetPassword = "ResetPasswordEmail.html";
+        public const string SyncTransactionError = "SyncTransactionErrorEmail.html";
+        public const string DepositPaymentSuccess = "DepositPaymentSuccessEmail.html";
+        public const string FullPaymentSuccess = "FullPaymentSuccessEmail.html";
+        public const string VehiclePromotion = "VehiclePromotionEmail.html";
+        public const string RefundNotification = "RefundNotificationEmail.html";
+        public const string RefundSuccess = "RefundSuccessEmail.html";
+        public const string RefundProcessingFailureAlert = "RefundProcessingFailureAlertEmail.html";
+        public const string PendingTransactionsRefundNotice = "PendingTransactionsRefundNoticeEmail.html";
+        public const string ViolationNotification = "ViolationNotificationEmail.html";
     }
 
     public static class Pagination

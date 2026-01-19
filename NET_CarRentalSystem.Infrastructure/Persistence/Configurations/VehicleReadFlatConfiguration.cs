@@ -17,11 +17,6 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");
 
-        builder.Property(v => v.NumberPlate)
-            .HasColumnName("number_plate")
-            .IsRequired()
-            .HasMaxLength(50);
-
         builder.Property(v => v.Manufacturer)
             .HasColumnName("manufacturer")
             .IsRequired()
@@ -35,9 +30,7 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
         builder.Property(v => v.Color)
             .HasColumnName("color")
             .HasMaxLength(50);
-
-        builder.Property(v => v.Mileage)
-            .HasColumnName("mileage");
+        
 
         builder.Property(v => v.PricePerHour)
             .HasColumnName("price_per_hour")
@@ -49,30 +42,8 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
         builder.Property(v => v.Description)
             .HasColumnName("description");
 
-        builder.Property(v => v.LastCheckoutAt)
-            .HasColumnName("last_checkout_at");
-
         builder.Property(v => v.Rating)
             .HasColumnName("rating");
-
-        builder.Property(v => v.Status)
-            .HasColumnName("status")
-            .IsRequired()
-            .HasConversion<string>()
-            .HasMaxLength(50);
-
-        builder.Property(v => v.ConditionNotes)
-            .HasColumnName("condition_notes");
-
-        builder.Property(v => v.RealTimeLocation)
-            .HasColumnName("real_time_location");
-
-        builder.Property(v => v.LocationId)
-            .HasColumnName("location_id");
-
-        builder.Property(v => v.LocationName)
-            .HasColumnName("location_name")
-            .HasMaxLength(255);
 
         builder.Property(v => v.VehicleCategoryId)
             .HasColumnName("vehicle_category_id");
@@ -94,6 +65,14 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
         builder.Property(v => v.TransmissionName)
             .HasColumnName("transmission_name")
             .HasMaxLength(50);
+
+        builder.Property(v => v.AvailableCount)
+            .HasColumnName("available_count")
+            .HasDefaultValue(0);
+
+        builder.Property(v => v.VehicleModelsJson)
+            .HasColumnName("vehicle_models_json")
+            .HasColumnType("nvarchar(max)");
 
         builder.Property(v => v.ImagesJson)
             .HasColumnName("images_json")
@@ -131,10 +110,7 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
             .HasColumnName("deleted_by")
             .HasMaxLength(255);
         
-        builder.HasIndex(v => v.NumberPlate).IsUnique();
-        builder.HasIndex(v => v.Status);
         builder.HasIndex(v => v.VehicleCategoryId);
-        builder.HasIndex(v => v.LocationId);
         builder.HasIndex(v => v.UpdatedAt);
         builder.HasIndex(v => v.IsDeleted);
     }

@@ -8,10 +8,6 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
 {
     public CreateVehicleCommandValidator()
     {
-        RuleFor(x => x.NumberPlate)
-            .NotEmpty().WithMessage(VehicleValidationMessage.NumberPlateRequired)
-            .MaximumLength(20).WithMessage(VehicleValidationMessage.NumberPlateMaxLength);
-
         RuleFor(x => x.Manufacturer)
             .NotEmpty().WithMessage(VehicleValidationMessage.ManufacturerRequired)
             .MaximumLength(50).WithMessage(VehicleValidationMessage.ManufacturerMaxLength);
@@ -19,9 +15,6 @@ public class CreateVehicleCommandValidator : AbstractValidator<CreateVehicleComm
         RuleFor(x => x.Model)
             .NotEmpty().WithMessage(VehicleValidationMessage.ModelRequired)
             .MaximumLength(50).WithMessage(VehicleValidationMessage.ModelMaxLength);
-
-        RuleFor(x => x.Mileage)
-            .GreaterThanOrEqualTo(0).WithMessage(VehicleValidationMessage.MileageNegative);
 
         RuleFor(x => x.PricePerHour)
             .GreaterThan(0).WithMessage(VehicleValidationMessage.PriceGreaterThanZero);

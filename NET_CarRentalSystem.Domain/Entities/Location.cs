@@ -2,7 +2,7 @@
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
-public class Location : BaseEntity<Guid>
+public class Location : BaseEntity<Guid>, IRowVersion
 {
     public string Name { get; set; }
 
@@ -19,14 +19,12 @@ public class Location : BaseEntity<Guid>
     public double? Longitude { get; set; }
     
     public string? Description { get; set; }
+
+    public byte[] RowVersion { get; set; } = [];
     
     public string? PublicId { get; set; }
     
     public string? Thumbnail { get; set; }
 
-    public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
-
-    public virtual ICollection<Booking> PickupsFromLocation { get; set; } = [];
-
-    public virtual ICollection<Booking> ReturnsToLocation { get; set; } = [];
+    public virtual ICollection<VehicleModel> VehicleModels { get; set; } = [];
 }

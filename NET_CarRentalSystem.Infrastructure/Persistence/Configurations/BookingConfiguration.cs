@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NET_CarRentalSystem.Domain.Entities;
-using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
 
@@ -24,6 +23,23 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.VehicleId)
             .HasColumnName("vehicle_id")
             .IsRequired();
+
+        builder.Property(b => b.VehicleModelId)
+            .HasColumnName("vehicle_model_id")
+            .IsRequired();
+
+        builder.Property(b => b.PickupLocationId)
+            .HasColumnName("pickup_location_id")
+            .IsRequired();
+
+        builder.Property(b => b.ReturnLocationId)
+            .HasColumnName("return_location_id");
+
+        builder.Property(b => b.Status)
+            .HasColumnName("status")
+            .IsRequired()
+            .HasConversion<string>()
+            .HasMaxLength(50);
 
         builder.Property(b => b.StartDate)
             .HasColumnName("start_date")
@@ -51,6 +67,12 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.MileageStart)
             .HasColumnName("mileage_start");
 
+        builder.Property(b => b.MileageEnd)
+            .HasColumnName("mileage_end");
+
+        builder.Property(b => b.FuelLevelStart)
+            .HasColumnName("fuel_level_start");
+
         builder.Property(b => b.FuelLevelEnd)
             .HasColumnName("fuel_level_end");
 
@@ -61,15 +83,23 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(b => b.ConditionNotes)
             .HasColumnName("condition_notes");
 
-        builder.Property(b => b.PickupLocationId)
-            .HasColumnName("pickup_location_id")
-            .IsRequired();
-
-        builder.Property(b => b.ReturnLocationId)
-            .HasColumnName("return_location_id");
-
         builder.Property(c => c.Description)
             .HasColumnName("description");
+
+        builder.Property(c => c.SwapReason)
+            .HasColumnName("swap_reason")
+            .HasMaxLength(500);
+
+        builder.Property(c => c.CancellationReason)
+            .HasColumnName("cancellation_reason")
+            .HasMaxLength(1000);
+
+        builder.Property(c => c.AcceptedTermsVersion)
+            .HasColumnName("accepted_terms_version")
+            .HasMaxLength(50);
+
+        builder.Property(c => c.AcceptedTermsAt)
+            .HasColumnName("accepted_terms_at");
 
         builder.Property(c => c.CreatedAt)
             .HasColumnName("created_at")
@@ -94,30 +124,40 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(c => c.DeletedAt)
             .HasColumnName("deleted_at");
 
+        builder.Property(c => c.RowVersion)
+            .HasColumnName("row_version")
+            .IsRowVersion()
+            .ValueGeneratedOnAddOrUpdate();
+        
+        builder.Property(c => c.FileName)
+            .HasColumnName("file_name")
+            .HasMaxLength(1000);
+
         builder.HasOne(b => b.Vehicle)
             .WithMany(v => v.Bookings)
             .HasForeignKey(b => b.VehicleId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne(b => b.PickupLocation)
-            .WithMany(l => l.PickupsFromLocation)
-            .HasForeignKey(b => b.PickupLocationId)
+        builder.HasOne(b => b.VehicleModel)
+            .WithMany(vm => vm.Bookings)
+            .HasForeignKey(b => b.VehicleModelId)
             .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne(b => b.ReturnLocation)
-            .WithMany(l => l.ReturnsToLocation)
-            .HasForeignKey(b => b.ReturnLocationId)
-            .IsRequired(false)
-            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasOne(b => b.Customer)
             .WithMany(c => c.Bookings)
             .HasForeignKey(b => b.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasQueryFilter(b => !b.Vehicle.IsDeleted);
+        builder.HasOne(b => b.PickupLocation)
+            .WithMany()
+            .HasForeignKey(b => b.PickupLocationId)
+            .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasData(BookingSeeder.Seed());
+        builder.HasOne(b => b.ReturnLocation)
+            .WithMany()
+            .HasForeignKey(b => b.ReturnLocationId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        builder.HasQueryFilter(b => !b.Vehicle.IsDeleted);
     }
 }
-

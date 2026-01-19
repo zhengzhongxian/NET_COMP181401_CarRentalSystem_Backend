@@ -104,6 +104,12 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
             new(JwtRegisteredClaimNames.Name, user.UserName)
         };
 
+        var userLogin = await unitOfWork.GetReadRepository<UserLogin>()
+            .GetFirstOrDefaultAsync(ul => ul.UserId == user.Id, cancellationToken: cancellationToken);
+
+        var loginProvider = userLogin?.LoginProvider.ToString() ?? "Local";
+        claims.Add(new Claim("LoginProvider", loginProvider));
+
         var roleIds = unitOfWork.GetReadRepository<UserRole>()
             .GetQueryable(ur => ur.UserId == user.Id)
             .Select(ur => ur.RoleId);
@@ -116,13 +122,32 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
             .Select(r => r.Name);
 
         var roleNames = await roles.ToListAsync(cancellationToken);
-        claims.AddRange(roleNames.Select(role => new Claim(ClaimTypes.Role, role)));
+        claims.AddRange(roleNames.Select(role => new Claim(ClaimTypes.Role, role)).Distinct());
 
         var permissionClaims = await unitOfWork.GetReadRepository<RoleClaim>()
             .GetAsync(rc => roleIds.Contains(rc.RoleId) && rc.ClaimType == "Permission", cancellationToken: cancellationToken);
 
-        claims.AddRange(permissionClaims.Select(c => new Claim(c.ClaimType, c.ClaimValue)));
+        var distinctPermissions = permissionClaims
+            .Select(c => c.ClaimValue)
+            .Distinct();
 
-        return claims.Distinct().ToList();
+        claims.AddRange(distinctPermissions.Select(permission => new Claim("Permission", permission)));
+
+        return claims.Distinct(new ClaimComparer()).ToList();
+    }
+}
+
+public class ClaimComparer : IEqualityComparer<Claim>
+{
+    public bool Equals(Claim? x, Claim? y)
+    {
+        if (x == null && y == null) return true;
+        if (x == null || y == null) return false;
+        return x.Type == y.Type && x.Value == y.Value;
+    }
+
+    public int GetHashCode(Claim obj)
+    {
+        return HashCode.Combine(obj.Type, obj.Value);
     }
 }

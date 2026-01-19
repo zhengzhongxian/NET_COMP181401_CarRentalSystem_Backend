@@ -15,4 +15,14 @@ public class GetVehiclesPagedQueryParams : PagedParams
     public decimal? MinPrice { get; set; }
 
     public decimal? MaxPrice { get; set; }
+    
+    public bool UseAi { get; set; } = false;
+
+    public List<string>? AttributeKeywords { get; set; }
+    
+    public List<string>? ExcludeAttributeKeywords { get; set; }
+    
+    public bool UseVectorSearch { get; set; } = false;
+    
+    public bool UseTwoStageSearch { get; set; } = false;
 }

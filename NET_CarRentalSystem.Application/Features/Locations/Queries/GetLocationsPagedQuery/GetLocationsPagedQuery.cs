@@ -1,4 +1,5 @@
 using MediatR;
+using NET_CarRentalSystem.Application.Common.Extensions;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Models.DTOs.LocationDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
@@ -9,8 +10,7 @@ namespace NET_CarRentalSystem.Application.Features.Locations.Queries.GetLocation
 
 public class GetLocationsPagedQuery : IQuery<PagedList<GetLocationDto>>
 {
-    public int PageNumber { get; init; } = 1;
-    public int PageSize { get; init; } = 10;
+    public required GetLocationsPagedQueryParams RequestParams { get; set; }
 }
 
 public class GetLocationsPagedQueryHandler(IUnitOfWork unitOfWork) 
@@ -18,10 +18,10 @@ public class GetLocationsPagedQueryHandler(IUnitOfWork unitOfWork)
 {
     public async Task<PagedList<GetLocationDto>> Handle(GetLocationsPagedQuery request, CancellationToken cancellationToken)
     {
-        var locations = await unitOfWork.GetReadRepository<Location>()
-            .GetAsync(cancellationToken: cancellationToken);
-
-        var locationDtos = locations
+        var queryParams = request.RequestParams;
+        
+        var query = unitOfWork.GetReadRepository<Location>()
+            .GetQueryable()
             .OrderBy(l => l.Name)
             .Select(location => new GetLocationDto
             {
@@ -35,14 +35,8 @@ public class GetLocationsPagedQueryHandler(IUnitOfWork unitOfWork)
                 Longitude = location.Longitude,
                 Description = location.Description,
                 Thumbnail = location.Thumbnail
-            }).ToList();
-
-        var totalCount = locationDtos.Count;
-        var pagedItems = locationDtos
-            .Skip((request.PageNumber - 1) * request.PageSize)
-            .Take(request.PageSize)
-            .ToList();
-
-        return new PagedList<GetLocationDto>(pagedItems, totalCount, request.PageNumber, request.PageSize);
+            });
+        
+        return await query.ToPagedListAsync(queryParams.PageNumber, queryParams.PageSize, cancellationToken);
     }
 }

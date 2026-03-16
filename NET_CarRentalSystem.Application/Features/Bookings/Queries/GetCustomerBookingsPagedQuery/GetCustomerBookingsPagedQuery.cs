@@ -34,7 +34,7 @@ public class GetCustomerBookingsPagedQueryHandler(
         var parameters = new Dictionary<string, object>();
         var query = request.RequestParams;
         
-        var whereConditions = new List<string> { "is_deleted = 0", "customer_id = @CustomerId", "LOWER(status) <> 'pending'" };
+        var whereConditions = new List<string> { "b.is_deleted = 0", "b.customer_id = @CustomerId", "LOWER(b.status) <> 'pending'" };
         parameters["CustomerId"] = customer.CustomerId;
         
         if (!string.IsNullOrWhiteSpace(query.SearchKeyword))
@@ -43,8 +43,8 @@ public class GetCustomerBookingsPagedQueryHandler(
             
             whereConditions.Add("""
                 (
-                    number_plate LIKE @Keyword OR
-                    pickup_location_name LIKE @Keyword
+                    b.number_plate LIKE @Keyword OR
+                    b.pickup_location_name LIKE @Keyword
                 )
             """);
             
@@ -53,19 +53,19 @@ public class GetCustomerBookingsPagedQueryHandler(
         
         if (!string.IsNullOrWhiteSpace(query.Status))
         {
-            whereConditions.Add("status = @Status");
+            whereConditions.Add("b.status = @Status");
             parameters["Status"] = query.Status;
         }
         
         if (query.StartDateFrom.HasValue)
         {
-            whereConditions.Add("start_date >= @StartDateFrom");
+            whereConditions.Add("b.start_date >= @StartDateFrom");
             parameters["StartDateFrom"] = query.StartDateFrom.Value;
         }
         
         if (query.StartDateTo.HasValue)
         {
-            whereConditions.Add("start_date <= @StartDateTo");
+            whereConditions.Add("b.start_date <= @StartDateTo");
             parameters["StartDateTo"] = query.StartDateTo.Value;
         }
         
@@ -73,15 +73,15 @@ public class GetCustomerBookingsPagedQueryHandler(
         
         var allowedSortColumns = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
         {
-            { "StartDate", "start_date" },
-            { "EndDate", "end_date" },
-            { "TotalPrice", "total_price" },
-            { "Created", "created_at" },
-            { "Updated", "updated_at" },
-            { "Status", "status" }
+            { "StartDate", "b.start_date" },
+            { "EndDate", "b.end_date" },
+            { "TotalPrice", "b.total_price" },
+            { "Created", "b.created_at" },
+            { "Updated", "b.updated_at" },
+            { "Status", "b.status" }
         };
 
-        var sortBy = "created_at"; 
+        var sortBy = "b.created_at"; 
         
         if (!string.IsNullOrEmpty(query.SortBy) && allowedSortColumns.TryGetValue(query.SortBy, out var column))
         {
@@ -95,31 +95,33 @@ public class GetCustomerBookingsPagedQueryHandler(
         parameters["Offset"] = offset;
         parameters["PageSize"] = query.PageSize;
         
-        var countSql = $"SELECT COUNT(*) FROM booking_read_flat WHERE {whereClause}";
+        var countSql = $"SELECT COUNT(*) FROM booking_read_flat b WHERE {whereClause}";
         var totalCount = await dapperRepository.ExecuteScalarAsync<int>(countSql, parameters, cancellationToken: cancellationToken);
         
         var dataSql = $"""
             SELECT
-                booking_id_src AS BookingId,
-                customer_id AS CustomerId,
-                customer_name AS CustomerName,
-                customer_email AS CustomerEmail,
-                customer_phone AS CustomerPhone,
-                vehicle_id AS VehicleId,
-                vehicle_price_per_hour AS VehiclePricePerHour,
-                vehicle_model_id AS VehicleModelId,
-                number_plate AS NumberPlate,
-                pickup_location_name AS PickupLocationName,
-                return_location_name AS ReturnLocationName,
-                file_name AS FileName,
-                status AS Status,
-                start_date AS StartDate,
-                end_date AS EndDate,
-                total_price AS TotalPrice,
-                deposit_ratio AS DepositRatio,
-                discount_rate AS DiscountRate,
-                created_at AS CreatedAt
-            FROM booking_read_flat
+                b.booking_id_src AS BookingId,
+                b.customer_id AS CustomerId,
+                b.customer_name AS CustomerName,
+                b.customer_email AS CustomerEmail,
+                b.customer_phone AS CustomerPhone,
+                b.vehicle_id AS VehicleId,
+                CONCAT(v.manufacturer, ' ', v.model) AS VehicleName,
+                b.vehicle_price_per_hour AS VehiclePricePerHour,
+                b.vehicle_model_id AS VehicleModelId,
+                b.number_plate AS NumberPlate,
+                b.pickup_location_name AS PickupLocationName,
+                b.return_location_name AS ReturnLocationName,
+                b.file_name AS FileName,
+                b.status AS Status,
+                b.start_date AS StartDate,
+                b.end_date AS EndDate,
+                b.total_price AS TotalPrice,
+                b.deposit_ratio AS DepositRatio,
+                b.discount_rate AS DiscountRate,
+                b.created_at AS CreatedAt
+            FROM booking_read_flat b
+            LEFT JOIN vehicle_read_flat v ON b.vehicle_id = v.vehicle_id
             WHERE {whereClause}
             {orderByClause}
             OFFSET @Offset ROWS

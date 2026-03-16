@@ -21,6 +21,7 @@ public class GetVehicleDetailsQueryHandler(
                                   vehicle_id as VehicleId, 
                                   manufacturer as Manufacturer,
                                   model as Model, 
+                                  title as Title,
                                   price_per_hour as PricePerHour,
                                   rating as Rating, 
                                   color as Color,
@@ -35,7 +36,9 @@ public class GetVehicleDetailsQueryHandler(
                                   vehicle_models_json as VehicleModelsJson,
                                   images_json as ImagesJson,
                                   attributes_json as AttributesJson,
-                                  metadata as Metadata
+                                  description as Description,
+                                  metadata as Metadata,
+                                  required_license_class as RequiredLicenseClass
                               FROM vehicle_read_flat
                               WHERE vehicle_id = @VehicleId AND is_deleted = 0
                   """;

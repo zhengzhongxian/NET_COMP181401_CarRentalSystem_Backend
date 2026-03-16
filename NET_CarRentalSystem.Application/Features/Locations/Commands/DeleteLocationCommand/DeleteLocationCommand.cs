@@ -33,10 +33,10 @@ public class DeleteLocationCommandHandler(
             if (location == null)
                 return (LocationMessage.Delete.NotFound, false);
 
-            var vehiclesCount = await unitOfWork.GetReadRepository<VehicleModel>()
-                .CountAsync(v => v.LocationId == request.LocationId, ct);
+            var hasVehicles = await unitOfWork.GetWriteRepository<VehicleModel>()
+                .ExistsAsync(v => v.LocationId == request.LocationId, ct);
                 
-            if (vehiclesCount > 0)
+            if (hasVehicles)
                 return (LocationMessage.Delete.HasVehicles, false);
 
             if (!string.IsNullOrEmpty(location.PublicId))

@@ -22,6 +22,8 @@ using NET_CarRentalSystem.Application.Features.Auth.Commands.SendOtpCommand;
 using NET_CarRentalSystem.Application.Features.Auth.Queries.EmailExists;
 using NET_CarRentalSystem.Application.Features.Auth.Queries.GetActiveSessions;
 using NET_CarRentalSystem.Application.Features.Auth.Queries.PhoneNumberExists;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.SendPhoneVerificationOtpCommand;
+using NET_CarRentalSystem.Application.Features.Auth.Commands.VerifyPhoneOtpCommand;
 using NET_CarRentalSystem.Application.Features.Users.Queries.GetUserProfileQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
@@ -574,5 +576,65 @@ namespace NET_CarRentalSystem.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
             }
         }
+
+        [HttpPost("phone/send-otp")]
+        [ValidateUserExists]
+        public async Task<IActionResult> SendPhoneVerificationOtp(CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new SendPhoneVerificationOtpCommand();
+                var (success, message) = await mediator.Send(command, cancellationToken);
+
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex) when (!ex.IsInfrastructureException())
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    SmsMessage.SendOtp.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
+
+        [HttpPost("phone/verify-otp")]
+        [ValidateUserExists]
+        public async Task<IActionResult> VerifyPhoneOtp([FromBody] VerifyPhoneOtpRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                var command = new VerifyPhoneOtpCommand { Otp = request.Otp };
+                var (success, message) = await mediator.Send(command, cancellationToken);
+
+                if (!success)
+                {
+                    var errorResponse = ApiResponse.ErrorResult(message);
+                    return StatusCode(errorResponse.StatusCode, errorResponse);
+                }
+
+                var response = ApiResponse.SuccessResult(message);
+                return StatusCode(response.StatusCode, response);
+            }
+            catch (Exception ex) when (!ex.IsInfrastructureException())
+            {
+                var errorResponse = ApiResponse.ErrorResult(
+                    SmsMessage.VerifyOtp.Error,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message]);
+
+                return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            }
+        }
     }
+
+    public record VerifyPhoneOtpRequest(string Otp);
 }

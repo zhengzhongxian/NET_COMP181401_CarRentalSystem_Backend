@@ -22,9 +22,11 @@ using NET_CarRentalSystem.Application.Features.Vehicles.Commands.AddVehicleModel
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleModelsCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.DeleteVehicleModelsCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.SendVehiclePromotionEmailCommand;
+using NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleModelsStatusCommand;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleDetailsQuery;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleAvailabilityQuery;
+using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleModelsInventoryQuery;
 using NET_CarRentalSystem.Application.Models.Storage;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
@@ -132,6 +134,36 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
         }
     }
 
+    [HttpGet("{vehicleId:guid}/inventory")]
+    [ValidateUserExists(Policy = PermissionConstants.Vehicles.View)]
+    public async Task<IActionResult> GetVehicleModelsInventory(
+        [FromRoute] Guid vehicleId,
+        [FromQuery] GetVehicleModelsInventoryRequest request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var query = mapper.Map<GetVehicleModelsInventoryQuery>(request);
+            query.VehicleId = vehicleId;
+
+            var result = await sender.Send(query, ct);
+
+            var response = mapper.Map<GetVehicleModelsInventoryResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, VehicleMessage.Get.Success);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleMessage.Get.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+        }
+    }
+
     [HttpPost]
     [ValidateUserExists(Policy = PermissionConstants.Vehicles.Create)]
     public async Task<IActionResult> Create([FromForm] CreateVehicleRequest request, CancellationToken ct = default)
@@ -154,6 +186,7 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
             {
                 Manufacturer = request.Manufacturer,
                 Model = request.Model,
+                Title = request.Title,
                 Color = request.Color,
                 PricePerHour = request.PricePerHour,
                 Thumbnail = thumbnailFileModel,
@@ -161,7 +194,9 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 VehicleCategoryId = request.VehicleCategoryId,
                 FuelId = request.FuelId,
                 TransmissionId = request.TransmissionId,
-                Metadata = request.Metadata
+                Metadata = request.Metadata,
+                RequiredLicenseClass = request.RequiredLicenseClass,
+                EnableAiVerification = request.EnableAiVerification
             };
 
             var newVehicleId = await sender.Send(command, ct);
@@ -195,6 +230,7 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 VehicleId = vehicleId,
                 Manufacturer = request.Manufacturer,
                 Model = request.Model,
+                Title = request.Title,
                 Color = request.Color,
                 PricePerHour = request.PricePerHour,
                 Thumbnail = request.Thumbnail,
@@ -202,7 +238,8 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 VehicleCategoryId = request.VehicleCategoryId,
                 FuelId = request.FuelId,
                 TransmissionId = request.TransmissionId,
-                Metadata = request.Metadata
+                Metadata = request.Metadata,
+                RequiredLicenseClass = request.RequiredLicenseClass
             };
 
             var success = await sender.Send(command, cancellationToken);
@@ -278,21 +315,20 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
             var command = new UpdateVehicleThumbnailCommand
             {
                 VehicleId = vehicleId,
-                Thumbnail = fileModel
+                Thumbnail = fileModel,
+                EnableAiVerification = request.EnableAiVerification
             };
 
-            var success = await sender.Send(command, cancellationToken);
+            var (success, message) = await sender.Send(command, cancellationToken);
 
             if (!success)
             {
-                var notFoundResponse = ApiResponse.ErrorResult(
-                    VehicleMessage.UpdateImage.NotFound,
-                    StatusCodes.Status404NotFound);
+                var notFoundResponse = ApiResponse.ErrorResult(message ?? VehicleMessage.UpdateImage.NotFound);
 
-                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+                return StatusCode(StatusCodes.Status400BadRequest, notFoundResponse);
             }
 
-            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.UpdateImage.Success);
+            var apiResponse = ApiResponse.SuccessResult(success, message ?? VehicleMessage.UpdateImage.Success);
             return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex) when (!ex.IsInfrastructureException())
@@ -324,21 +360,20 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
             var command = new AddVehicleImagesCommand
             {
                 VehicleId = vehicleId,
-                Images = fileModels
+                Images = fileModels,
+                EnableAiVerification = request.EnableAiVerification
             };
 
-            var success = await sender.Send(command, cancellationToken);
+            var (success, message) = await sender.Send(command, cancellationToken);
 
             if (!success)
             {
-                var notFoundResponse = ApiResponse.ErrorResult(
-                    VehicleMessage.AddImages.NotFound,
-                    StatusCodes.Status404NotFound);
+                var notFoundResponse = ApiResponse.ErrorResult(message ?? VehicleMessage.AddImages.NotFound);
 
-                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+                return StatusCode(StatusCodes.Status400BadRequest, notFoundResponse);
             }
 
-            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.AddImages.Success);
+            var apiResponse = ApiResponse.SuccessResult(success, message ?? VehicleMessage.AddImages.Success);
 
             return StatusCode(apiResponse.StatusCode, apiResponse);
         }
@@ -588,6 +623,48 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 Mileage = request.Mileage,
                 ConditionNotes = request.ConditionNotes,
                 LocationId = request.LocationId
+            };
+
+            var success = await sender.Send(command, cancellationToken);
+
+            if (!success)
+            {
+                var notFoundResponse = ApiResponse.ErrorResult(
+                    VehicleMessage.UpdateVehicleModels.NotFound,
+                    StatusCodes.Status404NotFound);
+
+                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.UpdateVehicleModels.Success);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                VehicleMessage.UpdateVehicleModels.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+        }
+    }
+
+    [HttpPatch("{vehicleId:guid}/vehicle-models/{vehicleModelId:guid}/status")]
+    [ValidateUserExists(Policy = PermissionConstants.Vehicles.Edit)]
+    public async Task<IActionResult> UpdateVehicleModelStatus(
+        [FromRoute] Guid vehicleId,
+        [FromRoute] Guid vehicleModelId,
+        [FromBody] UpdateVehicleModelsStatusRequest request,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var command = new UpdateVehicleModelsStatusCommand
+            {
+                VehicleId = vehicleId,
+                VehicleModelId = vehicleModelId,
+                Status = request.Status
             };
 
             var success = await sender.Send(command, cancellationToken);

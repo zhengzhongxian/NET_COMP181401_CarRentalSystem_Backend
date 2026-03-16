@@ -29,8 +29,8 @@ public class SendOtpCommandHandler(
     
     public async Task<(string, bool)> Handle(SendOtpCommand request, CancellationToken cancellationToken)
     {
-        var userReadRepository = unitOfWork.GetReadRepository<User>();
-        var existingUser = await userReadRepository.GetFirstOrDefaultAsync(
+        var userWriteRepository = unitOfWork.GetWriteRepository<User>();
+        var existingUser = await userWriteRepository.GetFirstOrDefaultAsync(
             u => u.UserName == request.SendOtpParams.UserName || u.Email == request.SendOtpParams.Email, 
             cancellationToken: cancellationToken);
         

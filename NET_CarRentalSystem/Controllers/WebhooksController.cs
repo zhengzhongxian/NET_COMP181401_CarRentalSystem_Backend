@@ -97,7 +97,7 @@ public class WebhooksController(ISender sender, ILogger<WebhooksController> logg
         }
     }
 
-    [HttpPost("test/kkkkk")]
+    [HttpPost("test/hiendon")]
     public Task<IActionResult> Handle()
     {
         return Task.FromResult<IActionResult>(Ok());

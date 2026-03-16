@@ -19,9 +19,9 @@ public class PagedRequest
         };
     }
 
-    public string? SearchKeyword { get; set; } = default!;
+    public string? SearchKeyword { get; set; }
 
-    public string? SortBy { get; set; } = default!;
+    public string? SortBy { get; set; }
 
-    public string? SortDirection { get; set; } = default!;
+    public string? SortDirection { get; set; }
 }

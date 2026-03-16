@@ -33,11 +33,14 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
             if (booking == null)
                 return (false, BookingMessage.CompleteBooking.BookingNotFound, 0, 0);
             
-            var customer = await unitOfWork.GetReadRepository<Customer>()
+            var customer = await unitOfWork.GetWriteRepository<Customer>()
                 .GetFirstOrDefaultAsync(c => c.CustomerId == booking.CustomerId, cancellationToken: ct);
 
             if (customer == null)
                 return (false, BookingMessage.CompleteBooking.BookingNotFound, 0, 0);
+
+            // Ensure navigation property is set for later use (LoyaltyPoints update)
+            booking.Customer = customer;
 
             var violations = await unitOfWork.GetWriteRepository<BookingViolation>()
                 .GetAsync(v => v.BookingId == booking.Id, cancellationToken: ct);
@@ -65,7 +68,29 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
                 100);
             
             booking.Status = BookingStatus.Completed;
+            
+            // 4. Schedule deposit refund (30 days from ActualEndDate/return date)
+            var depositAmount = booking.TotalPrice * booking.DepositRatio;
+            var refundScheduledDate = (booking.ActualEndDate ?? DateTime.UtcNow).AddDays(30);
+            booking.DepositRefundScheduledAt = refundScheduledDate;
+            
             unitOfWork.GetWriteRepository<Booking>().Update(booking);
+            
+            // Create deposit refund request
+            var depositRefundRequest = new RefundRequest
+            {
+                BookingId = booking.Id,
+                CustomerId = booking.CustomerId,
+                Amount = depositAmount,
+                Status = RefundStatus.Pending,
+                IsDepositRefund = true,
+                ScheduledAt = refundScheduledDate,
+                Reason = $"Hoàn tiền cọc ({booking.DepositRatio * 100}%) sau 30 ngày kể từ khi trả xe. " +
+                         $"Dự kiến hoàn: {refundScheduledDate:dd/MM/yyyy HH:mm} UTC",
+                CreatedAt = DateTime.UtcNow
+            };
+            
+            await unitOfWork.GetWriteRepository<RefundRequest>().AddAsync(depositRefundRequest, ct);
             
             booking.Customer.LoyaltyPoints += loyaltyPointsPerBooking;
             
@@ -105,6 +130,7 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
             var bookingUpdatedEvent = booking.ToUpdatedEvent<Booking, BookingUpdatedEvent, Guid>(_ => new BookingUpdatedEvent
             {
                 Status = booking.Status,
+                DepositRefundScheduledAt = booking.DepositRefundScheduledAt,
                 BookingViolationsJson = violationsJson,
                 Id = default,
                 CreatedAt = default,
@@ -122,6 +148,7 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
                 loyaltyPointsPerBooking);
 
             return (true, message, loyaltyPointsPerBooking, booking.Customer.LoyaltyPoints);
+
 
         }, cancellationToken);
     }

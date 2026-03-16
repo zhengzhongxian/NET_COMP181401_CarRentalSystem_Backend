@@ -65,10 +65,12 @@ public static class PermissionConstants
         public const string Reject = "Permissions.RefundRequests.Reject";
     }
 
-    public static class Violations
+    public static class Ekyc
     {
-        public const string View = "Permissions.Violations.View";
-        public const string Resolve = "Permissions.Violations.Resolve";
+        public const string IdentityVerified = "Permissions.Ekyc.IdentityVerified";
+        public const string PhoneVerified = "Permissions.Ekyc.PhoneVerified";
+        public const string DriverLicenseVerified = "Permissions.Ekyc.DriverLicenseVerified";
+        public const string FullyVerified = "Permissions.Ekyc.FullyVerified";
     }
 
     public static List<string> GetAllPermissions()

@@ -61,7 +61,7 @@ public class ProcessDepositSuccessCommandHandler(
 
         await PublishPaymentEmailEventAsync(transaction, booking, ct);
 
-        await SendRealTimeNotificationAsync(transaction, booking, customer, vehicleModel, ct);
+        await SendRealTimeNotificationAsync(transaction, booking, customer, ct);
 
         return true;
     }
@@ -156,10 +156,9 @@ public class ProcessDepositSuccessCommandHandler(
         PaymentTransaction transaction,
         Booking booking,
         Customer? customer,
-        VehicleModel? vehicleModel,
         CancellationToken ct)
     {
-        var vehicle = await unitOfWork.GetReadRepository<Vehicle>()
+        var vehicle = await unitOfWork.GetWriteRepository<Vehicle>()
             .GetByIdAsync(booking.VehicleId, ct);
 
         var customerName = customer is not null
@@ -181,7 +180,6 @@ public class ProcessDepositSuccessCommandHandler(
             Message = $"{customerName} đã đặt cọc thành công xe {vehicleName}"
         };
 
-        await notificationHub.SendToRoleAsync("Admin", "ReceivePaymentNotification", notification, ct);
-        await notificationHub.SendToRoleAsync("Staff", "ReceivePaymentNotification", notification, ct);
+        await notificationHub.SendToAllAsync("ReceivePaymentNotification", notification, ct);
     }
 }

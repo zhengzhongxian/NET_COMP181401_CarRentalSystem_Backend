@@ -50,6 +50,7 @@ public static class VehicleMessage
         public const string Error = "Có lỗi xảy ra khi thêm thuộc tính xe.";
         public const string NotFound = "Không tìm thấy xe để thêm thuộc tính.";
     }
+
     public static class DeleteImages
     {
         public const string Success = "Xóa danh sách ảnh xe thành công";
@@ -100,5 +101,25 @@ public static class VehicleMessage
         public const string Error = "Có lỗi xảy ra khi lấy danh sách xe có sẵn để đổi.";
         public const string NotFound = "Không tìm thấy xe model cũ.";
     }
-}
 
+    public static class AiVerification
+    {
+        public const string InvalidImage = "Ảnh không phải là ảnh xe hợp lệ";
+        public const string InvalidImageWithConfidence = "Ảnh không phải là ảnh xe hợp lệ. Độ tin cậy: {0:P0}";
+        public const string InvalidImageWithType = "Ảnh không phải là ảnh xe hợp lệ. Loại phát hiện: {0}";
+        public const string InvalidImagesInBatch = "Có {0} ảnh không hợp lệ trong danh sách tải lên";
+        public const string ServiceUnavailable = "Dịch vụ xác thực ảnh AI không khả dụng. Vui lòng thử lại sau.";
+        public const string Timeout = "Xác thực ảnh AI vượt quá thời gian cho phép.";
+        public const string Error = "Có lỗi xảy ra khi xác thực ảnh với AI.";
+        public const string Verified = "Ảnh đã được xác thực là ảnh xe hợp lệ";
+        
+        public const string SkipDisabled = "AI verification is disabled";
+        public const string SkipUnavailable = "AI service unavailable";
+        public const string SkipTimeout = "AI verification timeout";
+        public const string SkipError = "AI error: {0}";
+        public const string SkipUnexpected = "Unexpected AI error";
+        
+        public const string SkipMessageViFormat = "Bỏ qua xác thực AI: {0}";
+        public const string SkipMessageEnFormat = "AI verification skipped: {0}";
+    }
+}

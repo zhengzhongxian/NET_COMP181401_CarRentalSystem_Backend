@@ -91,7 +91,7 @@ public class ProcessFinalPaymentSuccessCommandHandler(
         Customer? customer,
         CancellationToken ct)
     {
-        var vehicle = await unitOfWork.GetReadRepository<Vehicle>()
+        var vehicle = await unitOfWork.GetWriteRepository<Vehicle>()
             .GetByIdAsync(booking.VehicleId, ct);
 
         var customerName = customer is not null

@@ -30,10 +30,20 @@ public class GetUserResponse
     
     public DateTime? DriverLicenseExpiry { get; set; }
     
+    public int? DriverLicenseClass { get; set; }
+    
     public string? DriverLicenseFrontUrl { get; set; }
     
     public string? DriverLicenseBackUrl { get; set; }
     
+    public bool IsPhoneVerified { get; set; }
+    
+    public bool IsIdentityVerified { get; set; }
+    
+    public bool IsDriverLicenseVerified { get; set; }
+
     public string? AvatarUrl { get; set; }
+    
+    public int LoyaltyPoints { get; set; }
 }
 

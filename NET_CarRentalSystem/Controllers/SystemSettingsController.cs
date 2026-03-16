@@ -7,6 +7,7 @@ using NET_CarRentalSystem.API.Models.Request.SystemSettings;
 using NET_CarRentalSystem.API.Models.Response.SystemSettings;
 using NET_CarRentalSystem.Application.Features.SystemSettings.Commands.UpdateSystemSettingsCommand;
 using NET_CarRentalSystem.Application.Features.SystemSettings.Queries.GetAllSystemSettingsQuery;
+using NET_CarRentalSystem.Application.Features.SystemSettings.Queries.GetPublicSystemSettingsQuery;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 using NET_CarRentalSystem.Domain.Constants;
@@ -19,6 +20,28 @@ public class SystemSettingsController(
     ISender sender,
     IMapper mapper) : ControllerBase
 {
+    [HttpGet("public")]
+    public async Task<IActionResult> GetPublicSystemSettings(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = new GetPublicSystemSettingsQuery();
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<PublicSystemSettingsResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, SystemSettingMessage.Get.Success);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex)
+        {
+             var errorResponse = ApiResponse.ErrorResult(
+                SystemSettingMessage.Get.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+        }
+    }
+
     [HttpGet]
     [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetAllSystemSettings(CancellationToken cancellationToken)

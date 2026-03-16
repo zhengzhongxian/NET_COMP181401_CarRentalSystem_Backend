@@ -10,6 +10,8 @@ using NET_CarRentalSystem.Application.Features.Bookings.Queries.GetCustomerBooki
 using NET_CarRentalSystem.Application.Models.DTOs.BookingDTOs.Get;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingDTOs.Update;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingImageDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.BookingViolationDTOs.Create;
+using NET_CarRentalSystem.Application.Models.DTOs.ReturnImageDTOs.Create;
 using NET_CarRentalSystem.Application.Models.DTOs.TransactionDTOs;
 
 namespace NET_CarRentalSystem.API.Mappings;
@@ -49,6 +51,15 @@ public class BookingProfile : Profile
             .ForMember(dest => dest.ReturnLocationName, opt => opt.MapFrom(src => src.ReturnLocationName))
             .ForMember(dest => dest.FileName, opt => opt.MapFrom(src => src.FileName));
 
+        CreateMap<GetBookingByTransactionCodeDto, GetBookingByTransactionCodeResponse>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status))
+            .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod))
+            .ForMember(dest => dest.TransactionStatus, opt => opt.MapFrom(src => src.TransactionStatus));
+
         CreateMap<GetBookingImageDto, GetBookingImageResponse>();
+        
+        CreateMap<CreateJsonBookingViolationDto, GetBookingViolationResponse>();
+        
+        CreateMap<CreateJsonReturnImageDto, GetReturnImageResponse>();
     }
 }

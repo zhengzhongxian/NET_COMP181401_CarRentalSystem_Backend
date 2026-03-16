@@ -248,4 +248,28 @@ public class CloudinaryService : ICloudinaryService
                 ex);
         }
     }
+
+    public async Task<byte[]?> DownloadImageAsync(string imageUrl)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(imageUrl))
+                return null;
+
+            using var httpClient = new HttpClient();
+            httpClient.Timeout = TimeSpan.FromSeconds(30);
+            
+            var response = await httpClient.GetAsync(imageUrl);
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadAsByteArrayAsync();
+            }
+            
+            return null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 }

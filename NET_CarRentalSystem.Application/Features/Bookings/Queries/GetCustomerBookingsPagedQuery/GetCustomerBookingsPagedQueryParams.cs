@@ -5,13 +5,14 @@ namespace NET_CarRentalSystem.Application.Features.Bookings.Queries.GetCustomerB
 public class GetCustomerBookingsPagedQueryParams : PagedParams
 {
     public string? Status { get; set; }
-
-    // Optional filters
+    
     public Guid? PickupLocationId { get; set; }
+    
     public Guid? ReturnLocationId { get; set; }
+    
     public bool? HasViolation { get; set; }
-
-    // Date range filters
+    
     public DateTime? StartDateFrom { get; set; }
+    
     public DateTime? StartDateTo { get; set; }
 }

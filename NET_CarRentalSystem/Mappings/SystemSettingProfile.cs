@@ -10,6 +10,7 @@ public class SystemSettingProfile : Profile
 {
     public SystemSettingProfile()
     {
+        CreateMap<PublicSystemSettingsDto, PublicSystemSettingsResponse>();
         CreateMap<AllSystemSettingsDto, AllSystemSettingsResponse>();
         CreateMap<BookingSettingsDto, BookingSettingsResponse>();
         CreateMap<CancellationSettingsDto, CancellationSettingsResponse>();

@@ -51,6 +51,8 @@ public class BookingReadFlat : BaseEntity<Guid>, IReadEntity
 
     public int MileageStart { get; set; }
     
+    public int? MileageEnd { get; set; }
+    
     public int FuelLevelStart { get; set; }
     
     public int? FuelLevelEnd { get; set; }
@@ -74,4 +76,6 @@ public class BookingReadFlat : BaseEntity<Guid>, IReadEntity
     public string? Metadata { get; set; }
     
     public string? FileName { get; set; }
+
+    public DateTime? DepositRefundScheduledAt { get; set; }
 }

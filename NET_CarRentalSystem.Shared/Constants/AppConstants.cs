@@ -15,6 +15,8 @@ public static class AppConstants
         public const string RefundProcessingFailureAlert = "RefundProcessingFailureAlertEmail.html";
         public const string PendingTransactionsRefundNotice = "PendingTransactionsRefundNoticeEmail.html";
         public const string ViolationNotification = "ViolationNotificationEmail.html";
+        public const string OverdueBookingWarning = "OverdueBookingWarningEmail.html";
+        public const string OverdueBookingAdminAlert = "OverdueBookingAdminAlertEmail.html";
     }
 
     public static class Pagination

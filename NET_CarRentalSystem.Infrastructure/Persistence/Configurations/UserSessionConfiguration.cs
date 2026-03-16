@@ -36,15 +36,6 @@ public class UserSessionConfiguration : IEntityTypeConfiguration<UserSession>
             .HasColumnName("ip_address")
             .HasMaxLength(50);
 
-        builder.Property(c => c.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(c => c.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(c => c.IsDeleted)
-            .HasColumnName("is_deleted");
-        
         builder.HasOne(us => us.User)
             .WithMany(u => u.UserSessions)
             .HasForeignKey(us => us.UserId);

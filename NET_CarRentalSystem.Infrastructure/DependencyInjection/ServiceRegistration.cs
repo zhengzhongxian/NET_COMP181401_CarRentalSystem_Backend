@@ -1,16 +1,14 @@
-﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Configurations.ApiClientSettings;
 using NET_CarRentalSystem.Application.Interfaces.Http;
-using NET_CarRentalSystem.Application.Interfaces.Services.AI;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Documents;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
-using NET_CarRentalSystem.Application.Interfaces.Services.Search;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -28,8 +26,14 @@ using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Jobs;
 using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Schedulers;
 using NET_CarRentalSystem.Infrastructure.Services.Security;
 using NET_CarRentalSystem.Infrastructure.Services.Storage;
-using NET_CarRentalSystem.Infrastructure.Services.AI;
+using NET_CarRentalSystem.Infrastructure.Services.Ekyc;
+using NET_CarRentalSystem.Infrastructure.Services.Sms;
+using NET_CarRentalSystem.Application.Interfaces.Services.Ekyc;
+using NET_CarRentalSystem.Application.Interfaces.Services.Mapping;
+using NET_CarRentalSystem.Application.Interfaces.Services.Sms;
+using NET_CarRentalSystem.Application.Interfaces.Services.Search;
 using NET_CarRentalSystem.Infrastructure.Services.Search;
+using NET_CarRentalSystem.Infrastructure.Services.Mapping;
 using PayOS;
 
 
@@ -39,6 +43,7 @@ public static class ServiceRegistration
 {
     public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
     {
+        #region Configuration
         services.Configure<CloudinarySettings>(configuration.GetSection(CloudinarySettings.SectionName));
         services.Configure<JwtSettings>(configuration.GetSection(JwtSettings.SectionName));
         services.Configure<EmailSettings>(configuration.GetSection(EmailSettings.SectionName));
@@ -55,12 +60,24 @@ public static class ServiceRegistration
         services.Configure<PaymentSyncJob>(configuration.GetSection(PaymentSyncJob.SectionName)); 
         services.Configure<RefundProcessingJobConfig>(configuration.GetSection(RefundProcessingJobConfig.SectionName));
         services.Configure<ReturnDeadlineReminderJobConfig>(configuration.GetSection(ReturnDeadlineReminderJobConfig.SectionName));
+        services.Configure<OverdueBookingJobConfig>(configuration.GetSection(OverdueBookingJobConfig.SectionName));
+        services.Configure<DepositRefundJobConfig>(configuration.GetSection(DepositRefundJobConfig.SectionName));
         services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
         services.Configure<MinioSettings>(configuration.GetSection(MinioSettings.SectionName));
-        services.Configure<GeminiSettings>(configuration.GetSection(GeminiSettings.SectionName));
-        services.Configure<EmbeddingSettings>(configuration.GetSection(EmbeddingSettings.SectionName));
+        services.Configure<VnptEkycSettings>(configuration.GetSection(VnptEkycSettings.SectionName));
+        services.Configure<SpeedSmsSettings>(configuration.GetSection(SpeedSmsSettings.SectionName));
+        services.Configure<TwilioSettings>(configuration.GetSection(TwilioSettings.SectionName));
+        services.Configure<GrpcServicesSettings>(configuration.GetSection(GrpcServicesSettings.SectionName));
+        
+        // Initialize GrpcChannelFactory with settings
+        var grpcSettings = configuration.GetSection(GrpcServicesSettings.SectionName).Get<GrpcServicesSettings>()!;
+        Grpc.GrpcChannelFactory.Settings(grpcSettings);
+        
+        services.Configure<CheckToolAliveSettings>(configuration.GetSection(CheckToolAliveSettings.SectionName));
+        services.Configure<FileValidationSettings>(configuration.GetSection(FileValidationSettings.SectionName));
+        #endregion
 
-        //add scope
+        #region Scoped Services
         services.AddScoped<ICloudinaryService, CloudinaryService>();
         services.AddScoped<IMinioService, MinioService>();
         services.AddScoped<IImageResizeService, ImageResizeService>();
@@ -75,17 +92,24 @@ public static class ServiceRegistration
         services.AddScoped<IVnPayService, VnPayService>();
         services.AddScoped<IQueryExecutor, QueryExecutor>();
         services.AddScoped<IPdfContractService, PdfContractService>();
-        services.AddScoped<IGeminiService, GeminiService>();
         services.AddScoped<PaymentStatusSyncJob>();
         services.AddScoped<RefundProcessingJob>();
         services.AddScoped<ReturnDeadlineReminderJob>();
         services.AddScoped<INotificationHub, NotificationHubService>();
+        services.AddScoped<DepositRefundJob>();
+        services.AddScoped<IVehicleSearchService, VehicleSearchService>();
+        services.AddScoped<IOsrmService, OsrmService>();
+        #endregion
 
-        //http
+        #region Http Clients
         services.AddHttpClient<IApiClient, ApiClient>();
+        services.AddHttpClient<IVnptEkycService, VnptEkycService>();
+        services.AddHttpClient<ISpeedSmsService, SpeedSmsService>();
+        services.AddHttpClient("OsrmClient");
         services.AddHttpContextAccessor();
+        #endregion
 
-        //add singleton
+        #region Singleton Services
         services.AddSingleton(typeof(IScheduleService<>), typeof(ScheduleService<>));
         services.AddSingleton(sp =>
         {
@@ -96,19 +120,27 @@ public static class ServiceRegistration
                 checksumKey: payOsSettings.CheckSumKey
             );
         });
-        services.AddSingleton<IEmbeddingService, OnnxEmbeddingService>();
-        services.AddSingleton<IVehicleSearchService, VehicleSearchService>();
+        services.AddSingleton<ITwilioSmsVerifyService, TwilioSmsVerifyService>();
+        #endregion
         
-        //add transient
+        #region Other Services
+        services.AddMemoryCache();
 
-        //hosted service
+        services.AddAiServices();
+
         services.AddHostedService<CheckToolAliveService>();
         services.AddHostedService<PaymentStatusSyncService>();
         services.AddHostedService<RefundProcessingService>();
         services.AddHostedService<ReturnDeadlineReminderService>();
+        services.AddHostedService<OverdueBookingService>();
+        services.AddHostedService<DepositRefundService>();
+        services.AddHostedService<VehicleSearchIndexInitializer>();
+        services.AddHostedService<VehicleTrackingBackgroundService>();
+        #endregion
 
-        //signalR
+        #region SignalR
         services.AddSignalR();
+        #endregion
 
         return services;
     }

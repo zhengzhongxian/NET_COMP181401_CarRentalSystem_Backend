@@ -38,20 +38,21 @@ public class RefreshTokenCommandHandler(
             return (AuthMessage.RefreshToken.Invalid, null);
         }
 
-        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
         var sessionWriteRepository = unitOfWork.GetWriteRepository<UserSession>();
         var userWriteRepository = unitOfWork.GetWriteRepository<User>();
 
         var sessionCacheJson = await cacheService.GetStringAsync(request.RefreshToken, cancellationToken);
         if (sessionCacheJson is null)
         {
-            var sessionInDb = await sessionReadRepository.GetFirstOrDefaultAsync(
+            var sessionInDb = await sessionWriteRepository.GetFirstOrDefaultAsync(
                 s => s.RefreshToken == request.RefreshToken, 
                 cancellationToken: cancellationToken);
             
             if (sessionInDb != null && sessionInDb.UserId == userId)
             {
-                var remainingSessions = await sessionReadRepository.CountAsync(s => s.UserId == sessionInDb.UserId, cancellationToken);
+                var remainingSessions = (await sessionWriteRepository.GetAsync(
+                    s => s.UserId == sessionInDb.UserId,
+                    cancellationToken: cancellationToken)).Count;
                 sessionWriteRepository.Remove(sessionInDb, true);
 
                 if (remainingSessions <= 1)
@@ -70,7 +71,7 @@ public class RefreshTokenCommandHandler(
                 return (AuthMessage.RefreshToken.Invalid, null);
             }
             
-            var allUserSessions = await sessionReadRepository.GetAsync(
+            var allUserSessions = await sessionWriteRepository.GetAsync(
                 s => s.UserId == userId,
                 cancellationToken: cancellationToken);
 
@@ -100,7 +101,9 @@ public class RefreshTokenCommandHandler(
         
         if (sessionCache.IsRevoked)
         {
-            var allUserSessions = await sessionReadRepository.GetAsync(s => s.UserId == sessionCache.UserId, cancellationToken: cancellationToken);
+            var allUserSessions = await sessionWriteRepository.GetAsync(
+                s => s.UserId == sessionCache.UserId,
+                cancellationToken: cancellationToken);
             if (allUserSessions.Count > 0)
             {
                 foreach (var session in allUserSessions)
@@ -131,7 +134,7 @@ public class RefreshTokenCommandHandler(
         var currentDbSession = await sessionWriteRepository.GetFirstAsync(s => s.RefreshToken == request.RefreshToken, cancellationToken: cancellationToken);
         var originalExpiryTime = currentDbSession.RefreshTokenExpiryTime;
 
-        var user = await unitOfWork.GetReadRepository<User>().GetByIdAsync(sessionCache.UserId, cancellationToken);
+        var user = await userWriteRepository.GetByIdAsync(sessionCache.UserId, cancellationToken);
 
         var newTokens = await tokenService.GenerateTokensAsync(user!, cancellationToken: cancellationToken);
         currentDbSession.RefreshToken = newTokens.RefreshToken;

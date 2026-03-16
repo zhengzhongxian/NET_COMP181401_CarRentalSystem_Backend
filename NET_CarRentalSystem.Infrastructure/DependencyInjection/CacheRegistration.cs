@@ -1,8 +1,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NET_CarRentalSystem.Application.Interfaces.Services.Search;
-using NET_CarRentalSystem.Infrastructure.Services.Search;
 using NET_CarRentalSystem.Shared.Constants;
 using StackExchange.Redis;
 
@@ -14,7 +12,6 @@ namespace NET_CarRentalSystem.Infrastructure.DependencyInjection
         {
             var redisConnectionString = configuration.GetConnectionString(KeyConstants.ConnectionStrings.Redis);
             
-            // Phase 5.2: Connection Pooling with optimized configuration
             var configOptions = ConfigurationOptions.Parse(redisConnectionString!);
             configOptions.AbortOnConnectFail = false;           
             configOptions.ConnectRetry = 3;                   

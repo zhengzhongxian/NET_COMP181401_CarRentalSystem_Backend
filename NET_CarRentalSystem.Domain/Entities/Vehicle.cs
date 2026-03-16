@@ -8,6 +8,8 @@ public class Vehicle : BaseEntity<Guid>, IRowVersion
 
     public string Model { get; set; } = default!;
 
+    public string? Title { get; set; }
+
     public string? Color { get; set; }
 
     public decimal PricePerHour { get; set; }
@@ -21,6 +23,8 @@ public class Vehicle : BaseEntity<Guid>, IRowVersion
     public string? Metadata { get; set; }
 
     public int AvailableCount { get; set; }
+
+    public int RequiredLicenseClass { get; set; }
 
     public byte[] RowVersion { get; set; } = [];
 

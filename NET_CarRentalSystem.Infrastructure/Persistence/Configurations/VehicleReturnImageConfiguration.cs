@@ -34,30 +34,7 @@ public class VehicleReturnImageConfiguration : IEntityTypeConfiguration<VehicleR
         builder.Property(vri => vri.Description)
             .HasColumnName("description")
             .HasMaxLength(500);
-
-        builder.Property(vri => vri.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(vri => vri.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(vri => vri.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(vri => vri.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(vri => vri.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder.Property(vri => vri.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(vri => vri.DeletedBy)
-            .HasColumnName("deleted_by");
-
+        
         builder.HasOne(vri => vri.Booking)
             .WithMany(b => b.VehicleReturnImages)
             .HasForeignKey(vri => vri.BookingId)

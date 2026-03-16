@@ -49,7 +49,7 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
             FROM INFORMATION_SCHEMA.COLUMNS c
             WHERE c.TABLE_SCHEMA = 'dbo' 
               AND c.TABLE_NAME = @TableName
-              AND c.DATA_TYPE != 'timestamp'
+              AND c.DATA_TYPE NOT IN ('timestamp', 'rowversion')
               AND COLUMNPROPERTY(OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME), c.COLUMN_NAME, 'IsComputed') = 0
             ORDER BY c.ORDINAL_POSITION";
             
@@ -62,6 +62,21 @@ public class SyncTableMetadataCache(IConfiguration config, ILogger<SyncTableMeta
 
         ColumnCache[tableName] = columns;
         return columns;
+    }
+
+    public async Task<bool> HasIdentityColumnAsync(string tableName, string columnName, CancellationToken token)
+    {
+        await using var connection = new SqlConnection(_writeDbConnection);
+        await connection.OpenAsync(token);
+
+        const string query = @"
+            SELECT CASE WHEN COLUMNPROPERTY(OBJECT_ID(@TableName), @ColumnName, 'IsIdentity') = 1 
+                   THEN 1 ELSE 0 END";
+
+        var isIdentity = await connection.QuerySingleAsync<int>(
+            new CommandDefinition(query, new { TableName = $"dbo.{tableName}", ColumnName = columnName }, cancellationToken: token));
+
+        return isIdentity == 1;
     }
 
     private static string BuildMergeStatement(string tableName, string pkColumn, List<string> columns)

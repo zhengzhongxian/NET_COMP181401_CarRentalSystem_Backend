@@ -45,32 +45,6 @@ public class VehicleModelConfiguration : IEntityTypeConfiguration<VehicleModel>
             .HasColumnName("vehicle_id")
             .IsRequired();
 
-        builder.Property(vm => vm.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(vm => vm.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(vm => vm.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(vm => vm.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(vm => vm.IsDeleted)
-            .HasColumnName("is_deleted");
-
-        builder.Property(vm => vm.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(vm => vm.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(vm => vm.RowVersion)
-            .HasColumnName("row_version")
-            .IsRowVersion()
-            .ValueGeneratedOnAddOrUpdate();
-
         builder.HasIndex(vm => vm.NumberPlate).IsUnique();
 
         builder.HasOne(vm => vm.Vehicle)

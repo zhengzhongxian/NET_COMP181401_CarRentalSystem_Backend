@@ -8,6 +8,8 @@ public class VehicleReadFlat : BaseEntity<Guid>, IReadEntity
 
     public string Model { get; set; } = string.Empty;
 
+    public string? Title { get; set; }
+
     public string? Color { get; set; }
 
     public decimal PricePerHour { get; set; }
@@ -39,5 +41,7 @@ public class VehicleReadFlat : BaseEntity<Guid>, IReadEntity
     public string? AttributesJson { get; set; }
     
     public string? Metadata { get; set; }
+
+    public int RequiredLicenseClass { get; set; } = 0;
 }
 

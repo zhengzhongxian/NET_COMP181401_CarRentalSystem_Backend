@@ -13,6 +13,6 @@ public class Transmission : IRowVersion
     public string? Description { get; set; }
 
     public virtual ICollection<Vehicle> Vehicles { get; set; } = [];
-    
+
     public byte[]? RowVersion { get; set; }
 }

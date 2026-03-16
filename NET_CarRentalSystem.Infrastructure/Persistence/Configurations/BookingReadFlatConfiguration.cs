@@ -100,6 +100,9 @@ public class BookingReadFlatConfiguration : IEntityTypeConfiguration<BookingRead
         builder.Property(b => b.MileageStart)
             .HasColumnName("mileage_start");
 
+        builder.Property(b => b.MileageEnd)
+            .HasColumnName("mileage_end");
+
         builder.Property(b => b.FuelLevelStart)
             .HasColumnName("fuel_level_start");
 
@@ -142,24 +145,6 @@ public class BookingReadFlatConfiguration : IEntityTypeConfiguration<BookingRead
         builder.Property(b => b.Metadata)
             .HasColumnName("metadata");
 
-        builder.Property(b => b.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(b => b.CreatedBy)
-            .HasColumnName("created_by")
-            .HasMaxLength(255);
-
-        builder.Property(b => b.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(b => b.UpdatedBy)
-            .HasColumnName("updated_by")
-            .HasMaxLength(255);
-
-        builder.Property(b => b.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        
         builder.HasIndex(b => b.BookingId)
             .HasDatabaseName("IX_booking_read_flat_booking_id");
 

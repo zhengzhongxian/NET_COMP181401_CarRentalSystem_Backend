@@ -15,7 +15,7 @@ public class GetAllVehicleCategoriesQueryHandler(IUnitOfWork unitOfWork)
         GetAllVehicleCategoriesQuery request,
         CancellationToken cancellationToken)
     {
-        var categories = await unitOfWork.GetReadRepository<VehicleCategory>().GetAsync(cancellationToken: cancellationToken);
+        var categories = await unitOfWork.GetWriteRepository<VehicleCategory>().GetAsync(cancellationToken: cancellationToken);
 
         var categoryDtos = categories.Select(category => new GetVehicleCategoryDto
         {

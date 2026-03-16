@@ -1,5 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingDTOs.Get;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Pagination;
@@ -11,8 +12,9 @@ public class GetBookingsPagedQuery : IQuery<PagedList<GetBookingDto>>
     public required GetBookingsPagedQueryParams RequestParams { get; set; }
 }
 
-public class GetBookingsPagedQueryHandler(IDapperRepository dapperRepository) 
-    : IRequestHandler<GetBookingsPagedQuery, PagedList<GetBookingDto>>
+public class GetBookingsPagedQueryHandler(
+    IDapperRepository dapperRepository,
+    ICryptographyService cryptographyService) : IRequestHandler<GetBookingsPagedQuery, PagedList<GetBookingDto>>
 {
     public async Task<PagedList<GetBookingDto>> Handle(GetBookingsPagedQuery request, CancellationToken cancellationToken)
     {
@@ -146,8 +148,26 @@ public class GetBookingsPagedQueryHandler(IDapperRepository dapperRepository)
 
         var bookings = await dapperRepository.QueryAsync<GetBookingDto>(dataSql, parameters, cancellationToken: cancellationToken);
 
+        // Decrypt phone numbers
+        var bookingsList = bookings.ToList();
+        foreach (var booking in bookingsList)
+        {
+            if (!string.IsNullOrEmpty(booking.CustomerPhone))
+            {
+                try
+                {
+                    booking.CustomerPhone = cryptographyService.DecryptAes(booking.CustomerPhone);
+                }
+                catch
+                {
+                    // If decryption fails, keep original value or set to null
+                    booking.CustomerPhone = null;
+                }
+            }
+        }
+
         return new PagedList<GetBookingDto>(
-            bookings.ToList(),
+            bookingsList,
             totalCount,
             query.PageNumber,
             query.PageSize);

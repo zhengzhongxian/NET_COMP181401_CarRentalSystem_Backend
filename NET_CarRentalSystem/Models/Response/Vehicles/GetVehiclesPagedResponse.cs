@@ -1,4 +1,4 @@
-﻿using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
 
 namespace NET_CarRentalSystem.API.Models.Response.Vehicles;
 
@@ -9,6 +9,8 @@ public class GetVehiclesPagedResponse
     public string Manufacturer { get; set; } = string.Empty;
 
     public string Model { get; set; } = string.Empty;
+
+    public string? Title { get; set; }
 
     public string? Color { get; set; }
 
@@ -35,4 +37,6 @@ public class GetVehiclesPagedResponse
     public string? TransmissionName { get; set; }
 
     public List<GetVehicleAttributeDto>? AttributeDtos { get; set; } = [];
+
+    public int RequiredLicenseClass { get; set; }
 }

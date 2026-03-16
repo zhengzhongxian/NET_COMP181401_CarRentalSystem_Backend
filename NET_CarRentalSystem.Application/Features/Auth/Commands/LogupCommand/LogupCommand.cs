@@ -52,8 +52,8 @@ public class LogupCommandHandler(
             return (AuthMessage.Otp.Invalid, false);
         }
 
-        var userReadRepository = unitOfWork.GetReadRepository<User>();
-        var existingUser = await userReadRepository.GetFirstOrDefaultAsync(
+        var userWriteRepository = unitOfWork.GetWriteRepository<User>();
+        var existingUser = await userWriteRepository.GetFirstOrDefaultAsync(
             u => u.UserName == logupDto.UserName || u.Email == logupDto.Email, 
             cancellationToken: cancellationToken);
         
@@ -64,8 +64,8 @@ public class LogupCommandHandler(
         
         var encryptedPhone = cryptographyService.EncryptAes(logupDto.PhoneNumber);
         
-        var customerReadRepository = unitOfWork.GetReadRepository<Customer>();
-        var existingCustomerByPhone = await customerReadRepository.GetFirstOrDefaultAsync(
+        var customerWriteRepository = unitOfWork.GetWriteRepository<Customer>();
+        var existingCustomerByPhone = await customerWriteRepository.GetFirstOrDefaultAsync(
             c => c.PhoneNumber == encryptedPhone, 
             cancellationToken: cancellationToken);
         
@@ -74,8 +74,8 @@ public class LogupCommandHandler(
             return (AuthMessage.Logup.PhoneNumberExists, false);
         }
 
-        var roleReadRepository = unitOfWork.GetReadRepository<Role>();
-        var customerRole = await roleReadRepository.GetFirstAsync(
+        var roleWriteRepository = unitOfWork.GetWriteRepository<Role>();
+        var customerRole = await roleWriteRepository.GetFirstAsync(
             r => r.Name == RoleConstants.Customer, 
             cancellationToken: cancellationToken);
 

@@ -1,5 +1,6 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
+using NET_CarRentalSystem.Application.Interfaces.Services.Ai;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Application.Models.Storage;
 using NET_CarRentalSystem.Domain.Entities;
@@ -27,7 +28,8 @@ public class UpdateAfterReturnCommand : ICommand<(bool Success, string Message, 
 public class UpdateAfterReturnCommandHandler(
     IUnitOfWork unitOfWork,
     ICloudinaryService cloudinaryService,
-    IPublishEndpoint publishEndpoint  ) : IRequestHandler<UpdateAfterReturnCommand, (bool, string, int, List<BookingViolation>)>
+    IPublishEndpoint publishEndpoint,
+    IAiImageVerificationService aiVerificationService) : IRequestHandler<UpdateAfterReturnCommand, (bool, string, int, List<BookingViolation>)>
 {
     public async Task<(bool, string, int, List<BookingViolation>)> Handle(
         UpdateAfterReturnCommand request,
@@ -41,7 +43,7 @@ public class UpdateAfterReturnCommandHandler(
             if (booking == null)
                 return (false, BookingMessage.UpdateAfterReturn.BookingNotFound, 0, []);
             
-            var customer = await unitOfWork.GetReadRepository<Customer>()
+            var customer = await unitOfWork.GetWriteRepository<Customer>()
                 .GetFirstOrDefaultAsync(c => c.CustomerId == booking.CustomerId, cancellationToken: ct);
 
             var user = customer?.UserId.HasValue == true
@@ -62,6 +64,117 @@ public class UpdateAfterReturnCommandHandler(
             
             booking.MileageEnd = request.MileageEnd;
             booking.FuelLevelEnd = request.FuelLevelEnd;
+            
+            var vehicleModel = await unitOfWork.GetWriteRepository<VehicleModel>()
+                .GetByIdAsync(booking.VehicleModelId, ct);
+            
+            // Fetch existing pickup images (BookingImages) for comparison
+            var pickupImages = await unitOfWork.GetWriteRepository<BookingImage>()
+                .GetAsync(filter: bi => bi.BookingId == booking.Id, cancellationToken: ct);
+            
+            // Download pickup image bytes for AI comparison
+            var pickupImageBytes = new List<byte[]>();
+            string? detectedPickupPlate = null;
+            
+            foreach (var pickupImage in pickupImages)
+            {
+                var imageBytes = await cloudinaryService.DownloadImageAsync(pickupImage.ImageUrl);
+                if (imageBytes != null)
+                {
+                    pickupImageBytes.Add(imageBytes);
+                    
+                    // Try to extract plate from each pickup image (find the one with plate visible)
+                    if (detectedPickupPlate == null && !string.IsNullOrEmpty(vehicleModel?.NumberPlate))
+                    {
+                        var pickupPlateResult = await aiVerificationService.ExtractLicensePlateAsync(
+                            imageBytes,
+                            vehicleModel.NumberPlate,
+                            pickupImage.ImageUrl,
+                            ct);
+                        
+                        if (!pickupPlateResult.WasSkipped && pickupPlateResult.PlateDetected)
+                        {
+                            detectedPickupPlate = pickupPlateResult.DetectedPlate;
+                        }
+                    }
+                }
+            }
+            
+            // Prepare return image bytes for comparison
+            var returnImageBytes = new List<byte[]>();
+            byte[]? firstReturnImageBytes = null;
+            
+            if (request.ReturnImages?.Count > 0)
+            {
+                for (var i = 0; i < request.ReturnImages.Count; i++)
+                {
+                    var returnImage = request.ReturnImages[i];
+                    using var ms = new MemoryStream();
+                    await returnImage.Content.CopyToAsync(ms, ct);
+                    var imgBytes = ms.ToArray();
+                    returnImageBytes.Add(imgBytes);
+                    
+                    if (i == 0)
+                    {
+                        firstReturnImageBytes = imgBytes;
+                    }
+                    
+                    // Reset stream position for upload later
+                    if (returnImage.Content.CanSeek)
+                    {
+                        returnImage.Content.Position = 0;
+                    }
+                }
+            }
+            
+            // License plate verification: compare return image plate with vehicle number plate
+            if (!string.IsNullOrEmpty(vehicleModel?.NumberPlate) && firstReturnImageBytes != null)
+            {
+                var plateResult = await aiVerificationService.ExtractLicensePlateAsync(
+                    firstReturnImageBytes,
+                    vehicleModel.NumberPlate,
+                    request.ReturnImages![0].FileName,
+                    ct);
+                
+                // Check if detected plate matches vehicle's registered plate
+                if (!plateResult.WasSkipped && plateResult.PlateDetected && !plateResult.IsMatched)
+                {
+                    return (false, string.Format(BookingMessage.AiVerification.LicensePlateMismatch, 
+                        plateResult.DetectedPlate, vehicleModel.NumberPlate), 0, []);
+                }
+                
+                // Also verify consistency between pickup and return plates if we detected one in pickup
+                if (detectedPickupPlate != null && plateResult.PlateDetected)
+                {
+                    // Normalize plates and compare
+                    var normalizedPickup = detectedPickupPlate.Replace("-", "").Replace(" ", "").ToUpperInvariant();
+                    var normalizedReturn = plateResult.DetectedPlate.Replace("-", "").Replace(" ", "").ToUpperInvariant();
+                    
+                    if (normalizedPickup != normalizedReturn)
+                    {
+                        return (false, string.Format(BookingMessage.AiVerification.LicensePlatePickupReturnMismatch, 
+                            detectedPickupPlate, plateResult.DetectedPlate), 0, []);
+                    }
+                }
+            }
+            
+            var existingReturnImages = await unitOfWork.GetWriteRepository<VehicleReturnImage>()
+                .GetAsync(filter: ri => ri.BookingId == booking.Id, cancellationToken: ct);
+            
+            if (existingReturnImages.Count > 0)
+            {
+                // Delete from Cloudinary first
+                foreach (var existingImage in existingReturnImages)
+                {
+                    if (!string.IsNullOrEmpty(existingImage.PublicId))
+                    {
+                        await cloudinaryService.DeleteImageAsync(existingImage.PublicId);
+                    }
+                }
+                
+                unitOfWork.GetWriteRepository<VehicleReturnImage>().RemoveRange(existingReturnImages);
+                await unitOfWork.SaveChangesAsync(ct);
+            }
             
             var returnImages = new List<VehicleReturnImage>();
           
@@ -121,7 +234,25 @@ public class UpdateAfterReturnCommandHandler(
                 });
             }
             
-            if (!string.IsNullOrWhiteSpace(request.VehicleDamageNotes))
+            // Check for vehicle damage - either from admin notes or AI detection
+            string? damageNotes = request.VehicleDamageNotes;
+            
+            // If admin didn't provide damage notes, use AI to detect damage
+            if (string.IsNullOrWhiteSpace(damageNotes) && pickupImageBytes.Count > 0 && returnImageBytes.Count > 0)
+            {
+                var damageResult = await aiVerificationService.DetectDamageAsync(
+                    pickupImageBytes,
+                    returnImageBytes,
+                    0.7f,
+                    ct);
+                
+                if (!damageResult.WasSkipped && damageResult.DamageDetected)
+                {
+                    damageNotes = $"[AI] {damageResult.DamageDescriptionVi}";
+                }
+            }
+            
+            if (!string.IsNullOrWhiteSpace(damageNotes))
             {
                 violations.Add(new BookingViolation
                 {
@@ -130,7 +261,7 @@ public class UpdateAfterReturnCommandHandler(
                     Status = ViolationStatus.Pending,
                     Amount = 0,
                     Description = "Xe bị hư hỏng",
-                    Details = request.VehicleDamageNotes
+                    Details = damageNotes
                 });
             }
             
@@ -208,6 +339,7 @@ public class UpdateAfterReturnCommandHandler(
                 Status = booking.Status,
                 FuelLevelStart = booking.FuelLevelStart,
                 FuelLevelEnd = booking.FuelLevelEnd,
+                MileageEnd = booking.MileageEnd,
                 BookingViolationsJson = bookingViolationsJson,
                 ReturnImagesJson = returnImagesJson,
                 Id = default,

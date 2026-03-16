@@ -12,6 +12,6 @@ public class BookingInsurance : BaseEntity<Guid>
     
     public virtual Booking Booking { get; set; } = default!;
     
-    public virtual InsurancePackage? InsurancePackage { get; set; } = default!;
+    public virtual InsurancePackage? InsurancePackage { get; set; }
 }
 

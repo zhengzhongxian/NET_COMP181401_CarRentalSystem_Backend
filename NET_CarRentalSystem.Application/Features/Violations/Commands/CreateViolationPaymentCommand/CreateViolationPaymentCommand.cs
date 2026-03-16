@@ -32,8 +32,8 @@ public class CreateViolationPaymentCommandHandler(
             if (violation == null)
                 return (false, ViolationMessage.CreatePaymentLink.ViolationNotFound, null);
             
-            var booking = await unitOfWork.GetReadRepository<Booking>()
-                .GetFirstOrDefaultAsync(b => b.Id == violation.BookingId, cancellationToken: ct);
+            var booking = await unitOfWork.GetWriteRepository<Booking>()
+                .GetFirstOrDefaultAsync(b => b.Id == violation.BookingId, ct);
 
             if (booking == null)
                 return (false, ViolationMessage.CreatePaymentLink.ViolationNotFound, null);
@@ -100,7 +100,9 @@ public class CreateViolationPaymentCommandHandler(
             await unitOfWork.GetWriteRepository<PaymentTransaction>().AddAsync(transaction, ct);
             await unitOfWork.SaveChangesAsync(ct);
 
-            // 6. Create PayOS payment link
+            var payOsDesc = $"VP {violation.ViolationType}";
+            if (payOsDesc.Length > 25) payOsDesc = payOsDesc[..25];
+            
             var payOsRequest = new PayOsCreateRequest
             {
                 TransactionCode = transactionCode,
@@ -109,7 +111,7 @@ public class CreateViolationPaymentCommandHandler(
                 TransactorEmail = user?.Email ?? "customer@renticar.com",
                 TransactorPhone = customer.PhoneNumber,
                 TransactorAddress = customer.Address ?? "N/A",
-                Description = $"Vi pham: {violation.Description}"
+                Description = payOsDesc
             };
 
             var payOsResponse = await payOsService.CreatePaymentAsync(payOsRequest);

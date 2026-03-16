@@ -23,7 +23,7 @@ public class GenerateQrReturnVehicleCommandHandler(
     ICryptographyService cryptographyService) : IRequestHandler<GenerateQrReturnVehicleCommand, (string, string)>
 {
     private readonly int _expireInSecond = int.Parse(configuration[KeyConstants.QrReturnVehicleUrl.ExpireInSecond] ?? "30");
-    private readonly string _baseUrl = configuration[KeyConstants.QrReturnVehicleUrl.BaseUrl] ?? "http://localhost:5173/qrCode=";
+    private readonly string _baseUrl = configuration[KeyConstants.QrReturnVehicleUrl.BaseUrl] ?? "http://localhost:5173/return/";
 
     public async Task<(string, string)> Handle(GenerateQrReturnVehicleCommand request, CancellationToken ct)
     {

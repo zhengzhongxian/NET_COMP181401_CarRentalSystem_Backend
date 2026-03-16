@@ -98,6 +98,7 @@ services:
       - ./https:/https:ro
       - ./logs:/app/Logs
       - ./appsettings.${ASPNETCORE_ENVIRONMENT}.json:/app/appsettings.${ASPNETCORE_ENVIRONMENT}.json
+      - ./Models:/app/Models:ro
     networks:
       - renticar-network
 

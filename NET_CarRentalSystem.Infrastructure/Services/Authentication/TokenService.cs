@@ -104,32 +104,48 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
             new(JwtRegisteredClaimNames.Name, user.UserName)
         };
 
-        var userLogin = await unitOfWork.GetReadRepository<UserLogin>()
+        var userLogin = await unitOfWork.GetWriteRepository<UserLogin>()
             .GetFirstOrDefaultAsync(ul => ul.UserId == user.Id, cancellationToken: cancellationToken);
 
         var loginProvider = userLogin?.LoginProvider.ToString() ?? "Local";
         claims.Add(new Claim("LoginProvider", loginProvider));
 
-        var roleIds = unitOfWork.GetReadRepository<UserRole>()
-            .GetQueryable(ur => ur.UserId == user.Id)
+        var customer = await unitOfWork.GetWriteRepository<Customer>()
+            .GetFirstOrDefaultAsync(c => c.UserId == user.Id, cancellationToken: cancellationToken);
+        var loyaltyPoints = customer?.LoyaltyPoints ?? 0;
+        claims.Add(new Claim("LoyaltyPoints", loyaltyPoints.ToString()));
+
+        var roleIds = unitOfWork.GetWriteRepository<UserRole>()
+            .GetQueryable()
+            .Where(ur => ur.UserId == user.Id)
             .Select(ur => ur.RoleId);
 
         var existRoleIds = await roleIds.AnyAsync(cancellationToken);
         if (!existRoleIds) return claims.Distinct().ToList();
 
-        var roles = unitOfWork.GetReadRepository<Role>()
-            .GetQueryable(r => roleIds.Contains(r.Id))
+        var roles = unitOfWork.GetWriteRepository<Role>()
+            .GetQueryable()
+            .Where(r => roleIds.Contains(r.Id))
             .Select(r => r.Name);
 
         var roleNames = await roles.ToListAsync(cancellationToken);
         claims.AddRange(roleNames.Select(role => new Claim(ClaimTypes.Role, role)).Distinct());
 
-        var permissionClaims = await unitOfWork.GetReadRepository<RoleClaim>()
+        var permissionClaims = await unitOfWork.GetWriteRepository<RoleClaim>()
             .GetAsync(rc => roleIds.Contains(rc.RoleId) && rc.ClaimType == "Permission", cancellationToken: cancellationToken);
 
-        var distinctPermissions = permissionClaims
+        var rolePermissions = permissionClaims
             .Select(c => c.ClaimValue)
             .Distinct();
+
+        var userClaims = await unitOfWork.GetWriteRepository<UserClaim>()
+            .GetAsync(uc => uc.UserId == user.Id && uc.ClaimType == "Permission", cancellationToken: cancellationToken);
+
+        var userPermissions = userClaims
+            .Select(c => c.ClaimValue)
+            .Distinct();
+
+        var distinctPermissions = rolePermissions.Union(userPermissions).Distinct();
 
         claims.AddRange(distinctPermissions.Select(permission => new Claim("Permission", permission)));
 

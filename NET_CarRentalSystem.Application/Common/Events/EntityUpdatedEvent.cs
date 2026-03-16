@@ -4,11 +4,11 @@ public abstract record EntityUpdatedEvent<TKey> : IEntityEvent<TKey>
 {
     public required TKey Id { get; init; }
     
-    public required DateTime CreatedAt { get; init; }
+    public DateTime? CreatedAt { get; set; }
     
-    public required string? CreatedBy { get; init; }
+    public string? CreatedBy { get; set; }
     
-    public required DateTime UpdatedAt { get; init; }
+    public DateTime? UpdatedAt { get; set; }
     
-    public required string? UpdatedBy { get; init; }
+    public string? UpdatedBy { get; set; }
 }

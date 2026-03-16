@@ -13,9 +13,7 @@ public static class BookingMessage
     public static class Create
     {
         public const string Success = "Tạo đơn đặt xe thành công.";
-        public const string Failed = "Tạo đơn đặt xe thất bại.";
         public const string VehicleNotFound = "Không tìm thấy xe yêu cầu.";
-        public const string VehicleNotAvailable = "Xe hiện không khả dụng để cho thuê.";
         public const string InvalidDate = "Thời gian thuê không hợp lệ.";
         public const string CustomerNotFound = "Không tìm thấy thông tin khách hàng.";
         public const string CustomerNotExists = "Khách hàng không tồn tại trong hệ thống.";
@@ -25,6 +23,9 @@ public static class BookingMessage
         public const string MustAcceptTerms = "Bạn phải đọc và chấp nhận điều khoản sử dụng trước khi đặt xe.";
         public const string InvalidInsurance = "Một hoặc nhiều gói bảo hiểm không hợp lệ.";
         public const string PaymentBeingProcessed = "Giao dịch thanh toán của bạn đang được xử lý. Vui lòng thử lại sau ít phút.";
+        public const string DriverLicenseExpired = "Giấy phép lái xe của bạn đã hết hạn. Vui lòng cập nhật GPLX mới.";
+        public const string DriverLicenseClassRequired = "Bạn cần có giấy phép lái xe để đặt loại xe này.";
+        public const string DriverLicenseClassInsufficient = "Hạng giấy phép lái xe của bạn không đủ yêu cầu để đặt loại xe này.";
     }
     
     public static class FinalPayment
@@ -33,6 +34,9 @@ public static class BookingMessage
         public const string BookingNotFound = "Không tìm thấy đơn đặt xe.";
         public const string BookingCancelled = "Đơn đặt xe đã bị hủy. Không thể tiếp tục thanh toán.";
         public const string InvalidBookingStatus = "Đơn đặt xe không ở trạng thái chờ nhận xe (phải đã thanh toán cọc).";
+        public const string TransactionNotFound = "Không tìm thấy giao dịch thanh toán cuối.";
+        public const string RegenerateSuccess = "Lấy lại thông tin thanh toán thành công.";
+        public const string BookingInProgress = "Không thể xuất lại QR khi đơn đặt xe đang trong quá trình thuê.";
     }
     
     public static class SwapVehicleModel
@@ -57,7 +61,6 @@ public static class BookingMessage
         public const string NotYourBooking = "Bạn không có quyền hủy đơn đặt xe này.";
         public const string InvalidBookingStatus = "Chỉ có thể hủy đơn đặt xe ở trạng thái đã thanh toán cọc.";
         public const string AlreadyCancelled = "Đơn đặt xe đã bị hủy trước đó.";
-        public const string CancellationReasonRequired = "Vui lòng cung cấp lý do hủy đơn.";
         public const string MaxCancellationsReached = "Bạn đã vượt quá số lần hủy tối đa trong tháng ({0} lần). Vui lòng thử lại vào tháng sau.";
     }
     
@@ -72,7 +75,6 @@ public static class BookingMessage
         public const string Error = "Lỗi khi tạo hợp đồng.";
         public const string BookingNotFound = "Không tìm thấy đơn đặt xe.";
         public const string InvalidStatus = "Chỉ có thể tạo hợp đồng cho đơn đặt xe đã đặt cọc.";
-        public const string AlreadyGenerated = "Hợp đồng đã được tạo trước đó.";
     }
 
     public static class ExportContract
@@ -107,10 +109,7 @@ public static class BookingMessage
         public const string BookingNotFound = "Không tìm thấy đơn đặt xe";
         public const string InvalidStatus = "Đơn đặt xe không ở trạng thái đã trả xe";
         public const string AlreadyUpdated = "Thông tin xe đã được cập nhật trước đó";
-        public const string InvalidFuelLevel = "Mức nhiên liệu không hợp lệ";
-        public const string InvalidMileage = "Số km không hợp lệ";
         public const string MileageLessThanStart = "Số km kết thúc phải lớn hơn số km bắt đầu";
-        public const string ImagesRequired = "Vui lòng tải lên ít nhất 4 ảnh xe khi trả";
     }
 
     public static class CompleteBooking
@@ -121,5 +120,19 @@ public static class BookingMessage
         public const string InvalidStatus = "Đơn đặt xe không ở trạng thái đã trả xe";
         public const string HasUnresolvedViolations = "Không thể hoàn thành đơn đặt xe khi còn vi phạm chưa giải quyết";
         public const string AlreadyCompleted = "Đơn đặt xe đã được hoàn thành trước đó";
+    }
+
+    public static class AiVerification
+    {
+        // License Plate OCR
+        public const string LicensePlateMismatch = "Biển số trong ảnh ({0}) không khớp với biển số xe ({1}). Vui lòng kiểm tra lại.";
+        public const string LicensePlatePickupReturnMismatch = "Biển số lúc nhận xe ({0}) không khớp với biển số lúc trả xe ({1}). Vui lòng kiểm tra lại.";
+        
+        // Vehicle image verification
+        public const string NotVehicleImage = "Ảnh không hợp lệ: {0} không phải là ảnh xe. Vui lòng tải lên ảnh xe hợp lệ.";
+        
+        // Skip messages
+        public const string SkipLicensePlate = "Bỏ qua xác thực biển số: {0}";
+        public const string SkipDamageDetection = "Bỏ qua kiểm tra hư hỏng: {0}";
     }
 }

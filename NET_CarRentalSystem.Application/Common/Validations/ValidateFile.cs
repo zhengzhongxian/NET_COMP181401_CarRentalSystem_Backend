@@ -1,17 +1,30 @@
+using Microsoft.Extensions.Options;
+using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Models.Storage;
 
 namespace NET_CarRentalSystem.Application.Common.Validations;
 
-public static class ValidateFile
+public class ValidateFile(IOptions<FileValidationSettings> options)
 {
-    private const long MaxFileSize = 10 * 1024 * 1024;
-    
-    public static bool IsValidate(FileModel? file)
+    private readonly long _maxFileSize = options.Value.MaxFileSizeBytes;
+
+    public bool IsValid(FileModel? file)
     {
         if (file == null) return true;
 
         return file.Content.Length > 0
-               && file.Content.Length <= MaxFileSize
+               && file.Content.Length <= _maxFileSize
+               && !string.IsNullOrWhiteSpace(file.FileName);
+    }
+    
+    public static bool IsValidate(FileModel? file)
+    {
+        const long defaultMaxFileSize = 10 * 1024 * 1024;
+        
+        if (file == null) return true;
+
+        return file.Content.Length > 0
+               && file.Content.Length <= defaultMaxFileSize
                && !string.IsNullOrWhiteSpace(file.FileName);
     }
 }

@@ -40,9 +40,9 @@ public class ProcessViolationPaymentSuccessCommandHandler(
         var customer = await unitOfWork.GetWriteRepository<Customer>()
             .GetByIdAsync(booking.CustomerId, ct);
 
-        var hasOtherViolations = await unitOfWork.GetReadRepository<BookingViolation>()
+        var hasOtherViolations = await unitOfWork.GetWriteRepository<BookingViolation>()
             .ExistsAsync(
-                v => v.Booking.CustomerId == booking.CustomerId
+                v => v.BookingId == booking.Id
                      && v.Id != violation.Id
                      && v.Status != ViolationStatus.Resolved
                      && v.Status != ViolationStatus.Paid,

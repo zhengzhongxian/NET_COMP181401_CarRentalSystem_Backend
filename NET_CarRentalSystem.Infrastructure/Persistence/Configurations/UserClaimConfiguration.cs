@@ -24,6 +24,6 @@ public class UserClaimConfiguration : IEntityTypeConfiguration<UserClaim>
         builder.Property(uc => uc.ClaimValue)
             .HasColumnName("claim_value");
 
-        builder.HasQueryFilter(c => !c.User.IsDeleted);
+        builder.HasQueryFilter(c => c.User != null && !c.User.IsDeleted);
     }
 }

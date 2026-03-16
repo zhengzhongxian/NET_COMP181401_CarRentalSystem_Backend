@@ -24,8 +24,6 @@ app.InitializeQueryExecutor();
 
 _ = app.ApplyMigrationsAsync();
 
-app.InitializeRediSearchIndex();
-
 app.UseStaticFiles();
 app.UseSwagger();
 app.UseSwaggerUI(c =>
@@ -34,12 +32,12 @@ app.UseSwaggerUI(c =>
 });
 
 app.UseMiddleware<GlobalInfrastructureMiddleware>();
-app.UseRateLimitingMiddleware();
 app.UseHttpsRedirection();
 app.UseSerilogRequestLogging();
 app.UseCors(AppConstants.CorsPolicy.DefaultCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseRateLimitingMiddleware();
 
 app.MapControllers();
 app.UseSignalRHubs();

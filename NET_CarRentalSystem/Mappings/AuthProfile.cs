@@ -21,7 +21,7 @@ public class AuthProfile : Profile
         CreateMap<GetUserSessionDto, GetUserSessionResponse>();
         CreateMap<SendOtpRequest, SendOtpParams>();
         CreateMap<LogupRequest, LogupCommandParams>();
-        CreateMap<UserDto, GetUserResponse>();
+        CreateMap<GetUserDto, GetUserResponse>();
         CreateMap<GoogleLoginDto, GoogleLoginResponse>();
         CreateMap<GoogleLoginDto, LoginResponse>();
         CreateMap<GoogleLogupRequest, GoogleLogupCommandParams>();

@@ -16,13 +16,12 @@ public class GetVehiclesPagedQueryParams : PagedParams
 
     public decimal? MaxPrice { get; set; }
     
-    public bool UseAi { get; set; } = false;
-
     public List<string>? AttributeKeywords { get; set; }
     
-    public List<string>? ExcludeAttributeKeywords { get; set; }
-    
-    public bool UseVectorSearch { get; set; } = false;
-    
-    public bool UseTwoStageSearch { get; set; } = false;
+    /// <summary>
+    /// When true, use AI-powered Redis hybrid search (semantic + keyword).
+    /// When false, use traditional SQL LIKE search.
+    /// Client search should set this to true; admin search leaves it false.
+    /// </summary>
+    public bool UseHybridSearch { get; set; }
 }

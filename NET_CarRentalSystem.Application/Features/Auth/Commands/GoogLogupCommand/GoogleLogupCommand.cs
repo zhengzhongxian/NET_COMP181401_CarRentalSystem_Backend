@@ -30,9 +30,9 @@ public class GoogleLogupCommandHandler(
             return (AuthMessage.GoogleLogup.UnverifiedEmail, false);
         }
         
-        var userReadRepository = unitOfWork.GetReadRepository<User>();
+        var userWriteRepository = unitOfWork.GetWriteRepository<User>();
         
-        var existingUser = await userReadRepository.GetFirstOrDefaultAsync(
+        var existingUser = await userWriteRepository.GetFirstOrDefaultAsync(
             u => u.Email == payload.Email && u.IsVerified, 
             cancellationToken: cancellationToken);
         if (existingUser != null) 
@@ -41,8 +41,8 @@ public class GoogleLogupCommandHandler(
         }
         var encryptedPhone = cryptographyService.EncryptAes(logupParams.PhoneNumber);
         
-        var customerReadRepository = unitOfWork.GetReadRepository<Customer>();
-        var existingCustomerByPhone = await customerReadRepository.GetFirstOrDefaultAsync(
+        var customerWriteRepository = unitOfWork.GetWriteRepository<Customer>();
+        var existingCustomerByPhone = await customerWriteRepository.GetFirstOrDefaultAsync(
             c => c.PhoneNumber == encryptedPhone, 
             cancellationToken: cancellationToken
         );
@@ -52,8 +52,8 @@ public class GoogleLogupCommandHandler(
             return (AuthMessage.GoogleLogup.PhoneNumberExists, false);
         }
         
-        var roleReadRepository = unitOfWork.GetReadRepository<Role>();
-        var customerRole = await roleReadRepository.GetFirstAsync(
+        var roleWriteRepository = unitOfWork.GetWriteRepository<Role>();
+        var customerRole = await roleWriteRepository.GetFirstAsync(
             r => r.Name == RoleConstants.Customer, 
             cancellationToken: cancellationToken);
         

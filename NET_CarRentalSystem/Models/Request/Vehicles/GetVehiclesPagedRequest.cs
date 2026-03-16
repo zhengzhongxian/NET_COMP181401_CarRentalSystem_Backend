@@ -1,4 +1,4 @@
-﻿using NET_CarRentalSystem.Shared.Pagination;
+using NET_CarRentalSystem.Shared.Pagination;
 
 namespace NET_CarRentalSystem.API.Models.Request.Vehicles;
 
@@ -16,9 +16,7 @@ public class GetVehiclesPagedRequest : PagedRequest
 
     public decimal? MaxPrice { get; set; }
     
-    public bool UseAi { get; set; } = false;
+    public List<string>? AttributeKeywords { get; set; }
     
-    public bool UseVectorSearch { get; set; } = false;
-    
-    public bool UseTwoStageSearch { get; set; } = false;
+    public bool UseHybridSearch { get; set; }
 }

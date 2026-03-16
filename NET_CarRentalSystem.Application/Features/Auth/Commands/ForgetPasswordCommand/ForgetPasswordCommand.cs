@@ -33,7 +33,7 @@ public class ForgetPasswordCommandHandler(
     
     public async Task<(string, bool)> Handle(ForgetPasswordCommand request, CancellationToken cancellationToken)
     {
-        var userRepo = unitOfWork.GetReadRepository<User>();
+        var userRepo = unitOfWork.GetWriteRepository<User>();
         var user = await userRepo.GetFirstOrDefaultAsync(u => 
                 u.Email == request.Email &&
                 !u.UserLogins.Any(l => l.LoginProvider == LoginProvider.Google) &&
@@ -50,7 +50,7 @@ public class ForgetPasswordCommandHandler(
         var key= CacheKeyHelper.GetResetPasswordKey(request.Email);
         var cachedResetPasswordDetailsJson = await cacheService.GetStringAsync(key, cancellationToken);
         
-        var customer = await unitOfWork.GetReadRepository<Customer>().GetFirstAsync(c => 
+        var customer = await unitOfWork.GetWriteRepository<Customer>().GetFirstAsync(c => 
             c.UserId == user.Id, 
             cancellationToken: cancellationToken);
         

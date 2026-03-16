@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using NET_CarRentalSystem.Application.Common.Extensions;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Bookings.Events;
+using NET_CarRentalSystem.Application.Interfaces.Services.Ai;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingImageDTOs;
@@ -42,6 +43,7 @@ public class CreateFinalPaymentCommandHandler(
     IPayOsService payOsService,
     ICloudinaryService cloudinaryService,
     IImageResizeService imageResizeService,
+    IAiImageVerificationService aiVerificationService,
     IConfiguration configuration) : IRequestHandler<CreateFinalPaymentCommand, (bool, string, PaymentTransactionDto?)>
 {
     private readonly int _maxImageWidth = int.Parse(configuration[KeyConstants.FinalPaymentSettings.MaxImageWidth] ?? "1920");
@@ -69,6 +71,60 @@ public class CreateFinalPaymentCommandHandler(
             {
                 return (false, BookingMessage.FinalPayment.InvalidBookingStatus, null);
             }
+            
+            var vehicleModel = await unitOfWork.GetWriteRepository<VehicleModel>()
+                .GetByIdAsync(booking.VehicleModelId, ct);
+            
+            // AI vehicle image verification - verify ALL images are vehicle images
+            if (request.Images?.Count > 0)
+            {
+                var imagesToVerify = new List<(byte[] Data, string Filename)>();
+                
+                foreach (var image in request.Images)
+                {
+                    using var ms = new MemoryStream();
+                    image.Content.Position = 0; // Reset stream position
+                    await image.Content.CopyToAsync(ms, ct);
+                    imagesToVerify.Add((ms.ToArray(), image.FileName));
+                }
+                
+                // Verify all images are vehicle images using AI
+                var batchResult = await aiVerificationService.VerifyVehicleImagesBatchAsync(
+                    imagesToVerify,
+                    minConfidence: 0.6f, // 60% threshold for vehicle detection
+                    cancellationToken: ct);
+                
+                if (!batchResult.AllValid)
+                {
+                    // Get invalid image filenames using indices
+                    var invalidFilenames = batchResult.InvalidIndices
+                        .Where(i => i < imagesToVerify.Count)
+                        .Select(i => imagesToVerify[i].Filename)
+                        .ToList();
+                    
+                    return (false, string.Format(BookingMessage.AiVerification.NotVehicleImage, 
+                        string.Join(", ", invalidFilenames)), null);
+                }
+                
+                // License plate verification - only check first image
+                if (!string.IsNullOrEmpty(vehicleModel?.NumberPlate))
+                {
+                    var firstImageBytes = imagesToVerify[0].Data;
+                    var firstImageFilename = imagesToVerify[0].Filename;
+                    
+                    var plateResult = await aiVerificationService.ExtractLicensePlateAsync(
+                        firstImageBytes,
+                        vehicleModel.NumberPlate,
+                        firstImageFilename,
+                        ct);
+                    
+                    if (!plateResult.WasSkipped && plateResult.PlateDetected && !plateResult.IsMatched)
+                    {
+                        return (false, string.Format(BookingMessage.AiVerification.LicensePlateMismatch, 
+                            plateResult.DetectedPlate, vehicleModel.NumberPlate), null);
+                    }
+                }
+            }
 
             booking.MileageStart = request.MileageStart;
             booking.FuelLevelStart = request.FuelLevelStart;
@@ -77,6 +133,27 @@ public class CreateFinalPaymentCommandHandler(
 
             unitOfWork.GetWriteRepository<Booking>().Update(booking);
             await unitOfWork.SaveChangesAsync(ct);
+            
+            if (request.Images is { Count: > 0 })
+            {
+                var existingImages = await unitOfWork.GetWriteRepository<BookingImage>()
+                    .GetAsync(filter: bi => bi.BookingId == booking.Id, cancellationToken: ct);
+                
+                foreach (var existingImage in existingImages)
+                {
+                    if (!string.IsNullOrEmpty(existingImage.PublicId))
+                    {
+                        await cloudinaryService.DeleteImageAsync(existingImage.PublicId);
+                    }
+                    
+                    unitOfWork.GetWriteRepository<BookingImage>().Remove(existingImage, hardDelete: true);
+                }
+                
+                if (existingImages.Count != 0)
+                {
+                    await unitOfWork.SaveChangesAsync(ct);
+                }
+            }
             
             var uploadedImages = new List<(string Url, string PublicId)>();
             var folder = $"{booking.CustomerId}/bookings/{booking.Id}";
@@ -106,8 +183,8 @@ public class CreateFinalPaymentCommandHandler(
             }
             await unitOfWork.SaveChangesAsync(ct);
             
-            var depositAmount = booking.TotalPrice * booking.DepositRatio;
-            var remainingAmount = booking.TotalPrice - depositAmount;
+            // Thanh toán 100% giá thuê - tiền cọc giữ riêng, hoàn trả sau 30 ngày
+            var paymentAmount = booking.TotalPrice;
             
             var customer = await unitOfWork.GetWriteRepository<Customer>()
                 .GetByIdAsync(booking.CustomerId, ct);
@@ -122,12 +199,12 @@ public class CreateFinalPaymentCommandHandler(
             {
                 TransactionCode = transactionCode,
                 BookingId = booking.Id,
-                Amount = remainingAmount,
+                Amount = paymentAmount,
                 PaymentDate = createdDate,
                 PaymentMethod = PaymentMethod.PayOs,
                 Status = TransactionStatus.Pending,
                 Type = TransactionType.FinalPayment,
-                Note = $"Final payment for booking {booking.Id}. Mileage: {request.MileageStart}km, Fuel: 100% (full tank), Fuel Price: {request.FuelPrice:N0}đ"
+                Note = $"Full payment (100%) for booking {booking.Id}. Deposit held separately for 30 days. Mileage: {request.MileageStart}km, Fuel Price: {request.FuelPrice:N0}đ"
             };
             
             await unitOfWork.GetWriteRepository<PaymentTransaction>().AddAsync(transaction, ct);
@@ -136,12 +213,12 @@ public class CreateFinalPaymentCommandHandler(
             var payOsRequest = new PayOsCreateRequest
             {
                 TransactionCode = transactionCode,
-                TotalAmount = (long)remainingAmount,
+                TotalAmount = (long)paymentAmount,
                 TransactorName = $"{customer!.FirstName} {customer.LastName}",
                 TransactorEmail = user?.Email!,
                 TransactorPhone = customer.PhoneNumber,
                 TransactorAddress = customer.Address ?? "N/A",
-                Description = $"Final: {booking.Id.ToString()[..8]}"
+                Description = $"Thue xe: {booking.Id.ToString()[..8]}"
             };
             
             var payOsResponse = await payOsService.CreatePaymentAsync(payOsRequest);
@@ -165,6 +242,7 @@ public class CreateFinalPaymentCommandHandler(
                 Status = booking.Status,
                 FuelLevelStart = booking.FuelLevelStart,
                 FuelLevelEnd = booking.FuelLevelEnd,
+                MileageStart = booking.MileageStart,
                 FuelPrice = booking.FuelPrice,
                 ConditionNotes = booking.ConditionNotes,
                 BookingImagesJson = imagesJson,
@@ -201,4 +279,3 @@ public class CreateFinalPaymentCommandHandler(
         }, cancellationToken);
     }
 }
-

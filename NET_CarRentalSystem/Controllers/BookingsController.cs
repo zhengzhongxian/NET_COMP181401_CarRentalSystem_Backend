@@ -17,9 +17,11 @@ using NET_CarRentalSystem.Application.Features.Bookings.Commands.SwapVehicleMode
 using NET_CarRentalSystem.Application.Features.Bookings.Commands.UpdateAfterReturnCommand;
 using NET_CarRentalSystem.Application.Features.Bookings.Commands.UpdateFinalPaymentCommand;
 using NET_CarRentalSystem.Application.Features.Bookings.Queries.GetBookingDetailQuery;
+using NET_CarRentalSystem.Application.Features.Bookings.Queries.GetBookingByTransactionCodeQuery;
 using NET_CarRentalSystem.Application.Features.Bookings.Queries.GetBookingsPagedQuery;
 using NET_CarRentalSystem.Application.Features.Bookings.Queries.GetCustomerBookingDetailQuery;
 using NET_CarRentalSystem.Application.Features.Bookings.Queries.GetCustomerBookingsPagedQuery;
+using NET_CarRentalSystem.Application.Features.Bookings.Queries.RegenerateFinalPaymentQuery;
 using NET_CarRentalSystem.Application.Models.Storage;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
@@ -93,7 +95,39 @@ public class BookingsController(ISender sender, IMapper mapper) : ControllerBase
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]);
 
-            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    [HttpGet("by-transaction/{transactionCode:long}")]
+    public async Task<IActionResult> GetBookingByTransactionCode([FromRoute] long transactionCode, CancellationToken ct)
+    {
+        try
+        {
+            var query = new GetBookingByTransactionCodeQuery { TransactionCode = transactionCode };
+            var result = await sender.Send(query, ct);
+
+            if (result == null)
+            {
+                var notFoundResponse = ApiResponse.ErrorResult(
+                    BookingMessage.Get.NotFound,
+                    StatusCodes.Status404NotFound);
+                return StatusCode(notFoundResponse.StatusCode, notFoundResponse);
+            }
+
+            var response = mapper.Map<GetBookingByTransactionCodeResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, BookingMessage.Get.DetailSuccess);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                BookingMessage.Get.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }
     
@@ -169,7 +203,7 @@ public class BookingsController(ISender sender, IMapper mapper) : ControllerBase
     #region Booking Operations
 
     [HttpPost]
-    [ValidateUserExists]
+    [ValidateUserExists(Policy = PermissionConstants.Ekyc.FullyVerified)]
     public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request, CancellationToken ct)
     {
         var command = mapper.Map<CreateBookingCommand>(request);
@@ -235,6 +269,30 @@ public class BookingsController(ISender sender, IMapper mapper) : ControllerBase
         var apiResponse = ApiResponse.SuccessResult(
             response,
             BookingMessage.FinalPayment.Success
+        );
+
+        return StatusCode(apiResponse.StatusCode, apiResponse);
+    }
+    
+    [HttpGet("{bookingId:guid}/final-payment/regenerate")]
+    [ValidateUserExists(Policy = PermissionConstants.Bookings.CreateFinalPayment)]
+    public async Task<IActionResult> RegenerateFinalPaymentLink(
+        [FromRoute] Guid bookingId,
+        CancellationToken ct)
+    {
+        var query = new RegenerateFinalPaymentQuery { BookingId = bookingId };
+        var (success, message, transactionDto) = await sender.Send(query, ct);
+
+        if (!success || transactionDto is null)
+        {
+            var errorResponse = ApiResponse.ErrorResult(message);
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+
+        var response = mapper.Map<CreateBookingResponse>(transactionDto);
+        var apiResponse = ApiResponse.SuccessResult(
+            response,
+            BookingMessage.FinalPayment.RegenerateSuccess
         );
 
         return StatusCode(apiResponse.StatusCode, apiResponse);

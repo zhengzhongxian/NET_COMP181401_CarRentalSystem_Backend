@@ -55,34 +55,6 @@ public class BookingViolationConfiguration : IEntityTypeConfiguration<BookingVio
         builder.Property(bv => bv.PaymentTransactionId)
             .HasColumnName("payment_transaction_id");
 
-        builder.Property(bv => bv.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(bv => bv.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(bv => bv.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(bv => bv.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(bv => bv.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder.Property(bv => bv.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(bv => bv.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(bv => bv.RowVersion)
-            .HasColumnName("row_version")
-            .IsRowVersion()
-            .ValueGeneratedOnAddOrUpdate();
-
         builder.HasOne(bv => bv.Booking)
             .WithMany(b => b.Violations)
             .HasForeignKey(bv => bv.BookingId)

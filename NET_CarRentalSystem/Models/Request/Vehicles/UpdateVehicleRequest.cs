@@ -6,6 +6,8 @@ public class UpdateVehicleRequest
 
     public required string Model { get; set; } = default!;
 
+    public string? Title { get; set; } = default!;
+
     public string? Color { get; set; } = default!;
 
     public decimal PricePerHour { get; set; } = default!;
@@ -21,4 +23,6 @@ public class UpdateVehicleRequest
     public Guid? TransmissionId { get; set; } = default!;
 
     public string? Metadata { get; set; } = default!;
+
+    public int RequiredLicenseClass { get; set; } = 0;
 }

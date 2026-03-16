@@ -20,6 +20,9 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .ValueGeneratedOnAdd()
             .HasDefaultValueSql("NEWSEQUENTIALID()");
 
+        builder.Property(c => c.UserId)
+            .HasColumnName("user_id");
+
         builder.Property(c => c.FirstName)
             .HasColumnName("first_name")
             .IsRequired()
@@ -45,7 +48,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.Property(c => c.CccdNumber)
             .HasColumnName("cccd_number")
-            .HasMaxLength(150);
+            .HasMaxLength(300);
 
         builder.Property(c => c.CccdIssueDate)
             .HasColumnName("cccd_issue_date")
@@ -63,7 +66,7 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.Property(c => c.DriverLicenseId)
             .HasColumnName("driver_license_id")
-            .HasMaxLength(20);
+            .HasMaxLength(300);
 
         builder.Property(c => c.DriverLicenseExpiry)
             .HasColumnName("driver_license_expiry")
@@ -74,6 +77,9 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
 
         builder.Property(c => c.DriverLicenseBackUrl)
             .HasColumnName("driver_license_back_url");
+
+        builder.Property(c => c.DriverLicenseClass)
+            .HasColumnName("driver_license_class");
 
         builder.Property(c => c.AvatarUrl)
             .HasColumnName("avatar_url");
@@ -93,14 +99,24 @@ public class CustomerConfiguration : IEntityTypeConfiguration<Customer>
             .IsRequired()
             .HasDefaultValue(false);
 
+        builder.Property(c => c.IsIdentityVerified)
+            .HasColumnName("is_identity_verified")
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(c => c.IsPhoneVerified)
+            .HasColumnName("is_phone_verified")
+            .IsRequired()
+            .HasDefaultValue(false);
+
+        builder.Property(c => c.IsDriverLicenseVerified)
+            .HasColumnName("is_driver_license_verified")
+            .IsRequired()
+            .HasDefaultValue(false);
+
         builder.HasIndex(c => c.PhoneNumber).IsUnique();
         builder.HasIndex(c => c.CccdNumber).IsUnique();
         builder.HasIndex(c => c.DriverLicenseId).IsUnique();
-
-        builder.Property(c => c.RowVersion)
-            .HasColumnName("row_version")
-            .IsRowVersion()
-            .ValueGeneratedOnAddOrUpdate();
 
         builder.HasQueryFilter(c => c.User == null || !c.User.IsDeleted);
 

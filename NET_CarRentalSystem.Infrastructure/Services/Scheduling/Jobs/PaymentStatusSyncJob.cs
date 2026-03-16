@@ -155,7 +155,7 @@ public class PaymentStatusSyncJob(
             var booking = await unitOfWork.GetWriteRepository<Booking>()
                 .GetFirstOrDefaultAsync(b => b.Id == latestTransaction.BookingId, cancellationToken);
 
-            if (booking != null && booking.Status == BookingStatus.Cancelled)
+            if (booking is { Status: BookingStatus.Cancelled })
             {
                 logger.LogWarning("[PaymentStatusSyncJob] Booking {BookingId} was cancelled. Transaction will be handled via RefundRequest.",
                     booking.Id);

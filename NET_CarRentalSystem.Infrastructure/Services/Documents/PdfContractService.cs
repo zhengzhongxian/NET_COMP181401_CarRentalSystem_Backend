@@ -90,7 +90,6 @@ public class PdfContractService : IPdfContractService
             var timestamp = DateTime.UtcNow.ToString("yyyyMMdd_HHmmss");
             var fileName = $"HopDong_{bookingId}_{timestamp}.pdf";
             var objectPath = $"contracts/{booking.CustomerId}/{fileName}";
-
             // Upload to MinIO
             using var pdfStream = new MemoryStream(pdfBytes);
             var fileModel = new FileModel
@@ -300,9 +299,9 @@ public class PdfContractService : IPdfContractService
                 {
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.RelativeColumn(1);
+                        columns.RelativeColumn();
                         columns.RelativeColumn(2);
-                        columns.RelativeColumn(1);
+                        columns.RelativeColumn();
                         columns.RelativeColumn(2);
                     });
 
@@ -358,7 +357,7 @@ public class PdfContractService : IPdfContractService
                         table.ColumnsDefinition(columns =>
                         {
                             columns.RelativeColumn(2);
-                            columns.RelativeColumn(1);
+                            columns.RelativeColumn();
                         });
 
                         table.Cell().BorderBottom(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Mô tả / Description").SemiBold().FontSize(9);

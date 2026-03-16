@@ -1,136 +1,233 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <title>Thanh toán hoàn tất - Renticar</title>
 </head>
+
 <body style="margin: 0; padding: 0; background-color: #E8E8E8; font-family: Arial, sans-serif;">
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color: #E8E8E8; padding: 30px 15px;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+        style="background-color: #E8E8E8; padding: 30px 15px;">
         <tr>
             <td align="center">
-                <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="background-color: #ffffff; max-width: 600px;">
-                    
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+                    style="background-color: #ffffff; max-width: 600px;">
+
                     <tr>
                         <td style="text-align: center; line-height: 0;">
-                            <img src="https://res.cloudinary.com/dvxnesld4/image/upload/v1768026377/af204f6a-4d96-4b10-8861-e6b0fb7da225_removalai_preview_2_osnxvw.png" alt="RENTICAR" style="height: 100px; display: block; margin-left: auto; margin-right: auto;">
+                            <img src="https://res.cloudinary.com/dvxnesld4/image/upload/v1768026377/af204f6a-4d96-4b10-8861-e6b0fb7da225_removalai_preview_2_osnxvw.png"
+                                alt="RENTICAR"
+                                style="height: 100px; display: block; margin-left: auto; margin-right: auto;">
                         </td>
                     </tr>
-                    
+
                     <tr>
                         <td style="padding: 10px 0; text-align: center;">
-                            <div style="width: 500px; height: 3px; background-color: #72BF00; margin: 0 auto;"></div>
+                            <div style="width: 500px; height: 3px; background-color: #0d9488; margin: 0 auto;"></div>
                         </td>
                     </tr>
-                    
+
                     <tr>
                         <td style="padding: 30px 30px 40px 30px; background-color: #ffffff; text-align: center;">
-                            <h1 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 700; color: #0d9488;">Chuyến đi hoàn tất</h1>
-                            <h2 style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 20px; font-weight: 600;">Cảm ơn {{CustomerName}}!</h2>
+                            <h1 style="margin: 0 0 10px 0; font-size: 20px; font-weight: 700; color: #0d9488;">Chuyến đi
+                                hoàn tất</h1>
+                            <h2 style="margin: 0 0 16px 0; color: #1a1a1a; font-size: 20px; font-weight: 600;">Cảm ơn
+                                {{CustomerName}}!</h2>
                             <p style="margin: 0 0 30px 0; color: #555555; font-size: 14px; line-height: 1.6;">
-                                Chuyến đi của bạn đã hoàn tất. Thanh toán cuối cùng đã được xử lý thành công.
+                                Bạn đã thanh toán toàn bộ giá thuê xe (100%). Tiền cọc sẽ được hoàn trả riêng sau 30
+                                ngày.
                             </p>
-                            
-                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="1" style="margin-bottom: 25px; border-collapse: collapse; border: 1px solid #333333;">
+
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="1"
+                                style="margin-bottom: 25px; border-collapse: collapse; border: 1px solid #333333;">
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Mã đơn đặt</td>
-                                    <td style="color: #0d9488; font-size: 14px; font-weight: 700; font-family: monospace; padding: 12px 15px; border: 1px solid #333333;">{{BookingId}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Mã đơn đặt</td>
+                                    <td
+                                        style="color: #0d9488; font-size: 14px; font-weight: 700; font-family: monospace; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{BookingId}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Thương hiệu</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{Manufacturer}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Thương hiệu</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{Manufacturer}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Mẫu xe</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{Model}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Mẫu xe</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{Model}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Màu sắc</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{Color}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Màu sắc</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{Color}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Biển số</td>
-                                    <td style="color: #0d9488; font-size: 14px; font-weight: 700; font-family: monospace; padding: 12px 15px; border: 1px solid #333333;">{{NumberPlate}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Biển số</td>
+                                    <td
+                                        style="color: #0d9488; font-size: 14px; font-weight: 700; font-family: monospace; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{NumberPlate}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Điểm lấy xe</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{PickupLocation}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Điểm lấy xe</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{PickupLocation}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Thời gian</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{StartDate}} - {{EndDate}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Thời gian</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{StartDate}} - {{EndDate}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Km bắt đầu</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{MileageStart}} km</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Km bắt đầu</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{MileageStart}} km</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Mức xăng cuối</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{FuelLevelEnd}}%</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Mức xăng cuối</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{FuelLevelEnd}}%</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Giá xăng</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{FuelPrice}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Giá xăng</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{FuelPrice}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Tình trạng xe</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">{{ConditionNotes}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Tình trạng xe</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{ConditionNotes}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Tỷ lệ giảm giá</td>
-                                    <td style="color: #0d9488; font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">{{DiscountRate}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Tỷ lệ giảm giá</td>
+                                    <td
+                                        style="color: #0d9488; font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{DiscountRate}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Tổng tiền</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">{{TotalAmount}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Tổng tiền</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{TotalAmount}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Tiền cọc đã trả</td>
-                                    <td style="color: #1a1a1a; font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">{{DepositAmount}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Tiền cọc đã trả</td>
+                                    <td
+                                        style="color: #1a1a1a; font-size: 14px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{DepositAmount}}</td>
                                 </tr>
                                 <tr>
-                                    <td style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">Thanh toán cuối</td>
-                                    <td style="color: #0d9488; font-size: 16px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">{{FinalAmount}}</td>
+                                    <td
+                                        style="color: #666666; font-size: 12px; text-transform: uppercase; font-weight: 600; padding: 12px 15px; border: 1px solid #333333;">
+                                        Thanh toán khi nhận xe (100%)</td>
+                                    <td
+                                        style="color: #0d9488; font-size: 16px; font-weight: 700; padding: 12px 15px; border: 1px solid #333333;">
+                                        {{FinalAmount}}</td>
                                 </tr>
                             </table>
-                            
+
+                            <div
+                                style="background-color: #f0fdfa; border-left: 4px solid #0d9488; padding: 15px 20px; margin-bottom: 25px; text-align: left;">
+                                <p style="margin: 0; color: #0d9488; font-size: 13px; font-weight: 700;">📌 Lưu ý về
+                                    tiền cọc</p>
+                                <p style="margin: 8px 0 0 0; color: #555555; font-size: 13px; line-height: 1.6;">
+                                    {{DepositRefundNote}}</p>
+                            </div>
+
                             {{BookingImages}}
-                            
+
                             <p style="margin: 30px 0 25px 0; color: #555555; font-size: 14px; line-height: 1.8;">
-                                <span style="color: #0d9488; font-weight: 700; margin-right: 8px;">✓</span>Chuyến đi hoàn tất<br>
-                                <span style="color: #0d9488; font-weight: 700; margin-right: 8px;">✓</span>Thanh toán đã xử lý<br>
-                                <span style="color: #0d9488; font-weight: 700; margin-right: 8px;">✓</span>Cảm ơn bạn đã chọn Renticar
+                                <span style="color: #0d9488; font-weight: 700; margin-right: 8px;">✓</span>Chuyến đi
+                                hoàn tất<br>
+                                <span style="color: #0d9488; font-weight: 700; margin-right: 8px;">✓</span>Thanh toán đã
+                                xử lý<br>
+                                <span style="color: #0d9488; font-weight: 700; margin-right: 8px;">✓</span>Cảm ơn bạn đã
+                                chọn Renticar
                             </p>
-                            
-                            <a href="{{AppUrl}}/bookings/{{BookingId}}" style="display: inline-block; background-color: #0d9488; color: #ffffff; padding: 12px 28px; text-decoration: none; font-weight: 600; font-size: 14px;">
+
+                            <a href="{{AppUrl}}/bookings/{{BookingId}}"
+                                style="display: inline-block; background-color: #0d9488; color: #ffffff; padding: 12px 28px; text-decoration: none; font-weight: 600; font-size: 14px;">
                                 Xem chi tiết chuyến đi
                             </a>
                         </td>
                     </tr>
-                    
+
                     <tr>
                         <td style="padding: 30px; text-align: center; background-color: #ffffff;">
-                            <p style="margin: 0 0 15px 0; font-size: 12px; font-weight: 600; color: #1a1a1a;">LIÊN HỆ VỚI CHÚNG TÔI</p>
-                            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin: 0 auto 20px auto;">
+                            <p style="margin: 0 0 15px 0; font-size: 12px; font-weight: 600; color: #1a1a1a;">LIÊN HỆ
+                                VỚI CHÚNG TÔI</p>
+                            <table role="presentation" cellpadding="0" cellspacing="0" border="0"
+                                style="margin: 0 auto 20px auto;">
                                 <tr>
-                                    <td style="padding: 0 10px;"><a href="https://facebook.com" style="text-decoration: none;"><img src="https://cdn-icons-png.flaticon.com/512/733/733547.png" alt="Facebook" style="width: 24px; height: 24px;"></a></td>
-                                    <td style="padding: 0 10px;"><a href="https://twitter.com" style="text-decoration: none;"><img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" style="width: 24px; height: 24px;"></a></td>
-                                    <td style="padding: 0 10px;"><a href="https://instagram.com" style="text-decoration: none;"><img src="https://cdn-icons-png.flaticon.com/512/733/733558.png" alt="Instagram" style="width: 24px; height: 24px;"></a></td>
-                                    <td style="padding: 0 10px;"><a href="mailto:support@renticar.com" style="text-decoration: none;"><img src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Email" style="width: 24px; height: 24px;"></a></td>
+                                    <td style="padding: 0 10px;"><a href="https://facebook.com"
+                                            style="text-decoration: none;"><img
+                                                src="https://cdn-icons-png.flaticon.com/512/733/733547.png"
+                                                alt="Facebook" style="width: 24px; height: 24px;"></a></td>
+                                    <td style="padding: 0 10px;"><a href="https://twitter.com"
+                                            style="text-decoration: none;"><img
+                                                src="https://cdn-icons-png.flaticon.com/512/733/733579.png"
+                                                alt="Twitter" style="width: 24px; height: 24px;"></a></td>
+                                    <td style="padding: 0 10px;"><a href="https://instagram.com"
+                                            style="text-decoration: none;"><img
+                                                src="https://cdn-icons-png.flaticon.com/512/733/733558.png"
+                                                alt="Instagram" style="width: 24px; height: 24px;"></a></td>
+                                    <td style="padding: 0 10px;"><a href="mailto:support@renticar.com"
+                                            style="text-decoration: none;"><img
+                                                src="https://cdn-icons-png.flaticon.com/512/732/732200.png" alt="Email"
+                                                style="width: 24px; height: 24px;"></a></td>
                                 </tr>
                             </table>
                             <p style="margin: 0; font-size: 12px; color: #666666;">
                                 &copy; 2025 Renticar. Mọi quyền được bảo lưu.<br>
-                                <a href="mailto:support@renticar.com" style="color: #0d9488; text-decoration: none;">support@renticar.com</a>
+                                <a href="mailto:support@renticar.com"
+                                    style="color: #0d9488; text-decoration: none;">support@renticar.com</a>
                             </p>
                         </td>
                     </tr>
-                    
+
                 </table>
             </td>
         </tr>
     </table>
 </body>
-</html>
 
+</html>

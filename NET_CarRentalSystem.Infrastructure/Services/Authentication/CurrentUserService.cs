@@ -15,4 +15,21 @@ public class CurrentUserService(IHttpContextAccessor httpContextAccessor) : ICur
         }
         return null;
     }
+
+    public IReadOnlyList<string> GetRoles()
+    {
+        var roles = httpContextAccessor.HttpContext?.User
+            .FindAll(ClaimTypes.Role)
+            .Select(c => c.Value)
+            .Where(r => !string.IsNullOrWhiteSpace(r))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (roles == null || roles.Count == 0)
+        {
+            return [];
+        }
+
+        return roles.AsReadOnly();
+    }
 }

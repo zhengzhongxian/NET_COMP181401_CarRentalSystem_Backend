@@ -28,6 +28,5 @@ public static class LocationMessage
         public const string Error = "Xóa địa điểm thất bại";
         public const string NotFound = "Không tìm thấy địa điểm";
         public const string HasVehicles = "Không thể xóa địa điểm đang có xe";
-        public const string HasBookings = "Không thể xóa địa điểm đang có booking";
     }
 }

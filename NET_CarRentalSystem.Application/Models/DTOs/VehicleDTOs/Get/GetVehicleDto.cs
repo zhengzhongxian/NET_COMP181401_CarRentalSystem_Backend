@@ -10,6 +10,8 @@ public class GetVehicleDto
 
     public string Model { get; set; } = string.Empty;
 
+    public string? Title { get; set; }
+
     public string? Color { get; set; }
 
     public decimal PricePerHour { get; set; }
@@ -31,6 +33,8 @@ public class GetVehicleDto
     public string? FuelName { get; set; }
 
     public string? TransmissionName { get; set; }
+
+    public int RequiredLicenseClass { get; set; }
 
     public List<GetVehicleAttributeDto>? AttributeDtos { get; set; } = [];
 }

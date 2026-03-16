@@ -1,28 +1,60 @@
 using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Vehicles.Events;
+using NET_CarRentalSystem.Application.Interfaces.Services.Ai;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Application.Models.Storage;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleThumbnailCommand;
 
-public class UpdateVehicleThumbnailCommand : ICommand<bool>
+public class UpdateVehicleThumbnailCommand : ICommand<(bool Success, string? Message)>
 {
     public required Guid VehicleId { get; set; }
+    
     public required FileModel Thumbnail { get; set; }
+    
+    public bool EnableAiVerification { get; set; } = true;
 }
 
 public class UpdateVehicleThumbnailCommandHandler(
     IUnitOfWork unitOfWork,
     ICloudinaryService cloudinaryService,
-    IPublishEndpoint publishEndpoint) : IRequestHandler<UpdateVehicleThumbnailCommand, bool>
+    IAiImageVerificationService aiVerificationService,
+    IPublishEndpoint publishEndpoint,
+    ILogger<UpdateVehicleThumbnailCommandHandler> logger) : IRequestHandler<UpdateVehicleThumbnailCommand, (bool Success, string? Message)>
 {
-    public async Task<bool> Handle(UpdateVehicleThumbnailCommand request, CancellationToken cancellationToken)
+    public async Task<(bool Success, string? Message)> Handle(UpdateVehicleThumbnailCommand request, CancellationToken cancellationToken)
     {
-        return await unitOfWork.ExecuteInTransactionAsync(async (ct) =>
+        
+        if (request.EnableAiVerification)
+        {
+            using var memoryStream = new MemoryStream();
+            await request.Thumbnail.Content.CopyToAsync(memoryStream, cancellationToken);
+            var imageBytes = memoryStream.ToArray();
+            request.Thumbnail.Content.Position = 0;
+
+            var aiResult = await aiVerificationService.VerifyVehicleImageAsync(
+                imageBytes,
+                request.Thumbnail.FileName,
+                minConfidence: 0.7f,
+                cancellationToken: cancellationToken);
+
+            switch (aiResult.WasSkipped)
+            {
+                case false when !aiResult.IsValidVehicle:
+                    return (false, VehicleMessage.AiVerification.InvalidImage);
+                case true:
+                    logger.LogWarning("AI verification skipped: {Reason}", aiResult.SkipReason);
+                    break;
+            }
+        }
+
+        var success = await unitOfWork.ExecuteInTransactionAsync(async (ct) =>
         {
             var vehicle = await unitOfWork.GetWriteRepository<Vehicle>()
                 .GetByIdAsync(request.VehicleId, ct);
@@ -57,5 +89,9 @@ public class UpdateVehicleThumbnailCommandHandler(
 
             return true;
         }, cancellationToken);
+
+        return success 
+            ? (true, VehicleMessage.UpdateImage.Success) 
+            : (false, VehicleMessage.UpdateImage.NotFound);
     }
 }

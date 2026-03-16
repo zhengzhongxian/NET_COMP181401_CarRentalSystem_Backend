@@ -27,6 +27,10 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(v => v.Title)
+            .HasColumnName("title")
+            .HasMaxLength(200);
+
         builder.Property(v => v.Color)
             .HasColumnName("color")
             .HasMaxLength(50);
@@ -86,30 +90,11 @@ public class VehicleReadFlatConfiguration : IEntityTypeConfiguration<VehicleRead
             .HasColumnName("metadata")
             .HasColumnType("nvarchar(max)");
 
-        builder.Property(v => v.CreatedAt)
-            .HasColumnName("created_at");
+        builder.Property(v => v.RequiredLicenseClass)
+            .HasColumnName("required_license_class")
+            .IsRequired()
+            .HasDefaultValue(0);
 
-        builder.Property(v => v.CreatedBy)
-            .HasColumnName("created_by")
-            .HasMaxLength(255);
-
-        builder.Property(v => v.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(v => v.UpdatedBy)
-            .HasColumnName("updated_by")
-            .HasMaxLength(255);
-
-        builder.Property(v => v.IsDeleted)
-            .HasColumnName("is_deleted");
-
-        builder.Property(v => v.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(v => v.DeletedBy)
-            .HasColumnName("deleted_by")
-            .HasMaxLength(255);
-        
         builder.HasIndex(v => v.VehicleCategoryId);
         builder.HasIndex(v => v.UpdatedAt);
         builder.HasIndex(v => v.IsDeleted);

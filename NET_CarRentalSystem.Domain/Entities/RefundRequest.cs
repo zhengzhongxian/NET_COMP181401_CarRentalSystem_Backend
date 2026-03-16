@@ -17,6 +17,12 @@ public class RefundRequest : BaseEntity<Guid>
     
     public string? AdminNotes { get; set; }
     
+    public bool IsDepositRefund { get; set; }
+    
+    public DateTime? ScheduledAt { get; set; }
+    
+    public DateTime? ReadyToProcessAt { get; set; }
+    
     public Guid? ApprovedBy { get; set; }
     
     public DateTime? ApprovedAt { get; set; }

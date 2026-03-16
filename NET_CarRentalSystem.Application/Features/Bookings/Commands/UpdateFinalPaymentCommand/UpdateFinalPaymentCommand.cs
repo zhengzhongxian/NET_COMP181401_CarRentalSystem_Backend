@@ -73,51 +73,55 @@ public class UpdateFinalPaymentCommandHandler(
             await unitOfWork.SaveChangesAsync(token);
             
             var bookingImageRepo = unitOfWork.GetWriteRepository<BookingImage>();
-            var existingImages = await bookingImageRepo.GetAsync(
-                filter: bi => bi.BookingId == booking.Id,
-                cancellationToken: token);
             
-            foreach (var image in existingImages)
+            // Only process images if new images are provided
+            if (request.Images is { Count: > 0 })
             {
-                var deleted = await cloudinaryService.DeleteImageAsync(image.PublicId);
-                if (!deleted)
-                    return (false, BookingMessage.UpdateFinalPayment.Error);
-            }
-            
-            bookingImageRepo.RemoveRange(existingImages);
-            await unitOfWork.SaveChangesAsync(token);
-            
-            var folder = $"{booking.CustomerId}/bookings/{booking.Id}";
-            var uploadedImages = new List<(string Url, string PublicId)>();
-
-            foreach (var image in request.Images ?? [])
-            {
-                var resizedFile = await imageResizeService.ResizeAndCompressAsync(
-                    image,
-                    _maxImageWidth,
-                    _maxImageHeight,
-                    _imageQuality);
-
-                var uploadResult = await cloudinaryService.UploadImageAsync(resizedFile, folder);
-                uploadedImages.Add((uploadResult.SecureUrl, uploadResult.PublicId));
-            }
-
-            foreach (var (url, publicId) in uploadedImages)
-            {
-                var bookingImage = new BookingImage
+                var existingImages = await bookingImageRepo.GetAsync(
+                    filter: bi => bi.BookingId == booking.Id,
+                    cancellationToken: token);
+                
+                foreach (var image in existingImages)
                 {
-                    BookingId = booking.Id,
-                    ImageUrl = url,
-                    PublicId = publicId,
-                    CreatedAt = DateTime.UtcNow
-                };
+                    var deleted = await cloudinaryService.DeleteImageAsync(image.PublicId);
+                    if (!deleted)
+                        return (false, BookingMessage.UpdateFinalPayment.Error);
+                }
+                
+                bookingImageRepo.RemoveRange(existingImages);
+                await unitOfWork.SaveChangesAsync(token);
+                
+                var folder = $"{booking.CustomerId}/bookings/{booking.Id}";
+                var uploadedImages = new List<(string Url, string PublicId)>();
 
-                await bookingImageRepo.AddAsync(bookingImage, token);
+                foreach (var image in request.Images)
+                {
+                    var resizedFile = await imageResizeService.ResizeAndCompressAsync(
+                        image,
+                        _maxImageWidth,
+                        _maxImageHeight,
+                        _imageQuality);
+
+                    var uploadResult = await cloudinaryService.UploadImageAsync(resizedFile, folder);
+                    uploadedImages.Add((uploadResult.SecureUrl, uploadResult.PublicId));
+                }
+
+                foreach (var (url, publicId) in uploadedImages)
+                {
+                    var bookingImage = new BookingImage
+                    {
+                        BookingId = booking.Id,
+                        ImageUrl = url,
+                        PublicId = publicId,
+                        CreatedAt = DateTime.UtcNow
+                    };
+
+                    await bookingImageRepo.AddAsync(bookingImage, token);
+                }
+
+                await unitOfWork.SaveChangesAsync(token);
             }
-
-            await unitOfWork.SaveChangesAsync(token);
-
-            //này là event sau khi update xog phải get lại
+            
             var bookingImages = await bookingImageRepo.GetAsync(
                 filter: bi => bi.BookingId == booking.Id,
                 cancellationToken: token);
@@ -139,6 +143,7 @@ public class UpdateFinalPaymentCommandHandler(
                     Status = booking.Status,
                     FuelLevelStart = booking.FuelLevelStart,
                     FuelLevelEnd = booking.FuelLevelEnd,
+                    MileageStart = booking.MileageStart,
                     FuelPrice = booking.FuelPrice,
                     ConditionNotes = booking.ConditionNotes,
                     BookingImagesJson = imagesJson,
@@ -150,7 +155,7 @@ public class UpdateFinalPaymentCommandHandler(
                 });
 
             await publishEndpoint.Publish(bookingUpdatedEvent, token);
-
+            await unitOfWork.SaveChangesAsync(token);
             return (true, BookingMessage.UpdateFinalPayment.Success);
         }, ct);
     }

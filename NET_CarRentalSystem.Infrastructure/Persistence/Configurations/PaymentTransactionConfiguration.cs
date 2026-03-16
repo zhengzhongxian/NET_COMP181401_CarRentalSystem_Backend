@@ -51,34 +51,6 @@ public class PaymentTransactionConfiguration : IEntityTypeConfiguration<PaymentT
         builder.Property(t => t.Note)
             .HasColumnName("note");
 
-        builder.Property(t => t.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(t => t.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(t => t.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(t => t.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(t => t.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder.Property(t => t.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(t => t.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(t => t.RowVersion)
-            .HasColumnName("row_version")
-            .IsRowVersion()
-            .ValueGeneratedOnAddOrUpdate();
-        
         builder.HasOne(t => t.Booking)
             .WithMany(b => b.Transactions)
             .HasForeignKey(t => t.BookingId)

@@ -1,16 +1,13 @@
 using MassTransit;
 using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Features.Vehicles.Events;
-using NET_CarRentalSystem.Application.Interfaces.Services.Search;
-using NET_CarRentalSystem.Application.Models.Search;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Consumers;
 
 public class VehicleReadFlatUpdatedConsumer(
     ILogger<VehicleReadFlatUpdatedConsumer> logger,
-    IDapperRepository dapperRepository,
-    IVehicleSearchService vehicleSearchService) : IConsumer<VehicleUpdatedEvent>
+    IDapperRepository dapperRepository) : IConsumer<VehicleUpdatedEvent>
 {
     private const string TableName = "vehicle_read_flat";
     private const string IdColumn = "vehicle_id";
@@ -18,6 +15,7 @@ public class VehicleReadFlatUpdatedConsumer(
     private const string UpdateSetClause = """
                                                  manufacturer = @Manufacturer,
                                                  model = @Model,
+                                                 title = @Title,
                                                  color = @Color,
                                                  price_per_hour = @PricePerHour,
                                                  thumbnail = @Thumbnail,
@@ -30,6 +28,7 @@ public class VehicleReadFlatUpdatedConsumer(
                                                  transmission_id = @TransmissionId,
                                                  transmission_name = @TransmissionName,
                                                  metadata = @Metadata,
+                                                 required_license_class = @RequiredLicenseClass,
                                                  updated_at = @UpdatedAt,
                                                  updated_by = @UpdatedBy
                                            """;
@@ -45,7 +44,6 @@ public class VehicleReadFlatUpdatedConsumer(
             msg.Id
         );
 
-        // 1. Update in SQL Server
         var sql = $"""
                    UPDATE {TableName}
                    SET {UpdateSetClause}
@@ -57,6 +55,7 @@ public class VehicleReadFlatUpdatedConsumer(
             msg.Id,
             msg.Manufacturer,
             msg.Model,
+            msg.Title,
             msg.Color,
             msg.PricePerHour,
             msg.Thumbnail,
@@ -69,6 +68,7 @@ public class VehicleReadFlatUpdatedConsumer(
             msg.TransmissionId,
             msg.TransmissionName,
             msg.Metadata,
+            msg.RequiredLicenseClass,
             msg.UpdatedAt,
             msg.UpdatedBy
         };
@@ -82,53 +82,5 @@ public class VehicleReadFlatUpdatedConsumer(
             msg.UpdatedAt,
             msg.UpdatedBy ?? "System"
         );
-
-        // 2. Update in Redis for FTS
-        try
-        {
-            // Fetch current available_count, images_json, vehicle_models_json, attributes_json from DB
-            // since VehicleUpdatedEvent may not have all fields
-            var selectSql = """
-                            SELECT available_count, images_json, vehicle_models_json, attributes_json, is_deleted, created_at
-                            FROM vehicle_read_flat
-                            WHERE vehicle_id = @Id
-                            """;
-            
-            var existingData = await dapperRepository.QueryFirstOrDefaultAsync<dynamic>(selectSql, new { msg.Id }, cancellationToken: ct);
-
-            var searchDoc = new VehicleSearchDocument
-            {
-                VehicleId = msg.Id,
-                Manufacturer = msg.Manufacturer,
-                Model = msg.Model,
-                Color = msg.Color,
-                PricePerHour = msg.PricePerHour,
-                Thumbnail = msg.Thumbnail,
-                Description = msg.Description,
-                Rating = msg.Rating,
-                AvailableCount = existingData?.available_count ?? 0,
-                VehicleCategoryId = msg.VehicleCategoryId,
-                CategoryName = msg.CategoryName,
-                FuelId = msg.FuelId,
-                FuelName = msg.FuelName,
-                TransmissionId = msg.TransmissionId,
-                TransmissionName = msg.TransmissionName,
-                VehicleModelsJson = existingData?.vehicle_models_json,
-                ImagesJson = existingData?.images_json,
-                AttributesJson = existingData?.attributes_json,
-                Metadata = msg.Metadata,
-                IsDeleted = existingData?.is_deleted ?? false,
-                CreatedAt = existingData?.created_at ?? DateTime.UtcNow,
-                UpdatedAt = msg.UpdatedAt
-            };
-
-            await vehicleSearchService.IndexVehicleAsync(searchDoc, ct);
-            logger.LogInformation("[VehicleUpdatedEvent] Updated vehicle {Id} in Redis", msg.Id);
-        }
-        catch (Exception ex)
-        {
-            // Log error but don't fail the message - Redis is secondary storage
-            logger.LogWarning(ex, "[VehicleUpdatedEvent] Failed to update vehicle {Id} in Redis", msg.Id);
-        }
     }
 }

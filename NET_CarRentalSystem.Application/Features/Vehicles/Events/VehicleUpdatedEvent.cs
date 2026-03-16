@@ -8,6 +8,8 @@ public record VehicleUpdatedEvent : EntityUpdatedEvent<Guid>
 
     public required string Model { get; init; }
 
+    public string? Title { get; init; }
+
     public string? Color { get; init; }
 
     public decimal PricePerHour { get; init; }
@@ -31,4 +33,6 @@ public record VehicleUpdatedEvent : EntityUpdatedEvent<Guid>
     public string? TransmissionName { get; init; }
 
     public string? Metadata { get; init; }
+
+    public int RequiredLicenseClass { get; init; }
 }

@@ -16,6 +16,8 @@ public class GetBookingResponse
     
     public decimal VehiclePricePerHour { get; set; }
     
+    public string? VehicleName { get; set; }
+
     public Guid VehicleModelId { get; set; }
     
     public string? NumberPlate { get; set; }

@@ -26,7 +26,7 @@ public class ChangePasswordCommandHandler(
         var userRepo = unitOfWork.GetWriteRepository<User>();
         var user = await userRepo.GetFirstAsync(u => u.Id == userId, cancellationToken: cancellationToken);
         
-        var userLoginRepo = unitOfWork.GetReadRepository<UserLogin>();
+        var userLoginRepo = unitOfWork.GetWriteRepository<UserLogin>();
         var hasLocalLogin = await userLoginRepo.ExistsAsync(
             ul => ul.UserId == userId && ul.LoginProvider == LoginProvider.Local,
             cancellationToken: cancellationToken);

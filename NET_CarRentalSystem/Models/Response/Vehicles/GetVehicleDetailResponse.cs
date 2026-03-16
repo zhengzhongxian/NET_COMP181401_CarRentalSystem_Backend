@@ -11,12 +11,16 @@ public class GetVehicleDetailResponse
     public string Manufacturer { get; set; } = string.Empty;
     
     public string Model { get; set; } = string.Empty;
+
+    public string? Title { get; set; }
     
     public decimal PricePerHour { get; set; }
     
     public float Rating { get; set; }
     
     public string? Thumbnail { get; set; }
+    
+    public string? Description { get; set; }
     
     public string? Color { get; set; }
     
@@ -39,4 +43,6 @@ public class GetVehicleDetailResponse
     public List<GetVehicleImageDto> Images { get; set; } = [];
 
     public List<GetVehicleModelDto> VehicleModels { get; set; } = [];
+
+    public int RequiredLicenseClass { get; set; }
 }

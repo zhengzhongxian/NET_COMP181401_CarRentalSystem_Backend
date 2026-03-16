@@ -1,21 +1,21 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.SignalR;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 
 namespace NET_CarRentalSystem.Infrastructure.Hubs;
 
-public class NotificationHub : Hub
+public class NotificationHub(ICurrentUserService currentUserService) : Hub
 {
     public override async Task OnConnectedAsync()
     {
-        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var role = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = currentUserService.GetUserId()?.ToString();
+        var roles = currentUserService.GetRoles();
 
         if (!string.IsNullOrEmpty(userId))
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"user_{userId}");
         }
 
-        if (!string.IsNullOrEmpty(role))
+        foreach (var role in roles)
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, $"role_{role}");
         }
@@ -25,15 +25,15 @@ public class NotificationHub : Hub
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var userId = Context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        var role = Context.User?.FindFirst(ClaimTypes.Role)?.Value;
+        var userId = currentUserService.GetUserId()?.ToString();
+        var roles = currentUserService.GetRoles();
 
         if (!string.IsNullOrEmpty(userId))
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"user_{userId}");
         }
 
-        if (!string.IsNullOrEmpty(role))
+        foreach (var role in roles)
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"role_{role}");
         }

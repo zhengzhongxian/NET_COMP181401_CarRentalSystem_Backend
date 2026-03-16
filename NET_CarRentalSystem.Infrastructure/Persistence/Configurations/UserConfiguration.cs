@@ -40,15 +40,6 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
             .HasConversion<string>()
             .HasMaxLength(50);
 
-        builder.Property(c => c.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(c => c.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(c => c.IsDeleted)
-            .HasColumnName("is_deleted");
-
         builder.HasIndex(u => u.Email).IsUnique();
         builder.HasIndex(u => u.UserName).IsUnique();
 

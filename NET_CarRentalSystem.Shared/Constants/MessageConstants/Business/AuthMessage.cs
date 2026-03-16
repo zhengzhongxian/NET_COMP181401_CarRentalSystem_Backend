@@ -119,7 +119,6 @@ public static class AuthMessage
     public static class CheckPhoneNumberExists
     {
         public const string Error = "Có lỗi xảy ra khi kiểm tra số điện thoại tồn tại";
-        public const string Existed = "Số điện thoại đã tồn tại";
         public const string NotExisted = "Số điện thoại hợp lệ";
     }
     
@@ -129,6 +128,5 @@ public static class AuthMessage
         public const string Error = "Có lỗi xảy ra khi đổi mật khẩu";
         public const string IncorrectCurrentPassword = "Mật khẩu hiện tại không đúng";
         public const string OAuthAccountNotSupported = "Tài khoản OAuth không hỗ trợ đổi mật khẩu. Vui lòng quản lý mật khẩu qua nhà cung cấp dịch vụ của bạn (Google, Facebook, etc.)";
-        public const string UserNotFound = "Không tìm thấy người dùng";
     }
 }

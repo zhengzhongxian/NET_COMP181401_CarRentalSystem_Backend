@@ -5,6 +5,7 @@ using NET_CarRentalSystem.API.Models.Response.VehicleModels;
 using NET_CarRentalSystem.API.Models.Response.Vehicles;
 using NET_CarRentalSystem.Application.Features.VehicleModels.Queries.GetAvailableVehicleModelsForSwapQuery;
 using NET_CarRentalSystem.Application.Features.Vehicles.Commands.SendVehiclePromotionEmailCommand;
+using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehicleModelsInventoryQuery;
 using NET_CarRentalSystem.Application.Features.Vehicles.Queries.GetVehiclesPagedQuery;
 using NET_CarRentalSystem.Application.Models.DTOs.VehicleAttributeDTOs.Get;
 using NET_CarRentalSystem.Application.Models.DTOs.VehicleDTOs.Get;
@@ -48,5 +49,16 @@ public class VehicleProfile : Profile
                 string.IsNullOrWhiteSpace(src.VehicleModelsJson) 
                     ? new List<GetVehicleModelDto>() 
                     : src.VehicleModelsJson.FromJson<List<GetVehicleModelDto>>() ?? new List<GetVehicleModelDto>()));
+
+        CreateMap<GetVehicleModelsInventoryRequest, GetVehicleModelsInventoryQuery>();
+        
+        CreateMap<GetVehicleModelsInventoryDto, GetVehicleModelsInventoryResponse>()
+            .ForMember(dest => dest.ByStatus, opt => opt.MapFrom(src => src.ByStatus))
+            .ForMember(dest => dest.ByLocation, opt => opt.MapFrom(src => src.ByLocation));
+
+        CreateMap<GetVehicleModelsByStatusDto, GetVehicleModelsByStatusResponse>();
+
+        CreateMap<GetVehicleModelsByLocationDto, GetVehicleModelsByLocationResponse>()
+            .ForMember(dest => dest.Models, opt => opt.MapFrom(src => src.Models));
     }
 }

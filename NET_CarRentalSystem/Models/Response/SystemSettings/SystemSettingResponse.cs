@@ -55,6 +55,17 @@ public class MembershipDiscountsResponse
     public decimal Diamond { get; set; }
 }
 
+public class PublicSystemSettingsResponse
+{
+    public decimal DepositRatio { get; set; }
+
+    public decimal LatePenaltyRatio { get; set; }
+
+    public int MaxCancellationsPerMonth { get; set; }
+    
+    public int RefundableHoursLimit { get; set; }
+}
+
 public class AllSystemSettingsResponse
 {
     public BookingSettingsResponse BookingSettings { get; set; } = new();

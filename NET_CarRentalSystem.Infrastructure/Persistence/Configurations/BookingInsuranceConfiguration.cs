@@ -29,29 +29,6 @@ public class BookingInsuranceConfiguration : IEntityTypeConfiguration<BookingIns
             .HasColumnType("decimal(18, 2)")
             .IsRequired();
 
-        builder.Property(bi => bi.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(bi => bi.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(bi => bi.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(bi => bi.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(bi => bi.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder.Property(bi => bi.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(bi => bi.DeletedAt)
-            .HasColumnName("deleted_at");
-
         builder.HasOne(bi => bi.Booking)
             .WithMany(b => b.BookingInsurances)
             .HasForeignKey(bi => bi.BookingId)

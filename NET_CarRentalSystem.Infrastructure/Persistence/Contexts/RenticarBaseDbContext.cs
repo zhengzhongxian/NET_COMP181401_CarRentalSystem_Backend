@@ -58,10 +58,30 @@ public abstract class RenticarBaseDbContext(
 
         foreach (var entityType in modelBuilder.Model.GetEntityTypes())
         {
+            var entityBuilder = modelBuilder.Entity(entityType.ClrType);
+
+            if (typeof(IRowVersion).IsAssignableFrom(entityType.ClrType))
+            {
+                entityBuilder.Property(nameof(IRowVersion.RowVersion))
+                    .HasColumnName("row_version")
+                    .IsRowVersion();
+            }
+
             if (typeof(IAuditable).IsAssignableFrom(entityType.ClrType))
             {
-                modelBuilder.Entity(entityType.ClrType)
-                    .HasQueryFilter(CreateSoftDeleteFilter(entityType.ClrType));
+                entityBuilder.Property(nameof(IAuditable.CreatedAt)).HasColumnName("created_at");
+                entityBuilder.Property(nameof(IAuditable.CreatedBy)).HasColumnName("created_by");
+                entityBuilder.Property(nameof(IAuditable.UpdatedAt)).HasColumnName("updated_at");
+                entityBuilder.Property(nameof(IAuditable.UpdatedBy)).HasColumnName("updated_by");
+            }
+
+            if (typeof(ISoftDelete).IsAssignableFrom(entityType.ClrType))
+            {
+                entityBuilder.Property(nameof(ISoftDelete.IsDeleted)).HasColumnName("is_deleted");
+                entityBuilder.Property(nameof(ISoftDelete.DeletedAt)).HasColumnName("deleted_at");
+                entityBuilder.Property(nameof(ISoftDelete.DeletedBy)).HasColumnName("deleted_by");
+
+                entityBuilder.HasQueryFilter(CreateSoftDeleteFilter(entityType.ClrType));
             }
         }
     }

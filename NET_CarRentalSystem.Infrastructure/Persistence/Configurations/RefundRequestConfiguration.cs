@@ -31,7 +31,7 @@ public class RefundRequestConfiguration : IEntityTypeConfiguration<RefundRequest
         builder.Property(r => r.Status)
             .HasColumnName("status")
             .HasConversion<string>()
-            .HasMaxLength(20)
+            .HasMaxLength(30)
             .IsRequired();
 
         builder.Property(r => r.Reason)
@@ -40,7 +40,17 @@ public class RefundRequestConfiguration : IEntityTypeConfiguration<RefundRequest
 
         builder.Property(r => r.AdminNotes)
             .HasColumnName("admin_notes")
-            .HasMaxLength(500);
+            .HasMaxLength(1000);
+
+        builder.Property(r => r.IsDepositRefund)
+            .HasColumnName("is_deposit_refund")
+            .HasDefaultValue(false);
+
+        builder.Property(r => r.ScheduledAt)
+            .HasColumnName("scheduled_at");
+
+        builder.Property(r => r.ReadyToProcessAt)
+            .HasColumnName("ready_to_process_at");
 
         builder.Property(r => r.ApprovedBy)
             .HasColumnName("approved_by");
@@ -51,25 +61,8 @@ public class RefundRequestConfiguration : IEntityTypeConfiguration<RefundRequest
         builder.Property(r => r.ProcessedAt)
             .HasColumnName("processed_at");
 
-        builder.Property(r => r.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(r => r.CreatedBy)
-            .HasColumnName("created_by")
-            .HasMaxLength(100);
-
-        builder.Property(r => r.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(r => r.UpdatedBy)
-            .HasColumnName("updated_by")
-            .HasMaxLength(100);
-
-        builder.Property(r => r.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-
         builder.HasQueryFilter(r => !r.IsDeleted);
+
     }
 }
 

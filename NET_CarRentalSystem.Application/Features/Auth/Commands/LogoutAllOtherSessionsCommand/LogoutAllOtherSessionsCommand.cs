@@ -39,10 +39,9 @@ public class LogoutAllOtherSessionsCommandHandler(
             return Unit.Value; // token does not belong to the current user.
         }
 
-        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
         var sessionWriteRepository = unitOfWork.GetWriteRepository<UserSession>();
 
-        var sessionsToLogout = await sessionReadRepository.GetAsync(filter: s => 
+        var sessionsToLogout = await sessionWriteRepository.GetAsync(filter: s => 
             s.UserId == currentUserId && s.RefreshToken != request.CurrentRefreshToken, 
             cancellationToken: cancellationToken);
 

@@ -35,7 +35,7 @@ public class GoogleLoginCommandHandler(
         }
 
         var user = await unitOfWork
-            .GetReadRepository<User>()
+            .GetWriteRepository<User>()
             .GetFirstOrDefaultAsync(u => u.Email == payload.Email && u.IsVerified, cancellationToken: cancellationToken);
         
         var ggloginDto = new GoogleLoginDto();
@@ -64,8 +64,14 @@ public class GoogleLoginCommandHandler(
         };
         
         await unitOfWork.GetWriteRepository<UserSession>().AddAsync(userSession, cancellationToken);
-        user.Status = UserStatus.LoggedIn;
-        unitOfWork.GetWriteRepository<User>().Update(user); 
+        
+        var userToUpdate = await unitOfWork.GetWriteRepository<User>().GetByIdAsync(user.Id, cancellationToken);
+        if (userToUpdate != null)
+        {
+            userToUpdate.Status = UserStatus.LoggedIn;
+            unitOfWork.GetWriteRepository<User>().Update(userToUpdate);
+        }
+        
         await unitOfWork.SaveChangesAsync(cancellationToken);
         
         var sessionCacheDto = new UserSessionCacheDto

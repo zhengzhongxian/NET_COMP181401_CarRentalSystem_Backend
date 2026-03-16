@@ -1,0 +1,219 @@
+syntax = "proto3";
+
+package image_analysis;
+
+// C# namespace for generated code
+option csharp_namespace = "NET_CarRentalSystem.Infrastructure.Grpc.ImageAnalysis";
+
+// ============================================
+// Image Verification Service
+// AI-powered vehicle image detection using CLIP
+// ============================================
+
+service ImageVerificationService {
+    // Verify if image is a valid vehicle image
+    rpc VerifyVehicleImage(VerifyImageRequest) returns (VerifyImageResponse);
+    
+    // Verify multiple images in batch
+    rpc VerifyVehicleImagesBatch(VerifyImagesBatchRequest) returns (VerifyImagesBatchResponse);
+    
+    // Extract license plate from vehicle image using OCR
+    rpc ExtractLicensePlate(ExtractLicensePlateRequest) returns (ExtractLicensePlateResponse);
+    
+    // Detect vehicle damage by comparing before/after images
+    rpc DetectVehicleDamage(DetectDamageRequest) returns (DetectDamageResponse);
+    
+    // Health check endpoint
+    rpc HealthCheck(HealthCheckRequest) returns (HealthCheckResponse);
+}
+
+// ============================================
+// Request Messages
+// ============================================
+
+message VerifyImageRequest {
+    // Image data in bytes (base64 decoded)
+    bytes image_data = 1;
+    
+    // Optional: Image filename for logging
+    string filename = 2;
+    
+    // Minimum confidence threshold (0.0 - 1.0), default: 0.7
+    float min_confidence = 3;
+    
+    // Expected vehicle type for stricter validation
+    // e.g., "car", "motorcycle", "truck", "suv", "van"
+    string expected_vehicle_type = 4;
+}
+
+message VerifyImagesBatchRequest {
+    repeated VerifyImageRequest images = 1;
+}
+
+message HealthCheckRequest {
+    string service_name = 1;
+}
+
+// ============================================
+// Response Messages
+// ============================================
+
+message VerifyImageResponse {
+    // Is this a valid vehicle image?
+    bool is_valid_vehicle = 1;
+    
+    // Confidence score (0.0 - 1.0)
+    float confidence = 2;
+    
+    // Detected vehicle type: "car", "motorcycle", "truck", "suv", "van", "bus", "unknown"
+    string detected_vehicle_type = 3;
+    
+    // Response message (bilingual)
+    ResponseMessage response_message = 4;
+    
+    // Vehicle type scores breakdown
+    map<string, float> vehicle_type_scores = 5;
+    
+    // Processing metadata
+    ProcessingMetadata metadata = 6;
+}
+
+message VerifyImagesBatchResponse {
+    repeated VerifyImageResponse results = 1;
+    BatchSummary summary = 2;
+}
+
+message HealthCheckResponse {
+    bool is_healthy = 1;
+    string status = 2;
+    string model_loaded = 3;
+    string version = 4;
+}
+
+message ResponseMessage {
+    
+    string code = 1;
+    
+    string message_vi = 2;
+    
+    string message_en = 3;
+    
+    string severity = 4;
+}
+
+message ProcessingMetadata {
+    
+    int64 processing_time_ms = 1;
+    
+    string model_version = 2;
+    
+    string request_id = 3;
+    
+    string processed_at = 4;
+}
+
+message BatchSummary {
+    int32 total_images = 1;
+    
+    int32 valid_count = 2;
+    
+    int32 invalid_count = 3;
+    
+    int64 total_processing_time_ms = 4;
+    
+    float average_confidence = 5;
+}
+
+// ============================================
+// License Plate Extraction Messages
+// ============================================
+
+message ExtractLicensePlateRequest {
+    // Image data in bytes
+    bytes image_data = 1;
+    
+    // Expected plate to compare (e.g., "51A-12345")
+    string expected_plate = 2;
+    
+    // Optional: Image filename for logging
+    string filename = 3;
+}
+
+message ExtractLicensePlateResponse {
+    // Was a license plate detected?
+    bool plate_detected = 1;
+    
+    // Detected license plate text (normalized)
+    string detected_plate = 2;
+    
+    // Does the detected plate match expected plate?
+    bool is_matched = 3;
+    
+    // OCR confidence score (0.0 - 1.0)
+    float confidence = 4;
+    
+    // Response message (bilingual)
+    ResponseMessage response_message = 5;
+    
+    // Processing metadata
+    ProcessingMetadata metadata = 6;
+}
+
+// ============================================
+// Vehicle Damage Detection Messages
+// ============================================
+
+message DetectDamageRequest {
+    // Before images (when vehicle was picked up)
+    repeated bytes before_images = 1;
+    
+    // After images (when vehicle is returned)
+    repeated bytes after_images = 2;
+    
+    // Optional: Minimum confidence threshold
+    float min_confidence = 3;
+}
+
+message DetectDamageResponse {
+    // Was damage detected?
+    bool damage_detected = 1;
+    
+    // Damage description in Vietnamese
+    string damage_description_vi = 2;
+    
+    // Damage description in English
+    string damage_description_en = 3;
+    
+    // Confidence score (0.0 - 1.0)
+    float confidence = 4;
+    
+    // List of detected damages
+    repeated DamageDetail damages = 5;
+    
+    // Response message (bilingual)
+    ResponseMessage response_message = 6;
+    
+    // Processing metadata
+    ProcessingMetadata metadata = 7;
+}
+
+message DamageDetail {
+    // Type of damage: "scratch", "dent", "crack", "missing_part", "other"
+    string damage_type = 1;
+    
+    // Location on vehicle: "front", "back", "left", "right", "top", "hood", "trunk"
+    string location = 2;
+    
+    // Severity: "minor", "moderate", "severe"
+    string severity = 3;
+    
+    // Description in Vietnamese
+    string description_vi = 4;
+    
+    // Description in English
+    string description_en = 5;
+    
+    // Confidence for this damage
+    float confidence = 6;
+}
+

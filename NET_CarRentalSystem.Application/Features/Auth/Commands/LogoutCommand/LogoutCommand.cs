@@ -30,8 +30,8 @@ public class LogoutCommandHandler(
             }
         }
 
-        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
-        var session = await sessionReadRepository.GetFirstOrDefaultAsync(
+        var sessionWriteRepository = unitOfWork.GetWriteRepository<UserSession>();
+        var session = await sessionWriteRepository.GetFirstOrDefaultAsync(
             s => s.RefreshToken == request.RefreshToken,
             cancellationToken: cancellationToken);
 
@@ -40,10 +40,12 @@ public class LogoutCommandHandler(
             return Unit.Value;
         }
         
-        unitOfWork.GetWriteRepository<UserSession>().Remove(session, true);
-        await cacheService.RemoveAsync(request.RefreshToken, cancellationToken);
+        var remainingSessions = (await sessionWriteRepository.GetAsync(
+            s => s.UserId == session.UserId,
+            cancellationToken: cancellationToken)).Count;
 
-        var remainingSessions = await sessionReadRepository.CountAsync(s => s.UserId == session.UserId, cancellationToken);
+        sessionWriteRepository.Remove(session, true);
+        await cacheService.RemoveAsync(request.RefreshToken, cancellationToken);
 
         if (remainingSessions <= 1)
         {

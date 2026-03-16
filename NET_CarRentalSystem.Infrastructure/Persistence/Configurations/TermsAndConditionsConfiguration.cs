@@ -46,29 +46,6 @@ public class TermsAndConditionsConfiguration : IEntityTypeConfiguration<TermsAnd
             .HasConversion<string>()
             .HasMaxLength(50);
 
-        builder.Property(t => t.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(t => t.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(t => t.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(t => t.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(t => t.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder.Property(t => t.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(t => t.DeletedAt)
-            .HasColumnName("deleted_at");
-
         builder.HasIndex(t => new { t.Type, t.Version, t.IsActive });
 
         builder.HasQueryFilter(t => !t.IsDeleted);

@@ -13,5 +13,7 @@ public interface ICryptographyService
     string EncryptAes(string plainText);
     
     string DecryptAes(string cipherText);
+    
+    string? SafeDecryptAes(string? encryptedValue);
 }
 

@@ -72,5 +72,27 @@ public class CryptographyService(IOptions<RsaSettings> rsaSettings, IOptions<Aes
         using var srDecrypt = new StreamReader(csDecrypt);
         return srDecrypt.ReadToEnd();
     }
-}
 
+    public string? SafeDecryptAes(string? encryptedValue)
+    {
+        if (string.IsNullOrEmpty(encryptedValue))
+            return null;
+
+        try
+        {
+            return DecryptAes(encryptedValue);
+        }
+        catch (FormatException)
+        {
+            return encryptedValue;
+        }
+        catch (CryptographicException)
+        {
+            return encryptedValue;
+        }
+        catch
+        {
+            return encryptedValue;
+        }
+    }
+}

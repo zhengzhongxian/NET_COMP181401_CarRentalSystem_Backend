@@ -5,7 +5,6 @@ namespace NET_CarRentalSystem.Application.Configurations;
 public class AesSettings
 {
     public static string SectionName => KeyConstants.ConfigurationSections.AesSettings;
-    
     public string Key { get; set; } = string.Empty;
     
     public string Iv { get; set; } = string.Empty;

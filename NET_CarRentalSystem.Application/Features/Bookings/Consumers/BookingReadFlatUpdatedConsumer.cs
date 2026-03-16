@@ -77,6 +77,20 @@ public class BookingReadFlatUpdatedConsumer(
             logger.LogInformation("[BookingUpdatedEvent] ✓ FuelLevelStart: {FuelLevelStart}", msg.FuelLevelStart.Value);
         }
 
+        if (msg.MileageStart.HasValue)
+        {
+            setClauses.Add("mileage_start = @MileageStart");
+            parameters.Add("@MileageStart", msg.MileageStart.Value);
+            logger.LogInformation("[BookingUpdatedEvent] ✓ MileageStart: {MileageStart}", msg.MileageStart.Value);
+        }
+
+        if (msg.MileageEnd.HasValue)
+        {
+            setClauses.Add("mileage_end = @MileageEnd");
+            parameters.Add("@MileageEnd", msg.MileageEnd.Value);
+            logger.LogInformation("[BookingUpdatedEvent] ✓ MileageEnd: {MileageEnd}", msg.MileageEnd.Value);
+        }
+
         if (msg.FuelPrice.HasValue)
         {
             setClauses.Add("fuel_price = @FuelPrice");
@@ -138,6 +152,13 @@ public class BookingReadFlatUpdatedConsumer(
             setClauses.Add("file_name = @FileName");
             parameters.Add("@FileName", msg.FileName);
             logger.LogInformation("[BookingUpdatedEvent] ✓ FileName: {FileName}", msg.FileName);
+        }
+
+        if (msg.DepositRefundScheduledAt.HasValue)
+        {
+            setClauses.Add("deposit_refund_scheduled_at = @DepositRefundScheduledAt");
+            parameters.Add("@DepositRefundScheduledAt", msg.DepositRefundScheduledAt.Value);
+            logger.LogInformation("[BookingUpdatedEvent] ✓ DepositRefundScheduledAt: {DepositRefundScheduledAt}", msg.DepositRefundScheduledAt.Value);
         }
 
         setClauses.Add("updated_at = @UpdatedAt");

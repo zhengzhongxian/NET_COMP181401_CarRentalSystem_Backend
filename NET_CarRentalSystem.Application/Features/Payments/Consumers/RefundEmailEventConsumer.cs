@@ -25,8 +25,9 @@ public class RefundEmailEventConsumer(
                 "[RefundEmailEventConsumer] Started processing RefundEmailEvent. RefundRequestId={RefundRequestId}, BookingId={BookingId}, CustomerId={CustomerId}, EmailType={EmailType}, Amount={Amount}VND",
                 @event.RefundRequestId, @event.BookingId, @event.CustomerId, @event.EmailType, @event.Amount);
             
+            // Tìm theo BookingId (booking_id_src), không phải Id
             var bookingFlat = await unitOfWork.GetReadRepository<BookingReadFlat>()
-                .GetByIdAsync(@event.BookingId, context.CancellationToken);
+                .GetFirstOrDefaultAsync(b => b.BookingId == @event.BookingId, cancellationToken: context.CancellationToken);
             
             if (bookingFlat == null)
             {

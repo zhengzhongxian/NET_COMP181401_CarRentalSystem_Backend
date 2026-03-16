@@ -51,29 +51,6 @@ public class InsurancePackageConfiguration : IEntityTypeConfiguration<InsuranceP
             .IsRequired()
             .HasDefaultValue(0);
 
-        builder.Property(i => i.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(i => i.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(i => i.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(i => i.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(i => i.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
-        builder.Property(i => i.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(i => i.DeletedAt)
-            .HasColumnName("deleted_at");
-
         builder.HasQueryFilter(i => !i.IsDeleted);
         
         builder.HasData(InsurancePackageSeeder.Seed());

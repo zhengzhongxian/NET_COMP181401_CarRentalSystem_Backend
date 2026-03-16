@@ -46,6 +46,10 @@ public class GetBookingReadFlatDto
     
     public int MileageStart { get; set; }
     
+    public int? MileageEnd { get; set; }
+    
+    public int FuelLevelStart { get; set; }
+    
     public int? FuelLevelEnd { get; set; }
     
     public decimal? FuelPrice { get; set; }

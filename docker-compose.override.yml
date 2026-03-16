@@ -77,8 +77,8 @@ services:
   # .NET API Application
   api:
     build:
-      context: ./NET_CarRentalSystem
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: NET_CarRentalSystem/Dockerfile
     container_name: renticar-api
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
@@ -94,6 +94,10 @@ services:
         condition: service_healthy
       minio:
         condition: service_started
+    volumes:
+      - ./Models:/app/Models:ro
+      - ./logs:/app/Logs
+      - ./NET_CarRentalSystem/appsettings.Development.json:/app/appsettings.Development.json:ro
     networks:
       - renticar-network
     restart: unless-stopped
@@ -101,8 +105,8 @@ services:
   # .NET Sync Service
   syncdatatool:
     build:
-      context: ./NET_CarRentalSystem.SyncDataTool
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: NET_CarRentalSystem.SyncDataTool/Dockerfile
     container_name: renticar-syncdatatool
     environment:
       - DOTNET_ENVIRONMENT=Development

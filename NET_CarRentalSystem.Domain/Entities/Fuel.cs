@@ -1,10 +1,10 @@
-﻿﻿using NET_CarRentalSystem.Domain.Common;
+﻿using NET_CarRentalSystem.Domain.Common;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
 public class Fuel : BaseEntity<Guid>, IRowVersion
 {
-    public string Name { get; set; }
+    public string Name { get; set; } = default!;
     
     public string? Description { get; set; }
 

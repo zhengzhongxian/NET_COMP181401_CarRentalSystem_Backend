@@ -80,40 +80,36 @@ public class ReturnVehicleCommandHandler(
 
         #endregion
 
-        #region Load Customer & Booking
-
-        var customer = await unitOfWork
-            .GetReadRepository<Customer>()
-            .GetFirstOrDefaultAsync(
-                c => c.UserId == userId.Value, cancellationToken: cancellationToken);
-
-        if (customer == null)
-            return (false, BookingMessage.Return.CustomerNotFound);
-
-        var booking = await unitOfWork
-            .GetWriteRepository<Booking>()
-            .GetFirstOrDefaultAsync(
-                b => b.CustomerId == customer.Id &&
-                     b.Status == BookingStatus.InProgress,
-                cancellationToken);
-
-        if (booking == null)
-            return (false, BookingMessage.Return.BookingNotFound);
-
-        if (booking.PickupLocationId != Guid.Empty &&
-            booking.PickupLocationId != locationId)
-            return (false, BookingMessage.Return.InvalidToken);
-
-        #endregion
-
         #region Update Booking State
-
-        booking.Status = BookingStatus.Returned;
-        booking.ActualEndDate = DateTime.UtcNow;
-        booking.ReturnLocationId = locationId;
 
         return await unitOfWork.ExecuteInTransactionAsync(async ct =>
         {
+            #region Load Customer & Booking (inside transaction for retry safety)
+
+            var customer = await unitOfWork
+                .GetWriteRepository<Customer>()
+                .GetFirstOrDefaultAsync(
+                    c => c.UserId == userId.Value, cancellationToken: ct);
+
+            if (customer == null)
+                return (false, BookingMessage.Return.CustomerNotFound);
+
+            var booking = await unitOfWork
+                .GetWriteRepository<Booking>()
+                .GetFirstOrDefaultAsync(
+                    b => b.CustomerId == customer.CustomerId &&
+                         b.Status == BookingStatus.InProgress,
+                    ct);
+
+            if (booking == null)
+                return (false, BookingMessage.Return.BookingNotFound);
+
+            #endregion
+
+            booking.Status = BookingStatus.Returned;
+            booking.ActualEndDate = DateTime.UtcNow;
+            booking.ReturnLocationId = locationId;
+
             unitOfWork.GetWriteRepository<Booking>().Update(booking);
             await unitOfWork.SaveChangesAsync(ct);
 
@@ -125,9 +121,19 @@ public class ReturnVehicleCommandHandler(
 
             var vehicleModel = await unitOfWork
                 .GetWriteRepository<VehicleModel>()
-                .GetByIdAsync(booking.VehicleModelId, ct);
-
+                .GetFirstOrDefaultAsync(
+                    vm => vm.Id == booking.VehicleModelId, 
+                    ct);
+            
+            Vehicle? vehicle = null;
             if (vehicleModel != null)
+            {
+                vehicle = await unitOfWork
+                    .GetWriteRepository<Vehicle>()
+                    .GetByIdAsync(vehicleModel.VehicleId, ct);
+            }
+
+            if (vehicleModel != null && vehicle != null)
             {
                 vehicleModel.LocationId = locationId;
                 vehicleModel.RealTimeLocation = location?.Name;
@@ -136,27 +142,36 @@ public class ReturnVehicleCommandHandler(
                 // vehicleModel.LastAvailableAt = DateTime.UtcNow;
 
                 unitOfWork.GetWriteRepository<VehicleModel>().Update(vehicleModel);
-
-                // Build JSON for all models of the vehicle using CreateJsonVehicleModelDto
+                
                 var allModels = await unitOfWork.GetWriteRepository<VehicleModel>()
                     .GetAsync(filter: vm => vm.VehicleId == vehicleModel.VehicleId, cancellationToken: ct);
+                
+                var locationIds = allModels.Where(vm => vm.LocationId.HasValue).Select(vm => vm.LocationId!.Value).Distinct().ToList();
+                var locations = await unitOfWork.GetReadRepository<Location>()
+                    .GetAsync(filter: l => locationIds.Contains(l.Id), cancellationToken: ct);
+                var locationDict = locations.ToDictionary(l => l.Id);
 
-                var modelsDto = allModels.Select(vm => new CreateJsonVehicleModelDto
+                var modelsDto = allModels.Select(vm => 
                 {
-                    Id = vm.Id,
-                    NumberPlate = vm.NumberPlate,
-                    Mileage = vm.Mileage,
-                    LocationId = vm.LocationId,
-                    LocationName = vm.Location?.Name,
-                    Address = vm.Location?.Address,
-                    Status = vm.Status,
-                    ConditionNotes = vm.ConditionNotes,
-                    LastAvailableAt = vm.LastAvailableAt
+                    var vmLocation = vm.LocationId.HasValue && locationDict.TryGetValue(vm.LocationId.Value, out var loc) ? loc : null;
+                    return new CreateJsonVehicleModelDto
+                    {
+                        Id = vm.Id,
+                        NumberPlate = vm.NumberPlate,
+                        Mileage = vm.Mileage,
+                        LocationId = vm.LocationId,
+                        LocationName = vmLocation?.Name,
+                        Address = vmLocation?.Address,
+                        Status = vm.Status,
+                        ConditionNotes = vm.ConditionNotes,
+                        LastAvailableAt = vm.LastAvailableAt
+                    };
                 }).ToList();
 
                 var modelsJson = modelsDto.ToJson();
 
-                var vehicleUpdatedEvent = vehicleModel.Vehicle.ToUpdatedEvent<Vehicle, VehicleModelsUpdatedEvent, Guid>(_ => new VehicleModelsUpdatedEvent
+                // Sử dụng vehicle đã load riêng thay vì vehicleModel.Vehicle
+                var vehicleUpdatedEvent = vehicle.ToUpdatedEvent<Vehicle, VehicleModelsUpdatedEvent, Guid>(_ => new VehicleModelsUpdatedEvent
                 {
                     Id = vehicleModel.VehicleId,
                     VehicleModelsJson = modelsJson,

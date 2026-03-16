@@ -1,7 +1,10 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingDTOs.Get;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingImageDTOs.Get;
+using NET_CarRentalSystem.Application.Models.DTOs.BookingViolationDTOs.Create;
+using NET_CarRentalSystem.Application.Models.DTOs.ReturnImageDTOs.Create;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Utilities;
 
@@ -12,8 +15,9 @@ public class GetBookingDetailQuery : IQuery<GetBookingDetailDto?>
     public required Guid BookingId { get; set; }
 }
 
-public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository) 
-    : IRequestHandler<GetBookingDetailQuery, GetBookingDetailDto?>
+public class GetBookingDetailQueryHandler(
+    IDapperRepository dapperRepository,
+    ICryptographyService cryptographyService) : IRequestHandler<GetBookingDetailQuery, GetBookingDetailDto?>
 {
     public async Task<GetBookingDetailDto?> Handle(GetBookingDetailQuery request, CancellationToken cancellationToken)
     {
@@ -41,6 +45,8 @@ public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository)
                 discount_rate AS DiscountRate,
                 late_penalty_ratio AS LatePenaltyRatio,
                 mileage_start AS MileageStart,
+                mileage_end AS MileageEnd,
+                fuel_level_start AS FuelLevelStart,
                 fuel_level_end AS FuelLevelEnd,
                 fuel_price AS FuelPrice,
                 condition_notes AS ConditionNotes,
@@ -48,6 +54,8 @@ public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository)
                 swap_reason AS SwapReason,
                 cancellation_reason AS CancellationReason,
                 booking_images_json AS BookingImagesJson,
+                booking_violations_json AS BookingViolationsJson,
+                return_images_json AS ReturnImagesJson,
                 metadata AS Metadata,
                 created_at AS CreatedAt,
                 created_by AS CreatedBy,
@@ -67,7 +75,29 @@ public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository)
 
         var bookingImages = !string.IsNullOrEmpty(bookingFlat.BookingImagesJson)
             ? bookingFlat.BookingImagesJson.FromJson<List<GetBookingImageDto>>()
-            : new List<GetBookingImageDto>();
+            : [];
+
+        var bookingViolations = !string.IsNullOrEmpty(bookingFlat.BookingViolationsJson)
+            ? bookingFlat.BookingViolationsJson.FromJson<List<CreateJsonBookingViolationDto>>()
+            : [];
+
+        var returnImages = !string.IsNullOrEmpty(bookingFlat.ReturnImagesJson)
+            ? bookingFlat.ReturnImagesJson.FromJson<List<CreateJsonReturnImageDto>>()
+            : [];
+
+        // Decrypt phone number
+        string? decryptedPhone = null;
+        if (!string.IsNullOrEmpty(bookingFlat.CustomerPhone))
+        {
+            try
+            {
+                decryptedPhone = cryptographyService.DecryptAes(bookingFlat.CustomerPhone);
+            }
+            catch
+            {
+                decryptedPhone = null;
+            }
+        }
 
         return new GetBookingDetailDto
         {
@@ -75,7 +105,7 @@ public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository)
             CustomerId = bookingFlat.CustomerId,
             CustomerName = bookingFlat.CustomerName,
             CustomerEmail = bookingFlat.CustomerEmail,
-            CustomerPhone = bookingFlat.CustomerPhone,
+            CustomerPhone = decryptedPhone,
             VehicleId = bookingFlat.VehicleId,
             VehiclePricePerHour = bookingFlat.VehiclePricePerHour,
             VehicleModelId = bookingFlat.VehicleModelId,
@@ -93,6 +123,8 @@ public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository)
             DiscountRate = bookingFlat.DiscountRate,
             LatePenaltyRatio = bookingFlat.LatePenaltyRatio,
             MileageStart = bookingFlat.MileageStart,
+            MileageEnd = bookingFlat.MileageEnd,
+            FuelLevelStart = bookingFlat.FuelLevelStart,
             FuelLevelEnd = bookingFlat.FuelLevelEnd,
             FuelPrice = bookingFlat.FuelPrice,
             ConditionNotes = bookingFlat.ConditionNotes,
@@ -100,6 +132,8 @@ public class GetBookingDetailQueryHandler(IDapperRepository dapperRepository)
             SwapReason = bookingFlat.SwapReason,
             CancellationReason = bookingFlat.CancellationReason,
             BookingImages = bookingImages,
+            BookingViolations = bookingViolations,
+            ReturnImages = returnImages,
             Metadata = bookingFlat.Metadata,
             CreatedAt = bookingFlat.CreatedAt,
             CreatedBy = bookingFlat.CreatedBy,

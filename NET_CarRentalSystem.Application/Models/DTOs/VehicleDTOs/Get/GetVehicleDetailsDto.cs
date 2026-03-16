@@ -8,6 +8,8 @@ public class GetVehicleDetailsDto
     
     public string? Model { get; set; }
 
+    public string? Title { get; set; }
+
     public decimal PricePerHour { get; set; }
 
     public float Rating { get; set; }
@@ -36,5 +38,9 @@ public class GetVehicleDetailsDto
     
     public string? ImagesJson { get; set; }
 
+    public string? Description { get; set; }
+
     public string? Metadata { get; set; }
+
+    public int RequiredLicenseClass { get; set; }
 }

@@ -46,6 +46,10 @@ public class GetBookingDetailResponse
     
     public int MileageStart { get; set; }
     
+    public int? MileageEnd { get; set; }
+    
+    public int FuelLevelStart { get; set; }
+    
     public int? FuelLevelEnd { get; set; }
     
     public decimal? FuelPrice { get; set; }
@@ -59,6 +63,10 @@ public class GetBookingDetailResponse
     public string? CancellationReason { get; set; }
     
     public List<GetBookingImageResponse>? BookingImages { get; set; }
+    
+    public List<GetBookingViolationResponse>? BookingViolations { get; set; }
+    
+    public List<GetReturnImageResponse>? ReturnImages { get; set; }
     
     public string? Metadata { get; set; }
     

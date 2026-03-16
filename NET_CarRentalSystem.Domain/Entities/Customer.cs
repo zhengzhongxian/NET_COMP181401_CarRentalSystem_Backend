@@ -36,13 +36,21 @@ public class Customer : BaseEntity<Guid>, IRowVersion
 
     public string? DriverLicenseBackUrl { get; set; }
 
+    public int? DriverLicenseClass { get; set; }
+
     public string? AvatarUrl { get; set; }
     
     public int LoyaltyPoints { get; set; }
 
-    public bool IsRenting { get; set; } = false;
+    public bool IsRenting { get; set; }
 
-    public bool HasActiveViolation { get; set; } = false;
+    public bool HasActiveViolation { get; set; }
+
+    public bool IsIdentityVerified { get; set; }
+
+    public bool IsPhoneVerified { get; set; }
+
+    public bool IsDriverLicenseVerified { get; set; }
 
     public Guid? UserId { get; set; }
 

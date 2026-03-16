@@ -16,7 +16,6 @@ using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.CoreHelpers;
-using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.Application.Features.Bookings.Commands.CreateBookingCommand;
 
@@ -55,17 +54,19 @@ public class CreateBookingCommandHandler(
     {
         var userId = currentUserService.GetUserId();
         
-        var include = new IncludeBuilder<User>().Include(u => u.Customer);
-        var builder = include.Build();
+        // ReadDB không có navigation property, query riêng
         var user = await unitOfWork.GetReadRepository<User>()
-            .GetFirstAsync(c => c.Id == userId, includeProperties: builder, cancellationToken: cancellationToken);
+            .GetFirstAsync(c => c.Id == userId, cancellationToken: cancellationToken);
         
-        if (user.Customer == null)
+        var customer = await unitOfWork.GetReadRepository<Customer>()
+            .GetFirstOrDefaultAsync(c => c.UserId == userId, cancellationToken: cancellationToken);
+        
+        if (customer == null)
         {
             return (false, BookingMessage.Create.CustomerNotFound, null);
         }
         
-        var customerId = user.Customer.CustomerId;
+        var customerId = customer.CustomerId;
         
         var lockKey = CacheKeyHelper.GetCustomerPaymentLockKey(customerId);
         var lockValue = Guid.NewGuid().ToString();
@@ -79,7 +80,7 @@ public class CreateBookingCommandHandler(
         
         try
         {
-            return await CreateBookingInternalAsync(request, user, cancellationToken);
+            return await CreateBookingInternalAsync(request, user, customer, cancellationToken);
         }
         finally
         {
@@ -89,7 +90,8 @@ public class CreateBookingCommandHandler(
     
     private async Task<(bool, string, PaymentTransactionDto?)> CreateBookingInternalAsync(
         CreateBookingCommand request, 
-        User user, 
+        User user,
+        Customer customerRead,
         CancellationToken cancellationToken)
     {
         return await unitOfWork.ExecuteInTransactionAsync(async (ct) =>
@@ -97,14 +99,14 @@ public class CreateBookingCommandHandler(
             var settings = await unitOfWork.GetReadRepository<SystemSetting>().GetAsync(cancellationToken: ct);
             var maxCancellations = settings.GetInt(SystemSettingConstants.CancellationSettings.MaxCancellationsPerMonth, 3);
             
-            var cancellationCount = await GetCancellationCountAsync(user.Customer!.CustomerId, ct);
+            var cancellationCount = await GetCancellationCountAsync(customerRead.CustomerId, ct);
             if (cancellationCount >= maxCancellations)
             {
                 return (false, BookingMessage.CreateWithCancellationLimit.MaxCancellationsReached, null);
             }
             
             var customer = await unitOfWork.GetWriteRepository<Customer>()
-                .GetByIdAsync(user.Customer.CustomerId, ct);
+                .GetByIdAsync(customerRead.CustomerId, ct);
             
             if (customer == null)
             {
@@ -112,6 +114,11 @@ public class CreateBookingCommandHandler(
             }
             
             await CheckAndProcessPendingTransactionsAsync(customer, user, ct);
+            
+            if (customer.DriverLicenseExpiry.HasValue && customer.DriverLicenseExpiry.Value < DateTime.UtcNow)
+            {
+                return (false, BookingMessage.Create.DriverLicenseExpired, null);
+            }
             
             if (customer.IsRenting)
             {
@@ -126,6 +133,19 @@ public class CreateBookingCommandHandler(
             var vehicleRead = await unitOfWork.GetReadRepository<VehicleReadFlat>().GetByIdAsync(request.VehicleId, ct);
             if (vehicleRead == null) 
                 return (false, BookingMessage.Create.VehicleNotFound, null);
+            
+            if (vehicleRead.RequiredLicenseClass > 0)
+            {
+                if (!customer.DriverLicenseClass.HasValue)
+                {
+                    return (false, BookingMessage.Create.DriverLicenseClassRequired, null);
+                }
+                
+                if (customer.DriverLicenseClass.Value < vehicleRead.RequiredLicenseClass)
+                {
+                    return (false, BookingMessage.Create.DriverLicenseClassInsufficient, null);
+                }
+            }
             
             var pickupLocation = await unitOfWork.GetReadRepository<Location>()
                 .GetByIdAsync(request.PickupLocationId, ct);

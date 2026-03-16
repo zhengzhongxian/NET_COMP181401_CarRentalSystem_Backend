@@ -27,24 +27,26 @@ public class PaymentEmailEventConsumer(
             "[PaymentEmailEventConsumer] Started processing PaymentEmailEvent. BookingId={BookingId}, CustomerId={CustomerId}, TransactionType={TransactionType}, Amount={Amount}",
             @event.BookingId, @event.CustomerId, @event.TransactionType, @event.Amount);
         
-        var include = new IncludeBuilder<Customer>().Include(c => c.User);
-        var includeProperties = include.Build();
-        
         var customer = await unitOfWork.GetReadRepository<Customer>()
-            .GetFirstOrDefaultAsync(
-                c => c.CustomerId == @event.CustomerId,
-                includeProperties,
-                context.CancellationToken
-            );
+            .GetFirstOrDefaultAsync(c => c.CustomerId == @event.CustomerId, cancellationToken: context.CancellationToken);
 
-        if (customer?.User is null)
+        if (customer == null)
         {
-            logger.LogError("[PaymentEmailEventConsumer] Failed: Customer or User not found. CustomerId={CustomerId}", @event.CustomerId);
+            logger.LogError("[PaymentEmailEventConsumer] Failed: Customer not found. CustomerId={CustomerId}", @event.CustomerId);
+            return;
+        }
+
+        var user = await unitOfWork.GetReadRepository<User>()
+            .GetFirstOrDefaultAsync(u => u.Id == customer.UserId, cancellationToken: context.CancellationToken);
+
+        if (user == null)
+        {
+            logger.LogError("[PaymentEmailEventConsumer] Failed: User not found. UserId={UserId}", customer.UserId);
             return;
         }
         
-        logger.LogInformation("[PaymentEmailEventConsumer] Found customer. Email={Email}, CustomerId={CustomerId}", 
-            customer.User.Email, @event.CustomerId);
+        logger.LogInformation("[PaymentEmailEventConsumer] Found customer and user. Email={Email}, CustomerId={CustomerId}", 
+            user.Email, @event.CustomerId);
         
         var booking = await unitOfWork.GetReadRepository<BookingReadFlat>()
             .GetFirstOrDefaultAsync(
@@ -80,12 +82,12 @@ public class PaymentEmailEventConsumer(
             {
                 case TransactionType.Deposit:
                     logger.LogInformation("[PaymentEmailEventConsumer] Sending deposit payment email for BookingId={BookingId}", @event.BookingId);
-                    await SendDepositPaymentEmailAsync(customer, booking, vehicle, @event, context.CancellationToken);
+                    await SendDepositPaymentEmailAsync(customer, user, booking, vehicle, @event, context.CancellationToken);
                     break;
 
                 case TransactionType.FinalPayment:
                     logger.LogInformation("[PaymentEmailEventConsumer] Sending full payment email for BookingId={BookingId}", @event.BookingId);
-                    await SendFullPaymentEmailAsync(customer, booking, vehicle, @event, context.CancellationToken);
+                    await SendFullPaymentEmailAsync(customer, user, booking, vehicle, @event, context.CancellationToken);
                     break;
             }
         }
@@ -99,6 +101,7 @@ public class PaymentEmailEventConsumer(
 
     private async Task SendDepositPaymentEmailAsync(
         Customer customer,
+        User user,
         BookingReadFlat booking,
         VehicleReadFlat vehicle,
         PaymentEmailEvent @event,
@@ -108,7 +111,7 @@ public class PaymentEmailEventConsumer(
         {
             logger.LogInformation(
                 "[PaymentEmailEventConsumer] Preparing deposit payment email. Email={Email}, BookingId={BookingId}, Amount={Amount}VND",
-                customer.User!.Email, booking.BookingId, @event.Amount);
+                user.Email, booking.BookingId, @event.Amount);
 
             var vehicleImages = string.IsNullOrEmpty(vehicle.ImagesJson)
                 ? []
@@ -137,7 +140,7 @@ public class PaymentEmailEventConsumer(
             };
 
             await emailService.SendTemplateEmailViaGmailApiAsync(
-                customer.User!.Email,
+                user.Email,
                 "Thanh toán tiền cọc thành công - Renticar",
                 AppConstants.EmailTemplates.DepositPaymentSuccess,
                 emailData,
@@ -146,19 +149,20 @@ public class PaymentEmailEventConsumer(
             
             logger.LogInformation(
                 "[PaymentEmailEventConsumer] Deposit payment email sent successfully. Email={Email}, BookingId={BookingId}, TemplateKey={TemplateKey}",
-                customer.User.Email, booking.BookingId, AppConstants.EmailTemplates.DepositPaymentSuccess);
+                user.Email, booking.BookingId, AppConstants.EmailTemplates.DepositPaymentSuccess);
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
                 "[PaymentEmailEventConsumer] Failed to send deposit payment email. Email={Email}, BookingId={BookingId}, Error={ErrorMessage}",
-                customer.User!.Email, booking.BookingId, ex.Message);
+                user.Email, booking.BookingId, ex.Message);
             throw;
         }
     }
 
     private async Task SendFullPaymentEmailAsync(
         Customer customer,
+        User user,
         BookingReadFlat booking,
         VehicleReadFlat vehicle,
         PaymentEmailEvent @event,
@@ -168,7 +172,7 @@ public class PaymentEmailEventConsumer(
         {
             logger.LogInformation(
                 "[PaymentEmailEventConsumer] Preparing full payment email. Email={Email}, BookingId={BookingId}, Amount={Amount}VND",
-                customer.User!.Email, booking.BookingId, @event.Amount);
+                user.Email, booking.BookingId, @event.Amount);
 
             var bookingImages = string.IsNullOrEmpty(booking.BookingImagesJson)
                 ? []
@@ -181,10 +185,11 @@ public class PaymentEmailEventConsumer(
             var appUrl = configuration[KeyConstants.EmailRedirectUrl] ?? "http://localhost:5173";
 
             var depositAmount = booking.TotalPrice * booking.DepositRatio;
-            var finalAmount = booking.TotalPrice - depositAmount;
+            // Thanh toán 100% giá thuê (tiền cọc giữ riêng, hoàn trả sau 30 ngày)
+            var finalAmount = booking.TotalPrice;
 
             logger.LogInformation(
-                "[PaymentEmailEventConsumer] Calculating amounts. TotalPrice={TotalPrice}VND, DepositRatio={DepositRatio}, DepositAmount={DepositAmount}VND, FinalAmount={FinalAmount}VND",
+                "[PaymentEmailEventConsumer] Calculating amounts. TotalPrice={TotalPrice}VND, DepositRatio={DepositRatio}, DepositAmount={DepositAmount}VND, FinalAmount={FinalAmount}VND (100%)",
                 booking.TotalPrice, booking.DepositRatio, depositAmount, finalAmount);
 
             var emailData = new Dictionary<string, string>
@@ -207,11 +212,12 @@ public class PaymentEmailEventConsumer(
                 { "{{FuelPrice}}", booking.FuelPrice.HasValue ? booking.FuelPrice.Value.ToString("N0") + " VND" : "N/A" },
                 { "{{ConditionNotes}}", booking.ConditionNotes ?? "Tốt" },
                 { "{{BookingImages}}", bookingImagesHtml },
-                { "{{AppUrl}}", appUrl }
+                { "{{AppUrl}}", appUrl },
+                { "{{DepositRefundNote}}", $"Tiền cọc {depositAmount:N0} VND sẽ được hoàn trả sau 30 ngày kể từ khi trả xe, nếu không có vi phạm phát sinh." }
             };
 
             await emailService.SendTemplateEmailViaGmailApiAsync(
-                customer.User!.Email,
+                user.Email,
                 "Thanh toán toàn bộ thành công - Renticar",
                 AppConstants.EmailTemplates.FullPaymentSuccess,
                 emailData,
@@ -220,13 +226,13 @@ public class PaymentEmailEventConsumer(
             
             logger.LogInformation(
                 "[PaymentEmailEventConsumer] Full payment email sent successfully. Email={Email}, BookingId={BookingId}, TemplateKey={TemplateKey}, FinalAmount={FinalAmount}VND",
-                customer.User.Email, booking.BookingId, AppConstants.EmailTemplates.FullPaymentSuccess, finalAmount);
+                user.Email, booking.BookingId, AppConstants.EmailTemplates.FullPaymentSuccess, finalAmount);
         }
         catch (Exception ex)
         {
             logger.LogError(ex,
                 "[PaymentEmailEventConsumer] Failed to send full payment email. Email={Email}, BookingId={BookingId}, Error={ErrorMessage}",
-                customer.User!.Email, booking.BookingId, ex.Message);
+                user.Email, booking.BookingId, ex.Message);
             throw;
         }
     }

@@ -27,6 +27,10 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
             .IsRequired()
             .HasMaxLength(100);
 
+        builder.Property(v => v.Title)
+            .HasColumnName("title")
+            .HasMaxLength(200);
+
         builder.Property(v => v.Color)
             .HasColumnName("color")
             .HasMaxLength(50);
@@ -53,6 +57,11 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
             .HasColumnName("available_count")
             .HasDefaultValue(0);
 
+        builder.Property(v => v.RequiredLicenseClass)
+            .HasColumnName("required_license_class")
+            .IsRequired()
+            .HasDefaultValue(0);
+
         builder.Property(v => v.VehicleCategoryId)
             .HasColumnName("vehicle_category_id");
 
@@ -61,32 +70,6 @@ public class VehicleConfiguration : IEntityTypeConfiguration<Vehicle>
 
         builder.Property(v => v.TransmissionId)
             .HasColumnName("transmission_id");
-
-        builder.Property(v => v.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(v => v.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(v => v.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(v => v.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(v => v.IsDeleted)
-            .HasColumnName("is_deleted");
-
-        builder.Property(v => v.DeletedBy)
-            .HasColumnName("deleted_by");
-
-        builder.Property(v => v.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(v => v.RowVersion)
-            .HasColumnName("row_version")
-            .IsRowVersion()
-            .ValueGeneratedOnAddOrUpdate();
 
         // Relationships
         builder.HasOne(v => v.VehicleCategory)

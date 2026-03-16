@@ -60,6 +60,9 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
             .HasColumnName("deposit_ratio")
             .HasColumnType("decimal(5, 2)");
 
+        builder.Property(b => b.DepositRefundScheduledAt)
+            .HasColumnName("deposit_refund_scheduled_at");
+
         builder.Property(b => b.TotalPrice)
             .HasColumnName("total_price")
             .HasColumnType("decimal(18, 2)");
@@ -101,34 +104,6 @@ public class BookingConfiguration : IEntityTypeConfiguration<Booking>
         builder.Property(c => c.AcceptedTermsAt)
             .HasColumnName("accepted_terms_at");
 
-        builder.Property(c => c.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(c => c.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(c => c.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(c => c.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(c => c.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-        
-        builder.Property(c => c.DeletedBy)
-            .HasColumnName("deleted_by");
-        
-        builder.Property(c => c.DeletedAt)
-            .HasColumnName("deleted_at");
-
-        builder.Property(c => c.RowVersion)
-            .HasColumnName("row_version")
-            .IsRowVersion()
-            .ValueGeneratedOnAddOrUpdate();
-        
         builder.Property(c => c.FileName)
             .HasColumnName("file_name")
             .HasMaxLength(1000);

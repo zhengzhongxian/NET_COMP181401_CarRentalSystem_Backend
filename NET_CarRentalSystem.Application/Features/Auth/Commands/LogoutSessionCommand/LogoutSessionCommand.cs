@@ -23,7 +23,6 @@ public class LogoutSessionCommandHandler(
     {
         var currentUserId = currentUserService.GetUserId()!.Value;
         var sessionWriteRepository = unitOfWork.GetWriteRepository<UserSession>();
-        var sessionReadRepository = unitOfWork.GetReadRepository<UserSession>();
 
         var sessionToLogout = await sessionWriteRepository.GetByIdAsync(request.SessionId, cancellationToken);
 
@@ -32,11 +31,12 @@ public class LogoutSessionCommandHandler(
             return (AuthMessage.LogoutSession.NotFound, false);
         }
 
+        var remainingSessions = (await sessionWriteRepository.GetAsync(
+            s => s.UserId == currentUserId,
+            cancellationToken: cancellationToken)).Count;
+
         sessionWriteRepository.Remove(sessionToLogout, true);
         await cacheService.RemoveAsync(sessionToLogout.RefreshToken, cancellationToken);
-
-        // Đếm số session hiện có trong DB (bao gồm cả session vừa đánh dấu xóa vì chưa SaveChanges)
-        var remainingSessions = await sessionReadRepository.CountAsync(s => s.UserId == currentUserId, cancellationToken);
         
         if (remainingSessions <= 1)
         {

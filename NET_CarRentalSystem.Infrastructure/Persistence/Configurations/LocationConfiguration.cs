@@ -49,23 +49,6 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
         builder.Property(c => c.Description)
             .HasColumnName("description");
 
-        builder.Property(c => c.CreatedAt)
-            .HasColumnName("created_at")
-            .IsRequired();
-
-        builder.Property(c => c.CreatedBy)
-            .HasColumnName("created_by");
-
-        builder.Property(c => c.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(c => c.UpdatedBy)
-            .HasColumnName("updated_by");
-
-        builder.Property(c => c.IsDeleted)
-            .HasColumnName("is_deleted")
-            .IsRequired();
-
         builder.HasData(LocationSeeder.Seed());
     }
 }

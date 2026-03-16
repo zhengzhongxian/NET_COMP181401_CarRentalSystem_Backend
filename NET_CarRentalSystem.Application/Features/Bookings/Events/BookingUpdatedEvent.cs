@@ -19,6 +19,10 @@ public record BookingUpdatedEvent : EntityUpdatedEvent<Guid>
     
     public int? FuelLevelStart { get; set; }
     
+    public int? MileageStart { get; set; }
+    
+    public int? MileageEnd { get; set; }
+    
     public decimal? FuelPrice { get; set; }
     
     public string? ConditionNotes { get; set; }
@@ -36,4 +40,6 @@ public record BookingUpdatedEvent : EntityUpdatedEvent<Guid>
     public string? ReturnImagesJson { get; set; }
 
     public string? FileName { get; set; }
+
+    public DateTime? DepositRefundScheduledAt { get; set; }
 }

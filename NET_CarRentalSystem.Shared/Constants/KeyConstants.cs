@@ -29,17 +29,14 @@ public static class KeyConstants
         public const string PaymentSyncJob = "Quartz:PaymentSyncJob";
         public const string RefundProcessingJob = "Quartz:RefundProcessingJob";
         public const string ReturnDeadlineReminderJob = "Quartz:ReturnDeadlineReminderJob";
-        public const string GeminiSettings = "GeminiSettings";
-        public const string EmbeddingSettings = "EmbeddingSettings";
-    }
-
-    public static class Quartz
-    {
-        public static class CheckToolAlive
-        {
-            public const string JobName = "Quartz:CheckToolAlive:JobName";
-            public const string CronExpression = "Quartz:CheckToolAlive:CronExpression";
-        }
+        public const string OverdueBookingJob = "Quartz:OverdueBookingJob";
+        public const string VnptEkycSettings = "Authentication:Ekyc:VnptEkycSettings";
+        public const string SpeedSmsSettings = "Authentication:Sms:SpeedSmsSettings";
+        public const string TwilioSettings = "Authentication:Sms:TwilioSettings";
+        public const string GrpcServices = "GrpcServices";
+        public const string CheckToolAlive = "Quartz:CheckToolAlive";
+        public const string DepositRefundJob = "Quartz:DepositRefundJob";
+        public const string FileValidationSettings = "FileValidationSettings";
     }
 
     public static class DatabaseInitializationSettings

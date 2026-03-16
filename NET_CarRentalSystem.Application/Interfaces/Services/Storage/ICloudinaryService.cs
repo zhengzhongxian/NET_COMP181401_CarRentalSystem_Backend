@@ -51,6 +51,13 @@ public interface ICloudinaryService
     /// <param name="crop">Kiểu crop (fill, fit, scale, etc.)</param>
     /// <returns>URL đã được transform</returns>
     string GenerateTransformedUrl(string publicId, int? width = null, int? height = null, string crop = "fill");
+
+    /// <summary>
+    /// Download image bytes from URL for AI processing
+    /// </summary>
+    /// <param name="imageUrl">URL of the image</param>
+    /// <returns>Image bytes or null if failed</returns>
+    Task<byte[]?> DownloadImageAsync(string imageUrl);
 }
 
 

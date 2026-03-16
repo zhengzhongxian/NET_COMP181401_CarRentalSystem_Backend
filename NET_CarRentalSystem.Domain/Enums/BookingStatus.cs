@@ -10,5 +10,6 @@ public enum BookingStatus
     Cancelled,            // Đã hủy
     Expired,              // Hết hạn thanh toán
     Returned,             // Đã trả xe  
+    Disputed,             // Tranh chấp (có vi phạm chưa giải quyết khi đến hạn hoàn cọc)
 }
 

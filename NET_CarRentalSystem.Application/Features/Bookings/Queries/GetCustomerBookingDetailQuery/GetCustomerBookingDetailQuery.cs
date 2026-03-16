@@ -1,6 +1,7 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
+using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingDTOs.Get;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingImageDTOs.Get;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingViolationDTOs.Create;
@@ -19,8 +20,8 @@ public class GetCustomerBookingDetailQuery : IQuery<GetBookingDetailDto?>
 public class GetCustomerBookingDetailQueryHandler(
     IDapperRepository dapperRepository,
     ICurrentUserService currentUserService,
-    IUnitOfWork unitOfWork) 
-    : IRequestHandler<GetCustomerBookingDetailQuery, GetBookingDetailDto?>
+    IUnitOfWork unitOfWork,
+    ICryptographyService cryptographyService) : IRequestHandler<GetCustomerBookingDetailQuery, GetBookingDetailDto?>
 {
     public async Task<GetBookingDetailDto?> Handle(GetCustomerBookingDetailQuery request, CancellationToken cancellationToken)
     {
@@ -57,6 +58,8 @@ public class GetCustomerBookingDetailQueryHandler(
                 discount_rate AS DiscountRate,
                 late_penalty_ratio AS LatePenaltyRatio,
                 mileage_start AS MileageStart,
+                mileage_end AS MileageEnd,
+                fuel_level_start AS FuelLevelStart,
                 fuel_level_end AS FuelLevelEnd,
                 fuel_price AS FuelPrice,
                 condition_notes AS ConditionNotes,
@@ -89,11 +92,25 @@ public class GetCustomerBookingDetailQueryHandler(
 
         var bookingViolations = !string.IsNullOrEmpty(bookingFlat.BookingViolationsJson)
             ? bookingFlat.BookingViolationsJson.FromJson<List<CreateJsonBookingViolationDto>>()
-            : new List<CreateJsonBookingViolationDto>();
+            : [];
         
         var returnImages = !string.IsNullOrEmpty(bookingFlat.ReturnImagesJson)
             ? bookingFlat.ReturnImagesJson.FromJson<List<CreateJsonReturnImageDto>>()
-            : new List<CreateJsonReturnImageDto>();
+            : [];
+
+        // Decrypt phone number
+        string? decryptedPhone = null;
+        if (!string.IsNullOrEmpty(bookingFlat.CustomerPhone))
+        {
+            try
+            {
+                decryptedPhone = cryptographyService.DecryptAes(bookingFlat.CustomerPhone);
+            }
+            catch
+            {
+                decryptedPhone = null;
+            }
+        }
 
         return new GetBookingDetailDto
         {
@@ -101,7 +118,7 @@ public class GetCustomerBookingDetailQueryHandler(
             CustomerId = bookingFlat.CustomerId,
             CustomerName = bookingFlat.CustomerName,
             CustomerEmail = bookingFlat.CustomerEmail,
-            CustomerPhone = bookingFlat.CustomerPhone,
+            CustomerPhone = decryptedPhone,
             VehicleId = bookingFlat.VehicleId,
             VehiclePricePerHour = bookingFlat.VehiclePricePerHour,
             VehicleModelId = bookingFlat.VehicleModelId,
@@ -118,6 +135,8 @@ public class GetCustomerBookingDetailQueryHandler(
             DiscountRate = bookingFlat.DiscountRate,
             LatePenaltyRatio = bookingFlat.LatePenaltyRatio,
             MileageStart = bookingFlat.MileageStart,
+            MileageEnd = bookingFlat.MileageEnd,
+            FuelLevelStart = bookingFlat.FuelLevelStart,
             FuelLevelEnd = bookingFlat.FuelLevelEnd,
             FuelPrice = bookingFlat.FuelPrice,
             ConditionNotes = bookingFlat.ConditionNotes,

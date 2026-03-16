@@ -37,24 +37,6 @@ public class BookingImageConfiguration : IEntityTypeConfiguration<BookingImage>
             .HasColumnName("display_order")
             .HasDefaultValue(0);
 
-        builder.Property(bi => bi.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(bi => bi.CreatedBy)
-            .HasColumnName("created_by")
-            .HasMaxLength(255);
-
-        builder.Property(bi => bi.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(bi => bi.UpdatedBy)
-            .HasColumnName("updated_by")
-            .HasMaxLength(255);
-
-        builder.Property(bi => bi.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-        
         builder.HasOne(bi => bi.Booking)
             .WithMany(b => b.BookingImages)
             .HasForeignKey(bi => bi.BookingId)

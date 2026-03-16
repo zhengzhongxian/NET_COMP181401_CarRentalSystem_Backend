@@ -1,4 +1,4 @@
-﻿using Dapper;
+﻿﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Shared.Constants;
@@ -149,8 +149,30 @@ public class Worker(
                         }
                     }
 
-                    await readConnection.ExecuteAsync(new CommandDefinition(mergeSql, sourceData, cancellationToken: token));
-                    logger.LogInformation("Upserted {UpsertCount} records to {TableName}", sourceData.Count, config.TableName);
+                    // Check if primary key is IDENTITY column and enable IDENTITY_INSERT if needed
+                    var hasIdentity = await metadataCache.HasIdentityColumnAsync(config.TableName, config.PrimaryKeyColumn, token);
+                    
+                    if (hasIdentity)
+                    {
+                        await readConnection.ExecuteAsync(new CommandDefinition(
+                            $"SET IDENTITY_INSERT dbo.[{config.TableName}] ON", 
+                            cancellationToken: token));
+                    }
+
+                    try
+                    {
+                        await readConnection.ExecuteAsync(new CommandDefinition(mergeSql, sourceData, cancellationToken: token));
+                        logger.LogInformation("Upserted {UpsertCount} records to {TableName}", sourceData.Count, config.TableName);
+                    }
+                    finally
+                    {
+                        if (hasIdentity)
+                        {
+                            await readConnection.ExecuteAsync(new CommandDefinition(
+                                $"SET IDENTITY_INSERT dbo.[{config.TableName}] OFF", 
+                                cancellationToken: token));
+                        }
+                    }
                 }
             }
             await UpdateSyncVersion(writeConnection, config.TableName, currentSyncVersion, token);

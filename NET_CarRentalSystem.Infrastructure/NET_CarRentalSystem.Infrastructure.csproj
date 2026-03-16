@@ -23,6 +23,8 @@
     </PackageReference>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.21" />
+    <PackageReference Include="Microsoft.SemanticKernel" Version="1.70.0" />
+    <PackageReference Include="Microsoft.SemanticKernel.Connectors.Google" Version="1.70.0-alpha" />
     <PackageReference Include="NRedisStack" Version="0.13.1" />
     <PackageReference Include="Minio" Version="7.0.0" />
     <PackageReference Include="Mscc.GenerativeAI" Version="3.0.2" />
@@ -41,6 +43,26 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.14.0" />
     <PackageReference Include="Microsoft.ML.OnnxRuntime" Version="1.20.1" />
     <PackageReference Include="Microsoft.ML.Tokenizers" Version="0.22.0-preview.24378.1" />
+    <PackageReference Include="Twilio" Version="7.14.2" />
+    <!-- gRPC Client for AI Service -->
+    <PackageReference Include="Grpc.AspNetCore" Version="2.67.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.67.0" />
+    <PackageReference Include="Google.Protobuf" Version="3.29.3" />
+    <PackageReference Include="Grpc.Tools" Version="2.67.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Compile proto file to C# gRPC client -->
+    <Protobuf Include="Protos\image_analysis.proto" GrpcServices="Client">
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <Protobuf Include="Protos\text_embedding.proto" GrpcServices="Client">
+      <Generator>MSBuild:Compile</Generator>
+    </Protobuf>
+    <None Remove="Protos\test.proto" />
   </ItemGroup>
 
   <ItemGroup>
@@ -63,6 +85,12 @@
       <DependentUpon>VehicleSearchService.cs</DependentUpon>
     </Compile>
     <Compile Update="Services\Search\VehicleSearchService.Facets.cs">
+      <DependentUpon>VehicleSearchService.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Services\Search\VehicleSearchService.Index.cs">
+      <DependentUpon>VehicleSearchService.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Services\Search\VehicleSearchService.Search.cs">
       <DependentUpon>VehicleSearchService.cs</DependentUpon>
     </Compile>
   </ItemGroup>

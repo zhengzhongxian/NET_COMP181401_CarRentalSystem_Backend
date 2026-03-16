@@ -54,24 +54,6 @@ public class WebhookLogConfiguration : IEntityTypeConfiguration<WebhookLog>
             .HasColumnName("processed_by")
             .HasMaxLength(255);
 
-        builder.Property(w => w.CreatedAt)
-            .HasColumnName("created_at");
-
-        builder.Property(w => w.CreatedBy)
-            .HasColumnName("created_by")
-            .HasMaxLength(255);
-
-        builder.Property(w => w.UpdatedAt)
-            .HasColumnName("updated_at");
-
-        builder.Property(w => w.UpdatedBy)
-            .HasColumnName("updated_by")
-            .HasMaxLength(255);
-
-        builder.Property(w => w.IsDeleted)
-            .HasColumnName("is_deleted")
-            .HasDefaultValue(false);
-
         builder.HasQueryFilter(w => !w.IsDeleted);
     }
 }

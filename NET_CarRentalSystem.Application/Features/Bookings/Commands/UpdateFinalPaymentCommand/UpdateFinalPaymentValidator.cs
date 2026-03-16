@@ -1,12 +1,17 @@
 using FluentValidation;
+using Microsoft.Extensions.Options;
+using NET_CarRentalSystem.Application.Configurations;
+using NET_CarRentalSystem.Application.Common.Validations;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Validation;
 
 namespace NET_CarRentalSystem.Application.Features.Bookings.Commands.UpdateFinalPaymentCommand;
 
 public class UpdateFinalPaymentValidator : AbstractValidator<UpdateFinalPaymentCommand>
 {
-    public UpdateFinalPaymentValidator()
+    public UpdateFinalPaymentValidator(IOptions<FileValidationSettings> fileSettings)
     {
+        var validateFile = new ValidateFile(fileSettings);
+        
         RuleFor(x => x.BookingId)
             .NotEmpty()
             .WithMessage(BookingValidationMessage.BookingIdRequired);
@@ -25,10 +30,15 @@ public class UpdateFinalPaymentValidator : AbstractValidator<UpdateFinalPaymentC
             .MaximumLength(2000)
             .WithMessage(BookingValidationMessage.ConditionNotesTooLong);
 
-        RuleFor(x => x.Images)
-            .NotNull()
-            .WithMessage(BookingValidationMessage.ImagesRequired)
-            .Must(images => images is { Count: >= 4 })
-            .WithMessage(BookingValidationMessage.MinimumImagesRequired);
+        When(x => x.Images is { Count: > 0 }, () =>
+        {
+            RuleFor(x => x.Images)
+                .Must(images => images is { Count: >= 4 })
+                .WithMessage(BookingValidationMessage.MinimumImagesRequired);
+
+            RuleForEach(x => x.Images)
+                .Must(validateFile.IsValid)
+                .WithMessage(BookingValidationMessage.ImageInvalid);
+        });
     }
 }

@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package text_embedding;
+
+// C# namespace for generated code
+option csharp_namespace = "NET_CarRentalSystem.Infrastructure.Grpc.TextEmbedding";
+
+// ============================================
+// Text Embedding Service
+// AI-powered text embedding using Qwen3-Embedding
+// ============================================
+
+service TextEmbeddingService {
+    // Get embedding vector for a single text
+    rpc GetEmbedding(EmbeddingRequest) returns (EmbeddingResponse);
+    
+    // Get embedding vectors for multiple texts in batch
+    rpc GetEmbeddingsBatch(EmbeddingsBatchRequest) returns (EmbeddingsBatchResponse);
+}
+
+// ============================================
+// Request Messages
+// ============================================
+
+message EmbeddingRequest {
+    // Text to generate embedding for
+    string text = 1;
+}
+
+message EmbeddingsBatchRequest {
+    // List of texts to generate embeddings for
+    repeated string texts = 1;
+}
+
+// ============================================
+// Response Messages
+// ============================================
+
+message EmbeddingResponse {
+    // Embedding vector as raw bytes (float32 little-endian)
+    bytes embedding = 1;
+    
+    // Dimension of the embedding vector
+    int32 dimension = 2;
+    
+    // Model used for embedding
+    string model_name = 3;
+}
+
+message EmbeddingsBatchResponse {
+    // List of embedding responses
+    repeated EmbeddingResponse embeddings = 1;
+    
+    // Model used for embedding
+    string model_name = 2;
+}

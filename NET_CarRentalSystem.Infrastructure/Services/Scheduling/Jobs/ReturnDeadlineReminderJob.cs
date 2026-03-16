@@ -1,10 +1,11 @@
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Quartz;
 using System.Text.Json;
-using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
+using NET_CarRentalSystem.Application.Features.Bookings.Events;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -19,8 +20,6 @@ public class ReturnDeadlineReminderJob(
     IOptions<ReturnDeadlineReminderJobConfig> configOptions) : IJob
 {
     private readonly ReturnDeadlineReminderJobConfig _config = configOptions.Value;
-    private const string EmailTemplateName = "ReturnDeadlineReminderEmail.html";
-    private const string EmailSubject = "⏰ Nhắc nhở: Còn 15 phút nữa là đến hạn trả xe - Renticar";
 
     public async Task Execute(IJobExecutionContext context)
     {
@@ -34,7 +33,7 @@ public class ReturnDeadlineReminderJob(
             var serviceProvider = scope.ServiceProvider;
 
             var unitOfWork = serviceProvider.GetRequiredService<IUnitOfWork>();
-            var emailService = serviceProvider.GetRequiredService<IEmailService>();
+            var publishEndpoint = serviceProvider.GetRequiredService<IPublishEndpoint>();
 
             var now = DateTime.UtcNow;
             var reminderWindowStart = now.AddMinutes(_config.ReminderMinutesBefore - _config.ToleranceMinutes);
@@ -57,31 +56,32 @@ public class ReturnDeadlineReminderJob(
                 return;
             }
 
-            var sentCount = 0;
-            var failedCount = 0;
+            var publishedCount = 0;
 
             foreach (var booking in bookingsToRemind)
             {
                 try
                 {
-                    await SendReminderEmailAsync(emailService, booking, context.CancellationToken);
-                    sentCount++;
+                    var reminderEvent = CreateReminderEvent(booking);
+                    await publishEndpoint.Publish(reminderEvent, context.CancellationToken);
+                    await unitOfWork.SaveChangesAsync(context.CancellationToken);
+                    publishedCount++;
+
                     logger.LogInformation(
-                        "[ReturnDeadlineReminderJob] ✅ Sent reminder email for BookingId={BookingId}, CustomerEmail={Email}",
+                        "[ReturnDeadlineReminderJob] ✅ Published reminder event for BookingId={BookingId}, CustomerEmail={Email}",
                         booking.BookingId, booking.CustomerEmail);
                 }
                 catch (Exception ex)
                 {
-                    failedCount++;
                     logger.LogError(ex,
-                        "[ReturnDeadlineReminderJob] ❌ Failed to send reminder email for BookingId={BookingId}",
+                        "[ReturnDeadlineReminderJob] ❌ Failed to publish reminder event for BookingId={BookingId}",
                         booking.BookingId);
                 }
             }
 
             logger.LogInformation(
-                "[ReturnDeadlineReminderJob] Completed at {Time}. Sent: {SentCount}, Failed: {FailedCount}, Total: {TotalCount}",
-                DateTime.UtcNow, sentCount, failedCount, bookingsToRemind.Count);
+                "[ReturnDeadlineReminderJob] Completed at {Time}. Published: {PublishedCount}/{TotalCount} events",
+                DateTime.UtcNow, publishedCount, bookingsToRemind.Count);
         }
         catch (Exception ex)
         {
@@ -90,22 +90,11 @@ public class ReturnDeadlineReminderJob(
         }
     }
 
-    private async Task SendReminderEmailAsync(
-        IEmailService emailService,
-        BookingReadFlat booking,
-        CancellationToken cancellationToken)
+    private ReturnDeadlineReminderEvent CreateReminderEvent(BookingReadFlat booking)
     {
-        var customerEmail = booking.CustomerEmail;
-        if (string.IsNullOrEmpty(customerEmail))
-        {
-            logger.LogWarning("[ReturnDeadlineReminderJob] Skipping BookingId={BookingId} - No customer email", booking.BookingId);
-            return;
-        }
-
-        var customerName = booking.CustomerName ?? customerEmail;
+        var customerName = booking.CustomerName ?? booking.CustomerEmail ?? "Khách hàng";
         var returnLocation = booking.ReturnLocationName ?? booking.PickupLocationName;
-
-        // Parse Metadata to get vehicle details
+        
         var manufacturer = "N/A";
         var model = "N/A";
         var color = "N/A";
@@ -116,7 +105,7 @@ public class ReturnDeadlineReminderJob(
             {
                 using var doc = JsonDocument.Parse(booking.Metadata);
                 var root = doc.RootElement;
-                
+
                 if (root.TryGetProperty("Manufacturer", out var manuProp))
                     manufacturer = manuProp.GetString() ?? "N/A";
                 if (root.TryGetProperty("Model", out var modelProp))
@@ -130,25 +119,19 @@ public class ReturnDeadlineReminderJob(
             }
         }
 
-        var placeholders = new Dictionary<string, string>
+        return new ReturnDeadlineReminderEvent
         {
-            { "{{CustomerName}}", customerName },
-            { "{{BookingId}}", booking.BookingId.ToString().ToUpper()[..8] },
-            { "{{Manufacturer}}", manufacturer },
-            { "{{Model}}", model },
-            { "{{Color}}", color },
-            { "{{NumberPlate}}", booking.NumberPlate ?? "N/A" },
-            { "{{PickupLocation}}", booking.PickupLocationName },
-            { "{{ReturnLocation}}", returnLocation },
-            { "{{EndDate}}", booking.EndDate.ToLocalTime().ToString("HH:mm - dd/MM/yyyy") },
-            { "{{AppUrl}}", "https://renticar.com" }
+            BookingId = booking.BookingId,
+            CustomerName = customerName,
+            CustomerEmail = booking.CustomerEmail,
+            NumberPlate = booking.NumberPlate ?? "N/A",
+            Manufacturer = manufacturer,
+            Model = model,
+            Color = color,
+            PickupLocationName = booking.PickupLocationName,
+            ReturnLocationName = returnLocation,
+            EndDate = booking.EndDate,
+            DetectedAt = DateTime.UtcNow
         };
-
-        await emailService.SendTemplateEmailViaGmailApiAsync(
-            customerEmail,
-            EmailSubject,
-            EmailTemplateName,
-            placeholders,
-            cancellationToken);
     }
 }

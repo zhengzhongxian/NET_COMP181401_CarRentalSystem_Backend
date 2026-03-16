@@ -1,5 +1,5 @@
+using MassTransit;
 using Microsoft.Extensions.Logging;
-using NET_CarRentalSystem.Application.Common.Consumers;
 using NET_CarRentalSystem.Application.Features.Vehicles.Events;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 
@@ -7,25 +7,44 @@ namespace NET_CarRentalSystem.Application.Features.Vehicles.Consumers;
 
 public class VehicleReadFlatThumbnailUpdatedConsumer(
     ILogger<VehicleReadFlatThumbnailUpdatedConsumer> logger,
-    IDapperRepository dapperRepository) : EntityUpdatedConsumerBase<VehicleThumbnailUpdatedEvent, Guid>(logger, dapperRepository)
+    IDapperRepository dapperRepository) : IConsumer<VehicleThumbnailUpdatedEvent>
 {
-    protected override string TableName => "vehicle_read_flat";
-    protected override string IdColumn => "vehicle_id";
-    protected override string UpdateSetClause => """
+    private const string TableName = "vehicle_read_flat";
+    private const string IdColumn = "vehicle_id";
 
-                                                         thumbnail = @Thumbnail,
-                                                         updated_at = @UpdatedAt,
-                                                         updated_by = @UpdatedBy
-                                                 """;
+    private const string UpdateSetClause = """
+                                                 thumbnail = @Thumbnail,
+                                                 updated_at = @UpdatedAt,
+                                                 updated_by = @UpdatedBy
+                                           """;
 
-    protected override object CreateParameters(VehicleThumbnailUpdatedEvent msg)
+    public async Task Consume(ConsumeContext<VehicleThumbnailUpdatedEvent> context)
     {
-        return new 
-        { 
-            msg.Id, 
-            msg.Thumbnail, 
-            msg.UpdatedAt, 
-            msg.UpdatedBy 
+        var msg = context.Message;
+        var ct = context.CancellationToken;
+
+        logger.LogInformation(
+            "[VehicleThumbnailUpdatedEvent] Starting update process in {Table} with ID: {Id}...",
+            TableName, msg.Id);
+
+        var sql = $"""
+                   UPDATE {TableName}
+                   SET {UpdateSetClause}
+                   WHERE {IdColumn} = @Id
+                   """;
+
+        var param = new
+        {
+            msg.Id,
+            msg.Thumbnail,
+            msg.UpdatedAt,
+            msg.UpdatedBy
         };
+
+        await dapperRepository.ExecuteAsync(sql, param, cancellationToken: ct);
+
+        logger.LogInformation(
+            "[VehicleThumbnailUpdatedEvent] Successfully updated in {Table}: {Id} at {UpdatedAt}",
+            TableName, msg.Id, msg.UpdatedAt);
     }
 }

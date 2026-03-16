@@ -29,6 +29,8 @@ public class Booking : BaseEntity<Guid>, IRowVersion
     
     public decimal LatePenaltyRatio { get; set; }
 
+    public DateTime? DepositRefundScheduledAt { get; set; }
+
     public int MileageStart { get; set; }
 
     public int? MileageEnd { get; set; }

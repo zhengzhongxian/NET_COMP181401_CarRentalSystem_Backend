@@ -1,6 +1,7 @@
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 
@@ -11,6 +12,8 @@ public class CreateRoleCommand : ICommand<(bool Success, Guid? RoleId, string Me
     public string Name { get; set; } = string.Empty;
     
     public string? Description { get; set; }
+
+    public RoleAccessibility Accessibility { get; set; }
 }
 
 public class CreateRoleCommandHandler(IUnitOfWork unitOfWork)
@@ -34,6 +37,7 @@ public class CreateRoleCommandHandler(IUnitOfWork unitOfWork)
             Name = request.Name,
             NormalizedName = request.Name.ToUpperInvariant(),
             Description = request.Description,
+            Accessibility = request.Accessibility,
             ConcurrencyStamp = Guid.NewGuid().ToString()
         };
 
@@ -43,4 +47,3 @@ public class CreateRoleCommandHandler(IUnitOfWork unitOfWork)
         return (true, role.Id, RoleMessage.Create.Success);
     }
 }
-

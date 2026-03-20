@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Infrastructure.Persistence.Seeders;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Configurations;
@@ -31,6 +32,11 @@ public class RoleConfiguration : IEntityTypeConfiguration<Role>
             .HasColumnName("concurrency_stamp")
             .IsConcurrencyToken();
 
+        builder.Property(r => r.Accessibility)
+            .HasColumnName("accessibility")
+            .IsRequired()
+            .HasConversion<int>()
+            .HasDefaultValue(RoleAccessibility.Client);
 
         builder.HasIndex(r => r.NormalizedName).IsUnique();
 

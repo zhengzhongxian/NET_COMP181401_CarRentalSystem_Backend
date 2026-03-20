@@ -9,6 +9,7 @@ using NET_CarRentalSystem.Application.Features.Roles.Commands.CreateRoleClaimCom
 using NET_CarRentalSystem.Application.Features.Roles.Commands.CreateRoleCommand;
 using NET_CarRentalSystem.Application.Features.Roles.Commands.DeleteRoleClaimCommand;
 using NET_CarRentalSystem.Application.Features.Roles.Commands.DeleteRoleCommand;
+using NET_CarRentalSystem.Application.Features.Roles.Commands.UpdateRoleAccessibilityCommand;
 using NET_CarRentalSystem.Application.Features.Roles.Commands.UpdateRoleClaimCommand;
 using NET_CarRentalSystem.Application.Features.Roles.Commands.UpdateRoleCommand;
 using NET_CarRentalSystem.Application.Features.Roles.Queries.GetRoleClaimsQuery;
@@ -65,7 +66,8 @@ public class RolesController(ISender sender, IMapper mapper) : ControllerBase
             var command = new CreateRoleCommand
             {
                 Name = request.Name,
-                Description = request.Description
+                Description = request.Description,
+                Accessibility = request.Accessibility
             };
 
             var (success, roleId, message) = await sender.Send(command, ct);
@@ -107,6 +109,46 @@ public class RolesController(ISender sender, IMapper mapper) : ControllerBase
                 RoleId = roleId,
                 Name = request.Name,
                 Description = request.Description
+            };
+
+            var (success, message) = await sender.Send(command, ct);
+
+            if (!success)
+            {
+                var errorResponse = ApiResponse.ErrorResult(message);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(message);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                RoleMessage.Update.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+    
+    /// <summary>
+    /// Cập nhật quyền truy cập của Role
+    /// </summary>
+    [HttpPatch("{roleId:guid}/accessibility")]
+    [ValidateUserExists(Roles = RoleConstants.Admin)]
+    public async Task<IActionResult> UpdateRoleAccessibility(
+        [FromRoute] Guid roleId,
+        [FromBody] UpdateRoleAccessibilityRequest request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var command = new UpdateRoleAccessibilityCommand
+            {
+                RoleId = roleId,
+                Accessibility = request.Accessibility
             };
 
             var (success, message) = await sender.Send(command, ct);
@@ -312,4 +354,3 @@ public class RolesController(ISender sender, IMapper mapper) : ControllerBase
 
     #endregion
 }
-

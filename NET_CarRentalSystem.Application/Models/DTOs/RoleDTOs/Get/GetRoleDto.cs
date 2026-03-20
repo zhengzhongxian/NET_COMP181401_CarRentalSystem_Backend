@@ -8,6 +8,7 @@ public class GetRoleDto
     
     public string? Description { get; set; }
     
+    public string Accessibility { get; set; } = string.Empty;
+    
     public DateTime? CreatedAt { get; set; }
 }
-

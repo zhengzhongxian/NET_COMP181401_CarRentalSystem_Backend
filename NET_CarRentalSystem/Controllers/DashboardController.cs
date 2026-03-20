@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.API.Extensions;
 using NET_CarRentalSystem.API.Models.Response.Dashboard;
+using NET_CarRentalSystem.Application.Features.Dashboard.Queries.BranchStatistics;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetDailyRevenueQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetDashboardStatisticsQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetPaymentMethodStatisticsQuery;
@@ -21,8 +22,11 @@ namespace NET_CarRentalSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = RoleConstants.Admin)] // Tất cả API dashboard đều yêu cầu quyền Admin
 public class DashboardController(ISender sender, IMapper mapper) : ControllerBase
 {
+    #region General Dashboard APIs
+
     /// <summary>
     /// Lấy báo cáo doanh thu theo khoảng ngày
     /// </summary>
@@ -31,7 +35,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Doanh thu theo tháng: Deposit + FinalPayment - Refund</returns>
     [HttpGet("revenue")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetRevenueSummary(
         [FromQuery] DateTime fromDate,
         [FromQuery] DateTime toDate,
@@ -70,7 +73,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Danh sách xe có nhiều lượt thuê nhất</returns>
     [HttpGet("top-rented-vehicles")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetTopRentedVehicles(
         [FromQuery] int top = 5,
         CancellationToken cancellationToken = default)
@@ -104,7 +106,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Doanh thu hiện tại và % thay đổi so với kỳ trước</returns>
     [HttpGet("recent-revenue")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetRecentRevenue(
         [FromQuery] int hours = 2,
         CancellationToken cancellationToken = default)
@@ -138,7 +139,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Danh sách doanh thu theo ngày để vẽ biểu đồ</returns>
     [HttpGet("daily-revenue")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetDailyRevenue(
         [FromQuery] int days = 30,
         CancellationToken cancellationToken = default)
@@ -172,7 +172,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Tổng người dùng và % thay đổi so với kỳ trước</returns>
     [HttpGet("user-statistics")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetUserStatistics(
         [FromQuery] int days = 30,
         CancellationToken cancellationToken = default)
@@ -206,7 +205,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Danh sách doanh thu theo tháng và loại xe</returns>
     [HttpGet("revenue-by-category")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetRevenueByCategory(
         [FromQuery] int year,
         CancellationToken cancellationToken = default)
@@ -241,7 +239,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Các chỉ số thống kê</returns>
     [HttpGet("statistics")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetDashboardStatistics(
         CancellationToken cancellationToken = default)
     {
@@ -273,7 +270,6 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Danh sách phương thức thanh toán và phần trăm</returns>
     [HttpGet("payment-method-statistics")]
-    [Authorize(Roles = RoleConstants.Admin)]
     public async Task<IActionResult> GetPaymentMethodStatistics(
         CancellationToken cancellationToken = default)
     {
@@ -298,4 +294,155 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
             return StatusCode(errorResponse.StatusCode, errorResponse);
         }
     }
+
+    #endregion
+
+    #region Branch Statistics APIs
+
+    /// <summary>
+    /// Lấy thống kê tổng quan các chi nhánh
+    /// </summary>
+    [HttpGet("branch-stats-overview")]
+    public async Task<IActionResult> GetBranchOverviewStats(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = new GetBranchOverviewStatsQuery();
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<BranchOverviewStatsResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.BranchStatistics.OverviewSuccess);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.BranchStatistics.OverviewError,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    /// <summary>
+    /// Lấy dữ liệu so sánh chi nhánh (Radar Chart)
+    /// </summary>
+    [HttpGet("branch-comparison")]
+    public async Task<IActionResult> GetBranchComparison(CancellationToken cancellationToken)
+    {
+        try
+        {
+            var query = new GetBranchComparisonQuery();
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<BranchComparisonResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.BranchStatistics.ComparisonSuccess);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.BranchStatistics.ComparisonError,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    /// <summary>
+    /// Lấy doanh thu tất cả chi nhánh (Bar Chart)
+    /// </summary>
+    /// <param name="period">Khoảng thời gian (month, week, year)</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    [HttpGet("branch-revenue-all")]
+    public async Task<IActionResult> GetAllBranchRevenue([FromQuery] string period = "month", CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new GetAllBranchRevenueQuery { Period = period };
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<BranchRevenueListResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.BranchStatistics.RevenueSuccess);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.BranchStatistics.RevenueError,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    /// <summary>
+    /// Lấy doanh thu theo ngày của một chi nhánh (Area Chart)
+    /// </summary>
+    /// <param name="branchId">ID của chi nhánh</param>
+    /// <param name="days">Số ngày muốn lấy dữ liệu (mặc định 30)</param>
+    [HttpGet("branches/{branchId:guid}/revenue-daily")]
+    public async Task<IActionResult> GetBranchDailyRevenue(
+        [FromRoute] Guid branchId,
+        [FromQuery] int days = 30,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new GetBranchDailyRevenueQuery { BranchId = branchId, Days = days };
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<BranchDailyRevenueResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.BranchStatistics.DailyRevenueSuccess);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.BranchStatistics.DailyRevenueError,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    /// <summary>
+    /// Lấy tình trạng xe của một chi nhánh (Radial Chart)
+    /// </summary>
+    /// <param name="branchId">ID của chi nhánh</param>
+    [HttpGet("branches/{branchId:guid}/vehicle-status")]
+    public async Task<IActionResult> GetBranchVehicleStatus(
+        [FromRoute] Guid branchId,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new GetBranchVehicleStatusQuery { BranchId = branchId };
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<BranchVehicleStatusResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.BranchStatistics.VehicleStatusSuccess);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.BranchStatistics.VehicleStatusError,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    #endregion
 }

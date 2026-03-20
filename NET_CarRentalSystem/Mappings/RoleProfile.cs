@@ -12,4 +12,3 @@ public class RoleProfile : Profile
         CreateMap<GetRoleClaimDto, GetRoleClaimResponse>();
     }
 }
-

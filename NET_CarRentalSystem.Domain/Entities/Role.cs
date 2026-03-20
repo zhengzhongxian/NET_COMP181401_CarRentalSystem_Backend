@@ -1,4 +1,5 @@
 ﻿using NET_CarRentalSystem.Domain.Common;
+using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.Domain.Entities;
 
@@ -12,8 +13,9 @@ public class Role : BaseEntity<Guid>
     
     public string? Description { get; set; }
     
+    public RoleAccessibility Accessibility { get; set; } = RoleAccessibility.Client;
+    
     public virtual ICollection<UserRole> UserRoles { get; set; } = [];
 
     public virtual ICollection<RoleClaim> RoleClaims { get; set; } = [];
 }
-

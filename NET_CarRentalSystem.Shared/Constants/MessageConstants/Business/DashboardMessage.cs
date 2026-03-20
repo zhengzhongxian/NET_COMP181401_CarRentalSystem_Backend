@@ -49,9 +49,22 @@ public static class DashboardMessage
         public const string Success = "Lấy thống kê phương thức thanh toán thành công";
         public const string Error = "Có lỗi xảy ra khi lấy thống kê phương thức thanh toán";
     }
+
+    public static class BranchStatistics
+    {
+        public const string OverviewSuccess = "Lấy thống kê tổng quan chi nhánh thành công";
+        public const string OverviewError = "Có lỗi xảy ra khi lấy thống kê tổng quan chi nhánh";
+        
+        public const string ComparisonSuccess = "Lấy dữ liệu so sánh chi nhánh thành công";
+        public const string ComparisonError = "Có lỗi xảy ra khi lấy dữ liệu so sánh chi nhánh";
+        
+        public const string RevenueSuccess = "Lấy dữ liệu doanh thu các chi nhánh thành công";
+        public const string RevenueError = "Có lỗi xảy ra khi lấy dữ liệu doanh thu các chi nhánh";
+        
+        public const string DailyRevenueSuccess = "Lấy dữ liệu doanh thu hàng ngày của chi nhánh thành công";
+        public const string DailyRevenueError = "Có lỗi xảy ra khi lấy dữ liệu doanh thu hàng ngày của chi nhánh";
+        
+        public const string VehicleStatusSuccess = "Lấy tình trạng xe của chi nhánh thành công";
+        public const string VehicleStatusError = "Có lỗi xảy ra khi lấy tình trạng xe của chi nhánh";
+    }
 }
-
-
-
-
-

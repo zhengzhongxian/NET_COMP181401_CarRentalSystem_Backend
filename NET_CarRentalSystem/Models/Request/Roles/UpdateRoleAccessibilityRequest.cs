@@ -3,14 +3,8 @@ using NET_CarRentalSystem.Domain.Enums;
 
 namespace NET_CarRentalSystem.API.Models.Request.Roles;
 
-public class CreateRoleRequest
+public class UpdateRoleAccessibilityRequest
 {
-    [Required]
-    [MaxLength(256)]
-    public string Name { get; set; } = string.Empty;
-    
-    public string? Description { get; set; }
-
     [Required]
     [EnumDataType(typeof(RoleAccessibility))]
     public RoleAccessibility Accessibility { get; set; }

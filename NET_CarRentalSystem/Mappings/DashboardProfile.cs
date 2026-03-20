@@ -17,12 +17,22 @@ public class DashboardProfile : Profile
         CreateMap<DashboardStatisticsDto, DashboardStatisticsResponse>();
         CreateMap<LocationStatisticDto, LocationStatisticResponse>();
         CreateMap<PaymentMethodStatisticDto, PaymentMethodStatisticResponse>();
+
+        // Branch Statistics
+        CreateMap<BranchOverviewStatsDto, BranchOverviewStatsResponse>();
+        
+        CreateMap<BranchComparisonDto, BranchComparisonResponse>();
+        CreateMap<BranchInfoDto, BranchInfoResponse>();
+        CreateMap<BranchCriteriaDto, BranchCriteriaResponse>();
+        
+        CreateMap<BranchRevenueListDto, BranchRevenueListResponse>();
+        CreateMap<BranchRevenueDto, BranchRevenueResponse>();
+        
+        CreateMap<BranchDailyRevenueDto, BranchDailyRevenueResponse>();
+        CreateMap<BranchDailyRevenueDataDto, BranchDailyRevenueDataResponse>();
+        CreateMap<BranchRevenueSummaryDto, BranchRevenueSummaryResponse>();
+        
+        CreateMap<BranchVehicleStatusDto, BranchVehicleStatusResponse>();
+        CreateMap<VehicleStatusCountDto, VehicleStatusCountResponse>();
     }
 }
-
-
-
-
-
-
-

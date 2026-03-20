@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Domain.Entities;
+using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 
 namespace NET_CarRentalSystem.Infrastructure.Services.Authentication;
@@ -115,21 +116,24 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
         var loyaltyPoints = customer?.LoyaltyPoints ?? 0;
         claims.Add(new Claim("LoyaltyPoints", loyaltyPoints.ToString()));
 
-        var roleIds = unitOfWork.GetWriteRepository<UserRole>()
+        var roleIds = await unitOfWork.GetWriteRepository<UserRole>()
             .GetQueryable()
             .Where(ur => ur.UserId == user.Id)
-            .Select(ur => ur.RoleId);
+            .Select(ur => ur.RoleId)
+            .ToListAsync(cancellationToken);
 
-        var existRoleIds = await roleIds.AnyAsync(cancellationToken);
-        if (!existRoleIds) return claims.Distinct().ToList();
+        if (roleIds.Count == 0) return claims.Distinct().ToList();
 
-        var roles = unitOfWork.GetWriteRepository<Role>()
+        var roles = await unitOfWork.GetWriteRepository<Role>()
             .GetQueryable()
             .Where(r => roleIds.Contains(r.Id))
-            .Select(r => r.Name);
+            .Select(r => new { r.Name, r.Accessibility })
+            .ToListAsync(cancellationToken);
 
-        var roleNames = await roles.ToListAsync(cancellationToken);
-        claims.AddRange(roleNames.Select(role => new Claim(ClaimTypes.Role, role)).Distinct());
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role.Name)).Distinct());
+
+        var maxAccessibility = roles.Count > 0 ? roles.Max(r => r.Accessibility) : RoleAccessibility.Client;
+        claims.Add(new Claim("Accessibility", maxAccessibility.ToString()));
 
         var permissionClaims = await unitOfWork.GetWriteRepository<RoleClaim>()
             .GetAsync(rc => roleIds.Contains(rc.RoleId) && rc.ClaimType == "Permission", cancellationToken: cancellationToken);

@@ -17,6 +17,11 @@ public class GetRolesQueryHandler(IDapperRepository dapperRepository)
                 role_id AS RoleId,
                 name AS Name,
                 description AS Description,
+                CASE accessibility 
+                    WHEN 1 THEN 'Admin'
+                    WHEN 2 THEN 'Both'
+                    ELSE 'Client'
+                END AS Accessibility,
                 created_at AS CreatedAt
             FROM roles
             WHERE is_deleted = 0
@@ -27,4 +32,3 @@ public class GetRolesQueryHandler(IDapperRepository dapperRepository)
         return roles.ToList();
     }
 }
-

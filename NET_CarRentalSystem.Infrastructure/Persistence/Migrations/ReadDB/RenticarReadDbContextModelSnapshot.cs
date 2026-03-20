@@ -798,7 +798,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             CccdIssueDate = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "0s7H23SQolvCsrWr20Orjw==",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             Dob = new DateTime(1995, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl1-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -816,7 +816,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "fupEgUxoPV44LCKJSY7JLw==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
@@ -828,7 +828,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             CccdIssueDate = new DateTime(2014, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "cVXHyBreralnzAB1L4PQPg==",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             Dob = new DateTime(1992, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl2-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -846,7 +846,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "8JAbpw+SbCGaHGhEfWg3g==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
@@ -858,7 +858,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             CccdIssueDate = new DateTime(2016, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = " MK+LCGCQBxHbW7CoM5pipw==",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             Dob = new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl3-back.jpg",
                             DriverLicenseExpiry = new DateTime(2031, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -876,7 +876,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "Ha5ZLxongotYMMoHd5FJxg==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -888,7 +888,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             CccdIssueDate = new DateTime(2013, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "c3UJRjSHiGUa76qRID5QIg==",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             Dob = new DateTime(1990, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl4-back.jpg",
                             DriverLicenseExpiry = new DateTime(2032, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -906,7 +906,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "BFW3YFm70nX+X+CmDyqtrQ==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(2505),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 753, DateTimeKind.Utc).AddTicks(7000),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
@@ -972,32 +972,32 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         new
                         {
                             Id = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(9161),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(643),
                             Description = "Sử dụng xăng",
                             IsDeleted = false,
                             Name = "Gasoline",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(9161)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(643)
                         },
                         new
                         {
                             Id = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(9161),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(643),
                             Description = "Sử dụng dầu Diesel",
                             IsDeleted = false,
                             Name = "Diesel",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(9161)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(643)
                         },
                         new
                         {
                             Id = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(9161),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(643),
                             Description = "Sử dụng năng lượng điện",
                             IsDeleted = false,
                             Name = "Electric",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 721, DateTimeKind.Utc).AddTicks(9161)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(643)
                         });
                 });
 
@@ -1084,7 +1084,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
                             CoverageAmount = 50000000m,
                             CoverageDetails = "- Bảo hiểm trách nhiệm dân sự bên thứ 3\n- Thiệt hại tài sản tối đa 50 triệu\n- Chi phí y tế cơ bản\n- Hỗ trợ pháp lý 24/7",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(4453),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(5022),
                             Description = "Bảo hiểm trách nhiệm dân sự bắt buộc, bảo vệ bạn trước các chi phí pháp lý cơ bản.",
                             DisplayOrder = 1,
                             IsActive = true,
@@ -1097,7 +1097,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
                             CoverageAmount = 100000000m,
                             CoverageDetails = "- Tất cả quyền lợi gói Cơ bản\n- Bảo hiểm vật chất xe\n- Bảo hiểm tai nạn lái xe và hành khách\n- Hỗ trợ cứu hộ 24/7\n- Không khấu trừ khi xảy ra sự cố",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(4456),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(5026),
                             Description = "Bảo vệ toàn diện cho xe và hành khách với mức bồi thường cao hơn.",
                             DisplayOrder = 2,
                             IsActive = true,
@@ -1110,7 +1110,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             CoverageAmount = 200000000m,
                             CoverageDetails = "- Tất cả quyền lợi gói Tiêu chuẩn\n- Bảo hiểm mất trộm xe\n- Bảo hiểm thiên tai, hỏa hoạn\n- Xe thay thế khi sửa chữa\n- Bồi thường không giới hạn cho bên thứ 3\n- Hỗ trợ VIP 24/7",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(4458),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 754, DateTimeKind.Utc).AddTicks(5029),
                             Description = "Gói bảo hiểm toàn diện nhất với mức bồi thường tối đa và nhiều quyền lợi đặc biệt.",
                             DisplayOrder = 3,
                             IsActive = true,
@@ -1219,7 +1219,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
                             Address = "123 Lê Lợi, P. Bến Nghé",
                             City = "Hồ Chí Minh",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45),
                             IsDeleted = false,
                             Latitude = 10.7758,
                             Longitude = 106.702,
@@ -1227,14 +1227,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "02838123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
                             Address = "456 Xuân Thủy, P. Dịch Vọng Hậu",
                             City = "Hà Nội",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45),
                             IsDeleted = false,
                             Latitude = 21.036000000000001,
                             Longitude = 105.782,
@@ -1242,14 +1242,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             OpeningHours = "7:30 - 19:30",
                             PhoneNumber = "02439123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             Address = "789 Hùng Vương, Hải Châu",
                             City = "Đà Nẵng",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45),
                             IsDeleted = false,
                             Latitude = 16.054400000000001,
                             Longitude = 108.2022,
@@ -1257,14 +1257,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "023639123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000004"),
                             Address = "12 Trần Phú, Lộc Thọ",
                             City = "Khánh Hòa",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45),
                             IsDeleted = false,
                             Latitude = 12.238799999999999,
                             Longitude = 109.19670000000001,
@@ -1272,7 +1272,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "025839123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 722, DateTimeKind.Utc).AddTicks(7977)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 755, DateTimeKind.Utc).AddTicks(45)
                         });
                 });
 
@@ -1559,6 +1559,12 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         .HasColumnName("role_id")
                         .HasDefaultValueSql("NEWSEQUENTIALID()");
 
+                    b.Property<int>("Accessibility")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("accessibility");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .IsRequired()
@@ -1619,7 +1625,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         new
                         {
                             Id = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
-                            ConcurrencyStamp = "84d370b4-fa58-4a53-a9dd-4ccc77c43aca",
+                            Accessibility = 0,
+                            ConcurrencyStamp = "6290a949-0a94-405f-8c84-c02a0ead215f",
                             IsDeleted = false,
                             Name = "Admin",
                             NormalizedName = "ADMIN"
@@ -1627,7 +1634,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         new
                         {
                             Id = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
-                            ConcurrencyStamp = "c4f8ceab-53b2-40c3-af66-32c00336ebee",
+                            Accessibility = 0,
+                            ConcurrencyStamp = "c9a77e98-bcb2-4a8b-a7ad-5aa5b60038a2",
                             IsDeleted = false,
                             Name = "Manager",
                             NormalizedName = "MANAGER"
@@ -1635,7 +1643,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         new
                         {
                             Id = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
-                            ConcurrencyStamp = "44082d9e-b57a-4dde-b032-9184ec65505d",
+                            Accessibility = 0,
+                            ConcurrencyStamp = "241ef8d6-ca84-4676-b052-929e0db28839",
                             IsDeleted = false,
                             Name = "Staff",
                             NormalizedName = "STAFF"
@@ -1643,7 +1652,8 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         new
                         {
                             Id = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
-                            ConcurrencyStamp = "e390bfaa-edcf-49ed-8681-a6bd43bdba64",
+                            Accessibility = 0,
+                            ConcurrencyStamp = "dcbf52e3-9dc4-4494-8c24-22afcab0519d",
                             IsDeleted = false,
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
@@ -1678,385 +1688,385 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                     b.HasData(
                         new
                         {
-                            Id = new Guid("773e5b77-1f20-480e-aa21-cc3058c3b6df"),
+                            Id = new Guid("a67edb3e-6e1a-47d5-ba14-69f03bd5c03c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1062a19b-62c4-4f59-a50e-a86d2f6e1020"),
+                            Id = new Guid("197a26a3-9c9f-4267-87ba-9fa78967a3cd"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("21eef847-9882-4b23-b4e0-df9c8ee04ad6"),
+                            Id = new Guid("6b9c639f-d243-4a46-b497-44197cf4fee8"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("3d280898-990c-42f1-b928-372c08d6184c"),
+                            Id = new Guid("02bc16cc-a60a-4caf-8644-51cfdba85e37"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("f8814779-0fe3-4817-b04e-4fa07667f5bf"),
+                            Id = new Guid("36c1283a-c42b-4e64-afed-ec1202c52c2b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.SendEmail",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("9aba26ec-6d5e-4949-813b-0c6a74a0174f"),
+                            Id = new Guid("91ab274b-6f78-4792-aa05-b63567e6279b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("dcbfc053-7fd0-4f55-a261-d5954bbf8ca6"),
+                            Id = new Guid("f8248d8c-198d-4e3d-9064-0cb752290256"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ViewDetail",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8a8ce933-427f-4bdf-9d16-65b064aac3cb"),
+                            Id = new Guid("9e53f892-20a4-4aa4-ae09-10d76c16af10"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8bc8eb1e-0ab5-49f9-9f58-6ce4e5c3f0a3"),
+                            Id = new Guid("3b25adfa-b708-445d-9c1e-461d38a61c4d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("e9975bbf-5112-40d2-ab73-c74b0c239cfa"),
+                            Id = new Guid("801f5ad0-ee04-4c4c-9eee-6f82d1bf8c9f"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.SwapVehicleModel",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("09e55d58-379d-46ac-9c11-1d60f1e94142"),
+                            Id = new Guid("494c79e7-5dc6-466c-a71f-c24bd8392972"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Cancel",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1228a72e-4e82-4bee-b3e4-cf25c56efd54"),
+                            Id = new Guid("267073ea-eb8c-4604-bd25-b30a958da009"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.GenerateContract",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("5d09b2e1-844b-45d2-a1b9-b4dd1c86dcc5"),
+                            Id = new Guid("028b1e8a-f328-487e-b05c-4988894e5efa"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ExportContract",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("9b94047b-42f8-45d5-81d0-215087de2b5f"),
+                            Id = new Guid("3b4d562b-c8e0-4ba5-9952-973a4647a201"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.UpdateFinalPayment",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("3094d45b-e685-450e-8c9e-03afcde16b2b"),
+                            Id = new Guid("7d6a54cf-8976-4c59-99cc-196637df03ea"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.CreateFinalPayment",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("78317d5a-9bc5-49e0-9bfe-9fa725c0e9cb"),
+                            Id = new Guid("5d0f8920-aede-4fa2-b997-aed612eff3e6"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("63496f61-74a2-4464-870a-c3daf232e3fb"),
+                            Id = new Guid("69b9a4ce-fe94-47fb-aa18-8673a55ca7f4"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("e589c841-0dd1-4c99-a89a-bb4906be595a"),
+                            Id = new Guid("1bbb0c61-c5ab-4c3c-8516-019567c85b0a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("177e297f-b174-4779-87b0-9088359603be"),
+                            Id = new Guid("11d8c77e-e744-4892-8a73-516bdee06a93"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("f315037e-b8d8-4991-8c2a-119553887936"),
+                            Id = new Guid("be550c83-3943-4749-86f4-f4aa220c5211"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("094adfe4-e04b-4153-9f84-8833a060d689"),
+                            Id = new Guid("2df4828f-659b-4d7d-85b4-0b44122cd5a1"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("7d683538-278f-4ae2-ac88-d24a3dcc6259"),
+                            Id = new Guid("72e3ad57-2168-411b-a999-3a39ab353353"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1519aa87-6983-4c51-a295-d42781eb0c5b"),
+                            Id = new Guid("0a3326af-e82f-482b-9669-6565402e5279"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("e2a737e5-364f-4ed9-b1c0-aad831da74ed"),
+                            Id = new Guid("1447cf7d-2e5f-465b-8a51-8041e8c28999"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("dc21dff8-0a50-46af-a569-fa5dc3da45b3"),
+                            Id = new Guid("fc6b7d23-cd4a-4df4-9fc1-c40b3cee54ac"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("341cf4a5-d507-452a-a5ca-95b39ab471f7"),
+                            Id = new Guid("60b680a4-7c58-4ba0-bf3d-51844d930864"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("7ef7364a-8e0c-4ac9-bf99-146348d69695"),
+                            Id = new Guid("e900440e-1c54-498a-ba7b-66612f55a88a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("d9aa61d3-1106-468e-a58d-5171856e3833"),
+                            Id = new Guid("01b5b002-1ab5-47bd-9f93-27845b937f6d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("724720f9-7ca4-4d63-8767-957957e69694"),
+                            Id = new Guid("2cfac86f-d5e5-41a7-b7a6-a0c868168261"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b9563138-de74-4030-92e1-07eb35d10f87"),
+                            Id = new Guid("c85eec24-b43a-4f5b-ad8c-0a6dbdf86841"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("f75a0a3f-22cf-415d-8bac-2c9ac51a86c8"),
+                            Id = new Guid("33fbfda4-03fe-42b2-bd8a-bb2fbffe3659"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("a1f911d3-e912-487b-8e32-23f3d2f66161"),
+                            Id = new Guid("f3a8130f-236b-4940-88c8-43d591d19a8e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.RefundRequests.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("bc1d75cb-a473-4f1d-a3e7-f54243d91ad5"),
+                            Id = new Guid("7920b5c0-23eb-4680-9948-7036459c6c58"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.RefundRequests.Approve",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("07791058-716c-4429-82a5-4d93de181bf4"),
+                            Id = new Guid("88b05d82-dce5-4959-acc2-a06156d8a977"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.RefundRequests.Reject",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("96b8ad01-00f8-4c4a-809e-82388d0ff19b"),
+                            Id = new Guid("607c463c-534d-4408-8dbf-4789b9f90835"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.IdentityVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("cabd771d-c492-4951-9df2-caebee722f5f"),
+                            Id = new Guid("37002ba4-045c-4172-addd-3a33f7939f3a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.PhoneVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("7d46f1da-a2e4-47f7-9723-a8740d101413"),
+                            Id = new Guid("26e75204-02b8-4fd4-a33e-10d5011db03a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.DriverLicenseVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("0e7877df-4785-4ad5-962d-1c0d9dc9c825"),
+                            Id = new Guid("be20d9c7-4e46-46e6-88de-4a675330bf08"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.FullyVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("312e643f-3691-4f54-a38b-123306211591"),
+                            Id = new Guid("1831128b-784b-41bf-802c-3d62e18b55ce"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("a248f959-f975-489d-a21f-08500a53e9c4"),
+                            Id = new Guid("7feb02d3-47fe-4b7f-8c47-29e9ea52d1f6"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("3123384d-8bac-499d-ae86-a31454591e7e"),
+                            Id = new Guid("af998cf7-281f-467c-a64f-7e0e83315f7f"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("9d120571-f9ce-4400-b527-00d8c27bfc68"),
+                            Id = new Guid("417acdf8-e529-4382-9bae-782f0eaa5348"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("c7749021-0087-47e7-a314-b0af2bed9ae8"),
+                            Id = new Guid("8ee59ba6-7ade-4898-8217-4e8115d8ec51"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ViewDetail",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("5d43b532-a3c9-4451-9fe9-4429c4afc605"),
+                            Id = new Guid("f5edd8c0-c821-45f9-bc99-405657442c48"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("250e4eb6-b2ff-42be-a431-61b72e1a0956"),
+                            Id = new Guid("7adb720e-0de7-4199-8050-30ae0f2ee997"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("b68ee564-1ba0-47ff-9cde-9373c43ad8f3"),
+                            Id = new Guid("f1f05428-f744-42e4-b9aa-823b243ae876"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("18215126-3fef-4239-b0f7-a1ddc0630aff"),
+                            Id = new Guid("fe2eb23a-4771-4e6f-95e1-ec52e361fd2f"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("a423a180-7a7b-4d4a-ba19-c8a9a221c79c"),
+                            Id = new Guid("96ffe7dc-6b7e-46cd-9934-0a3301e1517c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("0144c01b-19ac-4088-b180-79ea07d453a4"),
+                            Id = new Guid("3805ad28-3eda-4d5f-afd9-e10fadb4c37b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("22b6b53e-c02e-45c9-86f7-d2fb3c754cf5"),
+                            Id = new Guid("1298fd9d-0c1c-4dcb-9b2d-5ed95984b483"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("cc0c1799-4631-43bb-8b30-63a9de35d352"),
+                            Id = new Guid("863ad739-ae6a-49b7-ab44-c540ad7a0c97"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ViewDetail",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("8ef7009d-8772-4c8a-ab69-85e81a90afd2"),
+                            Id = new Guid("c3b71b56-9bc5-4351-92c9-38ae845590c9"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("8449b543-7faf-4ddb-8994-6ed03ddcf5df"),
+                            Id = new Guid("306e1215-54f5-48cb-90ee-5a5cce386c91"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         },
                         new
                         {
-                            Id = new Guid("a69967f5-effd-4ef4-9ca2-0346c3d347e8"),
+                            Id = new Guid("65fc4430-621e-4f6f-992b-9a3af610d9c3"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         },
                         new
                         {
-                            Id = new Guid("15986a35-e7e0-4c50-903f-1057af5e1daa"),
+                            Id = new Guid("e7b8a6d4-31ef-40ab-b59d-cfa16eb8fa78"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Cancel",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
@@ -2325,7 +2335,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000001"),
                             Content = "<h2>1. ĐIỀU KIỆN THUÊ XE</h2>\r\n<p>Khách hàng phải đáp ứng các điều kiện sau:</p>\r\n<ul>\r\n    <li>Tuổi từ 21 trở lên</li>\r\n    <li>Có giấy phép lái xe hợp lệ còn hiệu lực ít nhất 1 năm</li>\r\n    <li>Có CCCD/CMND còn hiệu lực</li>\r\n    <li>Đặt cọc theo quy định</li>\r\n</ul>\r\n\r\n<h2>2. QUY ĐỊNH VỀ ĐẶT CỌC</h2>\r\n<p>Khách hàng phải đặt cọc 30% giá trị hợp đồng khi đặt xe. Tiền cọc sẽ được hoàn trả sau khi trả xe và kiểm tra tình trạng xe.</p>\r\n\r\n<h2>3. TRÁCH NHIỆM CỦA KHÁCH HÀNG</h2>\r\n<ul>\r\n    <li>Sử dụng xe đúng mục đích đã đăng ký</li>\r\n    <li>Không cho người khác mượn xe</li>\r\n    <li>Không sử dụng xe vào mục đích vi phạm pháp luật</li>\r\n    <li>Bảo quản xe cẩn thận, không hút thuốc trong xe</li>\r\n    <li>Đổ đúng loại nhiên liệu theo quy định</li>\r\n    <li>Trả xe đúng hạn và đúng địa điểm</li>\r\n</ul>\r\n\r\n<h2>4. PHÍ PHẠT</h2>\r\n<ul>\r\n    <li>Trả xe trễ: 50.000đ/giờ (tối đa 500.000đ/ngày)</li>\r\n    <li>Thiếu xăng: Theo giá thị trường + 20% phí dịch vụ</li>\r\n    <li>Hư hỏng xe: Theo đánh giá thực tế</li>\r\n    <li>Mất xe: Đền bù 100% giá trị xe</li>\r\n</ul>\r\n\r\n<h2>5. CHÍNH SÁCH HỦY ĐẶT XE</h2>\r\n<ul>\r\n    <li>Hủy trước 24h: Hoàn 100% tiền cọc</li>\r\n    <li>Hủy trong vòng 24h: Hoàn 50% tiền cọc</li>\r\n    <li>Không đến nhận xe: Mất 100% tiền cọc</li>\r\n</ul>\r\n\r\n<h2>6. ĐIỀU KHOẢN KHÁC</h2>\r\n<p>Renticar có quyền từ chối cho thuê xe nếu khách hàng không đáp ứng các điều kiện trên hoặc có hành vi không phù hợp.</p>",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 728, DateTimeKind.Utc).AddTicks(7601),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 760, DateTimeKind.Utc).AddTicks(8893),
                             EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsDeleted = false,
@@ -2337,7 +2347,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000002"),
                             Content = "<h2>1. PHẠM VI BẢO HIỂM</h2>\r\n<p>Bảo hiểm chỉ có hiệu lực trong thời gian thuê xe và trong phạm vi lãnh thổ Việt Nam.</p>\r\n\r\n<h2>2. CÁC TRƯỜNG HỢP ĐƯỢC BẢO HIỂM</h2>\r\n<ul>\r\n    <li>Tai nạn giao thông</li>\r\n    <li>Va chạm với phương tiện khác</li>\r\n    <li>Thiệt hại do thiên tai (gói Premium)</li>\r\n    <li>Mất trộm xe (gói Premium)</li>\r\n</ul>\r\n\r\n<h2>3. CÁC TRƯỜNG HỢP KHÔNG ĐƯỢC BẢO HIỂM</h2>\r\n<ul>\r\n    <li>Lái xe khi say rượu bia hoặc sử dụng chất kích thích</li>\r\n    <li>Cố ý gây thiệt hại</li>\r\n    <li>Sử dụng xe vào mục đích bất hợp pháp</li>\r\n    <li>Cho người không có giấy phép lái xe</li>\r\n</ul>\r\n\r\n<h2>4. THỦ TỤC YÊU CẦU BỒI THƯỜNG</h2>\r\n<p>Khi xảy ra sự cố, khách hàng cần:</p>\r\n<ul>\r\n    <li>Liên hệ hotline ngay lập tức</li>\r\n    <li>Không di chuyển xe khỏi hiện trường (nếu có thể)</li>\r\n    <li>Chụp ảnh hiện trường</li>\r\n    <li>Lập biên bản với cơ quan chức năng (nếu cần)</li>\r\n</ul>",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 728, DateTimeKind.Utc).AddTicks(7605),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 760, DateTimeKind.Utc).AddTicks(8902),
                             EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsDeleted = false,
@@ -2349,7 +2359,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000003"),
                             Content = "<h2>1. GIỚI THIỆU</h2>\r\n<p>Chào mừng bạn đến với Renticar - dịch vụ cho thuê xe hàng đầu Việt Nam.</p>\r\n\r\n<h2>2. QUYỀN RIÊNG TƯ</h2>\r\n<p>Chúng tôi cam kết bảo vệ thông tin cá nhân của khách hàng theo quy định của pháp luật.</p>\r\n\r\n<h2>3. QUYỀN SỞ HỮU TRÍ TUỆ</h2>\r\n<p>Tất cả nội dung trên website thuộc quyền sở hữu của Renticar.</p>\r\n\r\n<h2>4. LIÊN HỆ</h2>\r\n<p>Mọi thắc mắc xin liên hệ:</p>\r\n<ul>\r\n    <li>Hotline: 1900 xxxx</li>\r\n    <li>Email: support@renticar.vn</li>\r\n</ul>",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 728, DateTimeKind.Utc).AddTicks(7607),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 760, DateTimeKind.Utc).AddTicks(8904),
                             EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsDeleted = false,
@@ -2556,53 +2566,53 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             Email = "admin@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$sWBGHM.VwUK8dCtcIFYtxONiNAIeF204pdrukH6odb.Lm8638l36O",
+                            Password = "$2a$11$qyk.zNNV/aqEK9jyXUQNu.Jxscr8JlxxgpqjQDZKUlnChKolAzPLG",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             UserName = "admin"
                         },
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             Email = "staff1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$KmO5DJ8J2IDBlrc29ygQvufJPXLzwAh.fKnP/BrobAYdNcRn8cPfG",
+                            Password = "$2a$11$nEAh1ydGK4Xj4ceTjicB8O639dkEdrz0Unouxn6GMSPT0vwkfInum",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             UserName = "staff1"
                         },
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             Email = "customer1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$MKswv3vAI32yI37RwdrtaO2PI7lJoQ9XK5AIcCJHGhVLE9mcGcT76",
+                            Password = "$2a$11$vzTQEav8Xe2olkK4eTcDdeWTMOZyKYSpOHr8Oy3vfZ4LXK04D1H1W",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             UserName = "customer1"
                         },
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             Email = "customer2@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$tQd.4N8HS94F2VkRpVMibuzjcumEa8bU89.fpr9TPszbXomHXoRmC",
+                            Password = "$2a$11$gHiS96db/OGQ4eZbbH1A7eyNo4CGdrnoT0gLTjAxUMj7SYxPutq6q",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 16, 732, DateTimeKind.Utc).AddTicks(6839),
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 22, 763, DateTimeKind.Utc).AddTicks(4929),
                             UserName = "customer2"
                         });
                 });
@@ -2693,25 +2703,25 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                     b.HasData(
                         new
                         {
-                            UserRoleId = new Guid("70f7609a-09be-49e2-80c6-520c0b50efd8"),
+                            UserRoleId = new Guid("f7b8e14c-f44f-47ef-97d2-3ae9be606c92"),
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            UserRoleId = new Guid("e37cdde5-cf72-4d19-9416-9149a021b2e5"),
+                            UserRoleId = new Guid("e49679ea-b595-403b-bca2-6762dc1ec490"),
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            UserRoleId = new Guid("c2a0867c-9395-4b9e-92c0-c615df8446dd"),
+                            UserRoleId = new Guid("67c3fd7a-6c27-4494-8869-ad3b22f192a8"),
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            UserRoleId = new Guid("584ab13c-4a54-4c94-b75e-36c8c520c73e"),
+                            UserRoleId = new Guid("fad0bada-dbbb-4223-a01b-e18a917883b0"),
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         });
@@ -3221,45 +3231,45 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01"),
                             CategoryCode = "SEDAN",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160),
                             Description = "Xe sedan 4-5 chỗ, phổ thông",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 5,
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02"),
                             CategoryCode = "SUV",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160),
                             Description = "Xe thể thao đa dụng, gầm cao",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 7,
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03"),
                             CategoryCode = "HATCHBACK",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160),
                             Description = "Xe cỡ nhỏ cho đô thị",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 5,
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04"),
                             CategoryCode = "MINIVAN",
-                            CreatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454),
+                            CreatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160),
                             Description = "Xe gia đình, rộng rãi",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 7,
-                            UpdatedAt = new DateTime(2026, 3, 14, 6, 20, 17, 247, DateTimeKind.Utc).AddTicks(1454)
+                            UpdatedAt = new DateTime(2026, 3, 17, 8, 10, 23, 285, DateTimeKind.Utc).AddTicks(8160)
                         });
                 });
 

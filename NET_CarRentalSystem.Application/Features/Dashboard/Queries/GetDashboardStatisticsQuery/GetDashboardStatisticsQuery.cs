@@ -16,19 +16,31 @@ public class GetDashboardStatisticsQueryHandler(IDapperRepository dapperReposito
         var totalLocations = await dapperRepository.QueryFirstOrDefaultAsync<int>(totalLocationsSql, cancellationToken: cancellationToken);
         
         var revenueByLocationSql = """
+            WITH BookingPayments AS (
+                SELECT
+                    b.pickup_location_id,
+                    SUM(pt.amount) AS TotalRevenue
+                FROM booking_read_flat b
+                JOIN payment_transactions pt ON b.booking_id_src = pt.booking_id
+                WHERE pt.status = 'Success' AND pt.transaction_type IN ('Deposit', 'FinalPayment')
+                GROUP BY b.pickup_location_id
+            ),
+            BookingRefunds AS (
+                SELECT
+                    b.pickup_location_id,
+                    SUM(rr.amount) AS TotalRefund
+                FROM booking_read_flat b
+                JOIN refund_requests rr ON b.booking_id_src = rr.booking_id
+                WHERE rr.status = 'Processed'
+                GROUP BY b.pickup_location_id
+            )
             SELECT 
                 l.name AS LocationName,
-                COALESCE(SUM(pt.amount), 0) - COALESCE(SUM(rr.amount), 0) AS Value
+                COALESCE(bp.TotalRevenue, 0) - COALESCE(br.TotalRefund, 0) AS Value
             FROM locations l
-            LEFT JOIN booking_read_flat b ON l.location_id = b.pickup_location_id
-            LEFT JOIN payment_transactions pt ON b.booking_id_src = pt.booking_id 
-                AND pt.status = 'Success' 
-                AND pt.transaction_type IN ('Deposit', 'FinalPayment')
-            LEFT JOIN refund_requests rr ON b.booking_id_src = rr.booking_id 
-                AND rr.status = 'Processed'
-            WHERE l.is_deleted = 0
-            GROUP BY l.name, l.location_id
-            HAVING (COALESCE(SUM(pt.amount), 0) - COALESCE(SUM(rr.amount), 0)) > 0
+            LEFT JOIN BookingPayments bp ON l.location_id = bp.pickup_location_id
+            LEFT JOIN BookingRefunds br ON l.location_id = br.pickup_location_id
+            WHERE l.is_deleted = 0 AND (COALESCE(bp.TotalRevenue, 0) - COALESCE(br.TotalRefund, 0)) > 0
             ORDER BY Value DESC
             """;
             
@@ -36,14 +48,14 @@ public class GetDashboardStatisticsQueryHandler(IDapperRepository dapperReposito
         var revenueList = revenueStats.ToList();
         
         var topRevenue = revenueList.FirstOrDefault();
-        var lowestRevenue = revenueList.OrderBy(x => x.Value).FirstOrDefault();
+        var lowestRevenue = revenueList.LastOrDefault();
         
         var performanceSql = """
             SELECT TOP 1
                 l.name AS LocationName,
                 COUNT(b.booking_id) AS Value
             FROM locations l
-            LEFT JOIN booking_read_flat b ON l.location_id = b.pickup_location_id
+            JOIN booking_read_flat b ON l.location_id = b.pickup_location_id
             WHERE l.is_deleted = 0
             GROUP BY l.name, l.location_id
             ORDER BY Value DESC

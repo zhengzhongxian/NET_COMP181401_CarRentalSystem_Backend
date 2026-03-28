@@ -1,3 +1,4 @@
+using NET_CarRentalSystem.Domain.Constants;
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Domain.Entities;
@@ -81,6 +82,18 @@ public class LoginCommandHandler(
             sessionCacheJson,
             tokens.RefreshTokenExpiry,
             cancellationToken);
+        
+        var roles = await identityService.GetRolesAsync(user);
+        if (roles.Any(r => r is RoleConstants.Admin or RoleConstants.Staff))
+        {
+            var agentEvent = new
+            {
+                type = "AGENT_LOGIN",
+                agentId = user.Id.ToString(),
+                timestamp = DateTime.UtcNow
+            }.ToJson();
+            await cacheService.PublishAsync("agent:status", agentEvent, cancellationToken);
+        }
         
         return (AuthMessage.Login.Success, tokens);
     }

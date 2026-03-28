@@ -135,4 +135,5 @@ volumes:
 
 networks:
   renticar-network:
-    driver: bridge
+    external: true
+    name: api-gateway_renticar-network

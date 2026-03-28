@@ -14,7 +14,7 @@ public class VehicleSearchIndexInitializer(
 {
     private const string IndexName = "idx:vehicles";
     private const string KeyPrefix = "vehicle:search:";
-    private const int VectorDimension = 896;
+    private const int VectorDimension = 1024;
 
     public async Task StartAsync(CancellationToken cancellationToken)
     {

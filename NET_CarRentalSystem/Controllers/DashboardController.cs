@@ -9,7 +9,8 @@ using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetDailyRevenue
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetDashboardStatisticsQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetPaymentMethodStatisticsQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetRecentRevenueQuery;
-
+using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetRecentBookingsQuery;
+using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetPendingVehiclesCountQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetRevenueByCategoryQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetRevenueSummaryQuery;
 using NET_CarRentalSystem.Application.Features.Dashboard.Queries.GetTopRentedVehiclesQuery;
@@ -288,6 +289,70 @@ public class DashboardController(ISender sender, IMapper mapper) : ControllerBas
         {
             var errorResponse = ApiResponse.ErrorResult(
                 DashboardMessage.PaymentMethod.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    /// <summary>
+    /// Lấy số lượng đặt xe trong X giờ qua với phần trăm thay đổi
+    /// </summary>
+    /// <param name="hours">Số giờ muốn tính (mặc định là 3 giờ)</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Số lượng booking hiện tại và % thay đổi so với kỳ trước</returns>
+    [HttpGet("recent-bookings")]
+    public async Task<IActionResult> GetRecentBookings(
+        [FromQuery] int hours = 3,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new GetRecentBookingsQuery { Hours = hours };
+
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<RecentBookingsResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.RecentBookings.Success);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.RecentBookings.Error,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
+    /// <summary>
+    /// Lấy số lượng xe chờ duyệt (Unavailable)
+    /// </summary>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Số lượng xe chờ duyệt và % thay đổi</returns>
+    [HttpGet("pending-vehicles")]
+    public async Task<IActionResult> GetPendingVehicles(
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var query = new GetPendingVehiclesCountQuery();
+
+            var result = await sender.Send(query, cancellationToken);
+            
+            var response = mapper.Map<PendingVehiclesResponse>(result);
+            var apiResponse = ApiResponse.SuccessResult(response, DashboardMessage.PendingVehicles.Success);
+
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                DashboardMessage.PendingVehicles.Error,
                 StatusCodes.Status500InternalServerError,
                 [ex.Message]);
 

@@ -33,4 +33,17 @@ public class IdentityService(IUnitOfWork unitOfWork) : IIdentityService
 
         return false;
     }
+    
+    public async Task<IList<string>> GetRolesAsync(User user)
+    {
+        var userRoles = await unitOfWork.GetWriteRepository<UserRole>().GetAsync(
+            ur => ur.UserId == user.Id);
+        
+        var roleIds = userRoles.Select(ur => ur.RoleId).ToList();
+        
+        var roles = await unitOfWork.GetWriteRepository<Role>().GetAsync(
+            r => roleIds.Contains(r.Id));
+        
+        return roles.Select(r => r.Name).ToList();
+    }
 }

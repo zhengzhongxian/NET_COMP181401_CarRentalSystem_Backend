@@ -44,6 +44,18 @@ public static class DashboardMessage
         public const string Error = "Có lỗi xảy ra khi lấy số liệu thống kê";
     }
     
+    public static class RecentBookings
+    {
+        public const string Success = "Lấy số lượng đặt xe gần đây thành công";
+        public const string Error = "Có lỗi xảy ra khi lấy số lượng đặt xe gần đây";
+    }
+    
+    public static class PendingVehicles
+    {
+        public const string Success = "Lấy số lượng xe chờ duyệt thành công";
+        public const string Error = "Có lỗi xảy ra khi lấy số lượng xe chờ duyệt";
+    }
+    
     public static class PaymentMethod
     {
         public const string Success = "Lấy thống kê phương thức thanh toán thành công";

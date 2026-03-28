@@ -23,7 +23,7 @@ public static class ReflectionHelper
     {
         var constants = classType
             .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-            .Where(fi => fi.IsLiteral && !fi.IsInitOnly && fi.FieldType == typeof(TValue))
+            .Where(fi => fi is { IsLiteral: true, IsInitOnly: false } && fi.FieldType == typeof(TValue))
             .Select(fi => (TValue)fi.GetRawConstantValue()!)
             .ToList();
         
@@ -39,7 +39,7 @@ public static class ReflectionHelper
     {
         var constants = classType
             .GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.FlattenHierarchy)
-            .Where(fi => fi.IsLiteral && !fi.IsInitOnly)
+            .Where(fi => fi is { IsLiteral: true, IsInitOnly: false })
             .ToDictionary(fi => prefix + fi.Name, fi => fi.GetRawConstantValue()!);
         
         foreach (var nestedType in classType.GetNestedTypes(BindingFlags.Public))

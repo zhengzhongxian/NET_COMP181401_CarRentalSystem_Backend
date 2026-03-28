@@ -17,6 +17,8 @@ public class DashboardProfile : Profile
         CreateMap<DashboardStatisticsDto, DashboardStatisticsResponse>();
         CreateMap<LocationStatisticDto, LocationStatisticResponse>();
         CreateMap<PaymentMethodStatisticDto, PaymentMethodStatisticResponse>();
+        CreateMap<RecentBookingsDto, RecentBookingsResponse>();
+        CreateMap<PendingVehiclesDto, PendingVehiclesResponse>();
 
         // Branch Statistics
         CreateMap<BranchOverviewStatsDto, BranchOverviewStatsResponse>();

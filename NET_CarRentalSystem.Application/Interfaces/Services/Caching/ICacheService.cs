@@ -26,4 +26,12 @@ public interface ICacheService
     /// <param name="ct">Cancellation token</param>
     /// <returns>True nếu release thành công</returns>
     Task<bool> ReleaseLockAsync(string lockKey, string lockValue, CancellationToken ct);
+    
+    /// <summary>
+    /// Publish message to a Redis Pub/Sub channel
+    /// </summary>
+    /// <param name="channel">Channel name</param>
+    /// <param name="message">JSON message payload</param>
+    /// <param name="ct">Cancellation token</param>
+    Task PublishAsync(string channel, string message, CancellationToken ct);
 }

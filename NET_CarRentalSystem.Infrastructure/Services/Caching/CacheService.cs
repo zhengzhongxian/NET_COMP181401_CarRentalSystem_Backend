@@ -46,4 +46,10 @@ public class CacheService(IDistributedCache cache, IConnectionMultiplexer redis)
         var result = await _redisDb.ScriptEvaluateAsync(luaScript, [lockKey], [lockValue]);
         return (int)result == 1;
     }
+    
+    public async Task PublishAsync(string channel, string message, CancellationToken ct)
+    {
+        var subscriber = redis.GetSubscriber();
+        await subscriber.PublishAsync(RedisChannel.Literal(channel), message);
+    }
 }

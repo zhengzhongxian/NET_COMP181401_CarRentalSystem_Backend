@@ -1,8 +1,10 @@
+using NET_CarRentalSystem.Domain.Constants;
 using MediatR;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Application.Features.Auth.Common;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Shared.Utilities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -16,7 +18,8 @@ public class LogoutCommand : ICommand<Unit>
 
 public class LogoutCommandHandler(
     IUnitOfWork unitOfWork,
-    ICacheService cacheService) : IRequestHandler<LogoutCommand, Unit>
+    ICacheService cacheService,
+    IIdentityService identityService) : IRequestHandler<LogoutCommand, Unit>
 {
     public async Task<Unit> Handle(LogoutCommand request, CancellationToken cancellationToken)
     {
@@ -54,6 +57,18 @@ public class LogoutCommandHandler(
             
             user.Status = UserStatus.LoggedOut;
             userWriteRepository.Update(user);
+            
+            var roles = await identityService.GetRolesAsync(user);
+            if (roles.Any(r => r is RoleConstants.Admin or RoleConstants.Staff))
+            {
+                var agentEvent = new
+                {
+                    type = "AGENT_LOGOUT",
+                    agentId = user.Id.ToString(),
+                    timestamp = DateTime.UtcNow
+                }.ToJson();
+                await cacheService.PublishAsync("agent:status", agentEvent, cancellationToken);
+            }
         }
 
         await unitOfWork.SaveChangesAsync(cancellationToken);

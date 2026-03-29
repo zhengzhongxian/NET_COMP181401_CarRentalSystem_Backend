@@ -1,7 +1,7 @@
 using MediatR;
+using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
-using NET_CarRentalSystem.Application.Interfaces.Services.Security;
 using NET_CarRentalSystem.Application.Models.DTOs.UserDTOs.Get;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
@@ -12,48 +12,41 @@ public record GetUserProfileQuery : IQuery<GetUserDto>;
 
 public class GetUserProfileQueryHandler(
     IUnitOfWork unitOfWork,
-    ICryptographyService cryptographyService,
-    ICurrentUserService currentUserService) : IRequestHandler<GetUserProfileQuery, GetUserDto>
+    ICurrentUserService currentUserService,
+    ILogger<GetUserProfileQueryHandler> logger) : IRequestHandler<GetUserProfileQuery, GetUserDto>
 {
     public async Task<GetUserDto> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
     {
         var userId = currentUserService.GetUserId()!.Value;
         
-        var user = await unitOfWork.GetReadRepository<User>().GetFirstAsync(u => u.Id == userId, cancellationToken: cancellationToken);
+        var user = await unitOfWork.GetReadRepository<User>().GetByIdAsync(userId, cancellationToken);
         var customer = await unitOfWork.GetReadRepository<Customer>().GetFirstOrDefaultAsync(c => c.UserId == userId, cancellationToken: cancellationToken);
 
         var userDto = new GetUserDto
         {
             Id = user.Id,
             Email = user.Email,
+            FirstName = customer?.FirstName,
+            LastName = customer?.LastName,
+            PhoneNumber = customer?.PhoneNumber,
+            Address = customer?.Address,
+            Dob = customer?.Dob,
+            CccdNumber = customer?.CccdNumber,
+            CccdIssueDate = customer?.CccdIssueDate,
+            CccdIssuePlace = customer?.CccdIssuePlace,
+            CccdFrontUrl = customer?.CccdFrontUrl,
+            CccdBackUrl = customer?.CccdBackUrl,
+            DriverLicenseId = customer?.DriverLicenseId,
+            DriverLicenseExpiry = customer?.DriverLicenseExpiry,
+            DriverLicenseClass = customer?.DriverLicenseClass,
+            DriverLicenseFrontUrl = customer?.DriverLicenseFrontUrl,
+            DriverLicenseBackUrl = customer?.DriverLicenseBackUrl,
+            IsPhoneVerified = customer?.IsPhoneVerified ?? false,
+            IsIdentityVerified = customer?.IsIdentityVerified ?? false,
+            IsDriverLicenseVerified = customer?.IsDriverLicenseVerified ?? false,
+            AvatarUrl = customer?.AvatarUrl,
+            LoyaltyPoints = customer?.LoyaltyPoints ?? 0
         };
-
-        if (customer == null) return userDto;
-
-        userDto.PhoneNumber = cryptographyService.SafeDecryptAes(customer.PhoneNumber);
-        userDto.IsPhoneVerified = customer.IsPhoneVerified;
-        userDto.IsDriverLicenseVerified = customer.IsDriverLicenseVerified;
-        userDto.AvatarUrl = customer.AvatarUrl;
-        
-        userDto.DriverLicenseId = cryptographyService.SafeDecryptAes(customer.DriverLicenseId);
-        userDto.DriverLicenseExpiry = customer.DriverLicenseExpiry;
-        userDto.DriverLicenseClass = customer.DriverLicenseClass;
-        userDto.DriverLicenseFrontUrl = customer.DriverLicenseFrontUrl;
-        userDto.DriverLicenseBackUrl = customer.DriverLicenseBackUrl;
-        
-        // Get all data from customers table
-        userDto.FirstName = customer.FirstName;
-        userDto.LastName = customer.LastName;
-        userDto.Address = customer.Address;
-        userDto.Dob = customer.Dob;
-        userDto.CccdNumber = cryptographyService.SafeDecryptAes(customer.CccdNumber);
-        userDto.CccdIssueDate = customer.CccdIssueDate;
-        userDto.CccdIssuePlace = customer.CccdIssuePlace;
-        userDto.IsIdentityVerified = customer.IsIdentityVerified;
-        userDto.LoyaltyPoints = customer.LoyaltyPoints;
-
-        userDto.CccdFrontUrl = null;
-        userDto.CccdBackUrl = null;
 
         return userDto;
     }

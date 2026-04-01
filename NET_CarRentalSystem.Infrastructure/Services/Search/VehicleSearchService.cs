@@ -80,16 +80,9 @@ public class VehicleSearchService : IVehicleSearchService
     {
         try
         {
-            string queryStr;
-            if (!string.IsNullOrWhiteSpace(keyword))
-            {
-                var escapedKeyword = EscapeRedisSearchQuery(keyword);
-                queryStr = $"(@search_text:{escapedKeyword})=>[KNN {topK} @embedding $query_vec AS score]";
-            }
-            else
-            {
-                queryStr = $"*=>[KNN {topK} @embedding $query_vec AS score]";
-            }
+            // Pure vector KNN search — semantic understanding via embedding
+            // No text pre-filter, so "xe du lịch" can match "SEDAN Gasoline" by meaning
+            var queryStr = $"*=>[KNN {topK} @embedding $query_vec AS score]";
 
             var query = new Query(queryStr)
                 .AddParam("query_vec", queryVector)
@@ -109,7 +102,9 @@ public class VehicleSearchService : IVehicleSearchService
                 if (Guid.TryParse(vehicleIdStr, out var vehicleId) &&
                     double.TryParse(scoreStr, out var score))
                 {
-                    results.Add((vehicleId, score));
+                    // Filter by cosine similarity threshold (lower = more similar)
+                    if (score < 0.8)
+                        results.Add((vehicleId, score));
                 }
             }
 

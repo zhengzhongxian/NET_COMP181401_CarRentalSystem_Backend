@@ -7,6 +7,7 @@ using NET_CarRentalSystem.API.Models.Request.Violations;
 using NET_CarRentalSystem.API.Models.Response.Violations;
 using NET_CarRentalSystem.Application.Features.Violations.Commands.CreateViolationPaymentCommand;
 using NET_CarRentalSystem.Application.Features.Violations.Commands.ResolveViolationCommand;
+using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 
@@ -55,7 +56,7 @@ public class ViolationsController(ISender sender, IMapper mapper) : ControllerBa
     }
 
     [HttpPost("{violationId:guid}/resolve")]
-    [ValidateUserExists(Policy = "Permissions.Violations.Resolve")] // placeholder policy, add to PermissionConstants
+    [ValidateUserExists(Policy = PermissionConstants.Violations.Resolve)]
     public async Task<IActionResult> ResolveViolation([FromRoute] Guid violationId, CancellationToken ct)
     {
         var command = new ResolveViolationCommand { ViolationId = violationId };

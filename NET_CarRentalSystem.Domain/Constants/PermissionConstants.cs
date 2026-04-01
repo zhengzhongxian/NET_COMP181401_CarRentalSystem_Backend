@@ -65,6 +65,12 @@ public static class PermissionConstants
         public const string Reject = "Permissions.RefundRequests.Reject";
     }
 
+    public static class Violations
+    {
+        public const string View = "Permissions.Violations.View";
+        public const string Resolve = "Permissions.Violations.Resolve";
+    }
+
     public static class Ekyc
     {
         public const string IdentityVerified = "Permissions.Ekyc.IdentityVerified";

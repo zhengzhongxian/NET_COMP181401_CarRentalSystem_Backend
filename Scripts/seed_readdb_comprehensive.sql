@@ -248,3 +248,62 @@ GO
 
 PRINT 'ReadDB Comprehensive Seed completed SUCCESSFULY!';
 GO
+SET NOCOUNT ON;
+
+PRINT '=== STARTING THUMBNAIL UPDATE ===';
+
+-- Update thumbnails based on manufacturer
+UPDATE vehicle_read_flat
+SET thumbnail = 
+    CASE 
+        WHEN manufacturer = 'Toyota' THEN 'https://i.pinimg.com/736x/27/e3/25/27e325ebdb79c76411a81b00488ad3f1.jpg'
+        WHEN manufacturer = 'VinFast' THEN 'https://i.pinimg.com/1200x/d5/0d/ca/d50dca69d1e873eec8d2b84ac7a25e07.jpg'
+        WHEN manufacturer = 'Mercedes-Benz' THEN 'https://i.pinimg.com/avif/1200x/41/e3/03/41e303628044e0b5b38f2f5248c2410c.avf'
+        WHEN manufacturer = 'Mazda' THEN 'https://i.pinimg.com/1200x/24/5e/ae/245eaefbf16cd7e01f324dedfeb7b8de.jpg'
+        WHEN manufacturer = 'Kia' THEN 'https://i.pinimg.com/1200x/a9/f1/6c/a9f16c5d89023d08398ae505c2bc8f03.jpg'
+        WHEN manufacturer = 'Hyundai' THEN 'https://i.pinimg.com/avif/1200x/63/5e/ae/635eae12bafef3fc0b12995f04f7241f.avf'
+        WHEN manufacturer = 'Honda' THEN 'https://i.pinimg.com/736x/d9/38/1b/d9381ba6978193d435bac55f40efb8ba.jpg'
+        WHEN manufacturer = 'Ford' THEN 'https://i.pinimg.com/736x/1a/42/df/1a42df7b906811bbf1d0b77f01449e89.jpg'
+        WHEN manufacturer = 'BMW' THEN 'https://i.pinimg.com/avif/736x/ff/42/5c/ff425cd7458fc00313ad403830e57a3a.avf'
+        WHEN manufacturer = 'Audi' THEN 'https://i.pinimg.com/736x/db/5b/15/db5b15e6c4b0702cf963187b76ca32dd.jpg'
+        ELSE thumbnail -- Keep the old thumbnail if manufacturer doesn't match
+    END;
+
+PRINT '=== THUMBNAIL UPDATE COMPLETED ===';
+GO
+-- ========================================
+-- UPDATE LOCATION THUMBNAILS WITH PINTEREST IMAGES
+-- Car Rental System
+-- Generated: 2026-03-30
+-- ========================================
+
+SET NOCOUNT ON;
+
+PRINT '=== STARTING LOCATION THUMBNAIL UPDATE ===';
+
+-- 1. Get ordered locations and update them one by one
+-- We use a CTE to assign a row number to each location based on its name or ID
+;WITH RankedLocations AS (
+    SELECT location_id, ROW_NUMBER() OVER(ORDER BY name) AS row_num
+    FROM locations
+)
+UPDATE l
+SET l.Thumbnail = 
+    CASE rl.row_num
+        WHEN 1 THEN 'https://i.pinimg.com/736x/c8/3f/ed/c83feddba1cb4784092fc0906ea4fffe.jpg'
+        WHEN 2 THEN 'https://i.pinimg.com/736x/e0/9f/49/e09f493cfe107ce34f6ca5a395ba2afa.jpg'
+        WHEN 3 THEN 'https://i.pinimg.com/1200x/8a/e5/cd/8ae5cd0537d23836654d1fcedc8d41a7.jpg'
+        WHEN 4 THEN 'https://i.pinimg.com/736x/09/9c/a0/099ca080eea762d2ac0f6d2b320fb064.jpg'
+        WHEN 5 THEN 'https://i.pinimg.com/avif/1200x/72/7d/5f/727d5f4b6f5a52da1f1ff7a9ba842fc7.avf'
+        WHEN 6 THEN 'https://i.pinimg.com/avif/736x/de/03/18/de0318053e135441e6e21f502de30a2b.avf'
+        WHEN 7 THEN 'https://i.pinimg.com/736x/d5/25/33/d52533e3dc0c620805e9af3c0b8a8444.jpg'
+        WHEN 8 THEN 'https://i.pinimg.com/736x/03/13/b0/0313b030396ad4fb49d441a1e99f1a73.jpg'
+        WHEN 9 THEN 'https://i.pinimg.com/avif/1200x/3f/1e/6c/3f1e6c6478be5976296e91e171fa8455.avf'
+        WHEN 10 THEN 'https://i.pinimg.com/1200x/2e/68/79/2e68796f8d7253558f81e45f901a32a8.jpg'
+        ELSE 'https://i.pinimg.com/736x/c8/3f/ed/c83feddba1cb4784092fc0906ea4fffe.jpg' -- Default if more than 10 locations
+    END
+FROM locations l
+JOIN RankedLocations rl ON l.location_id = rl.location_id;
+
+PRINT '=== LOCATION THUMBNAIL UPDATE COMPLETED ===';
+GO

@@ -6,6 +6,7 @@ public static class UserMessage
     public const string UpdateStatusSuccess = "Cập nhật trạng thái người dùng thành công";
     public const string UpdateStatusError = "Có lỗi xảy ra khi cập nhật trạng thái người dùng";
     public const string NotAllowedToBlockAdmin = "Không thể khóa tài khoản quản trị viên";
+    public const string UpdatePhoneError = "Số điện thoại này đã được sử dụng bởi người dùng khác";
 
     public static class Get
     {
@@ -23,6 +24,12 @@ public static class UserMessage
     public static class Avatar
     {
         public const string UpdateSuccess = "Cập nhật ảnh đại diện thành công.";
+    }
+
+    public static class Profile
+    {
+        public const string UpdateSuccess = "Cập nhật hồ sơ thành công.";
+        public const string UpdateError = "Có lỗi xảy ra khi cập nhật hồ sơ.";
     }
 
     public static class Role
@@ -45,4 +52,3 @@ public static class UserMessage
         public const string EkycPermissionNotAllowed = "Không được phép thay đổi quyền eKYC qua API này.";
     }
 }
-

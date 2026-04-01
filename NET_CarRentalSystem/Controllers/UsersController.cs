@@ -9,6 +9,7 @@ using NET_CarRentalSystem.Application.Features.Users.Commands.AddUserClaimComman
 using NET_CarRentalSystem.Application.Features.Users.Commands.AddUserRoleCommand;
 using NET_CarRentalSystem.Application.Features.Users.Commands.RemoveUserClaimCommand;
 using NET_CarRentalSystem.Application.Features.Users.Commands.RemoveUserRoleCommand;
+using NET_CarRentalSystem.Application.Features.Users.Commands.UpdateAdminProfileCommand;
 using NET_CarRentalSystem.Application.Features.Users.Commands.UpdateUserAvatarCommand;
 using NET_CarRentalSystem.Application.Features.Users.Commands.UpdateUserPhoneCommand;
 using NET_CarRentalSystem.Application.Features.Users.Commands.UpdateUserStatusCommand;
@@ -217,6 +218,43 @@ public class UsersController(ISender sender, IMapper mapper) : ControllerBase
         }
     }
 
+    [HttpPut("admin-profile")]
+    [ValidateUserExists(Roles = RoleConstants.Admin)]
+    public async Task<IActionResult> UpdateAdminProfile(
+        [FromBody] UpdateAdminProfileRequest request,
+        CancellationToken ct)
+    {
+        try
+        {
+            var command = new UpdateAdminProfileCommand
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                PhoneNumber = request.PhoneNumber
+            };
+
+            var (success, message) = await sender.Send(command, ct);
+
+            if (!success)
+            {
+                var errorResponse = ApiResponse.ErrorResult(message);
+                return StatusCode(errorResponse.StatusCode, errorResponse);
+            }
+
+            var apiResponse = ApiResponse.SuccessResult(message);
+            return StatusCode(apiResponse.StatusCode, apiResponse);
+        }
+        catch (Exception ex) when (!ex.IsInfrastructureException())
+        {
+            var errorResponse = ApiResponse.ErrorResult(
+                UserMessage.Profile.UpdateError,
+                StatusCodes.Status500InternalServerError,
+                [ex.Message]);
+
+            return StatusCode(errorResponse.StatusCode, errorResponse);
+        }
+    }
+
     #region User Role Management
 
     [HttpPost("{userId:guid}/roles/{roleId:guid}")]
@@ -373,4 +411,3 @@ public class UsersController(ISender sender, IMapper mapper) : ControllerBase
 
     #endregion
 }
-

@@ -83,15 +83,14 @@ public class CreateFinalPaymentCommandHandler(
                 foreach (var image in request.Images)
                 {
                     using var ms = new MemoryStream();
-                    image.Content.Position = 0; // Reset stream position
+                    image.Content.Position = 0;
                     await image.Content.CopyToAsync(ms, ct);
                     imagesToVerify.Add((ms.ToArray(), image.FileName));
                 }
                 
-                // Verify all images are vehicle images using AI
                 var batchResult = await aiVerificationService.VerifyVehicleImagesBatchAsync(
                     imagesToVerify,
-                    minConfidence: 0.6f, // 60% threshold for vehicle detection
+                    minConfidence: 0.6f,
                     cancellationToken: ct);
                 
                 if (!batchResult.AllValid)

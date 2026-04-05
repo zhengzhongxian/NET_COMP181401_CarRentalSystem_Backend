@@ -145,6 +145,9 @@ public class BookingReadFlatConfiguration : IEntityTypeConfiguration<BookingRead
         builder.Property(b => b.Metadata)
             .HasColumnName("metadata");
 
+        builder.Property(b => b.DepositRefundScheduledAt)
+            .HasColumnName("deposit_refund_scheduled_at");
+
         builder.HasIndex(b => b.BookingId)
             .HasDatabaseName("IX_booking_read_flat_booking_id");
 

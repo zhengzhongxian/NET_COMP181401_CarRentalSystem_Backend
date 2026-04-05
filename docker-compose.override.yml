@@ -130,4 +130,4 @@ volumes:
 networks:
   renticar-network:
     external: true
-    name: tieuluannghiencuu_renticar-network
+    name: api-gateway_renticar-network

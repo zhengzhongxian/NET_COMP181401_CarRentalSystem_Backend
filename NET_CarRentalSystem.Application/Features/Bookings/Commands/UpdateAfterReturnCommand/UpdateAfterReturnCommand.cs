@@ -13,6 +13,8 @@ using NET_CarRentalSystem.Application.Features.Bookings.Events;
 using NET_CarRentalSystem.Shared.Utilities;
 using NET_CarRentalSystem.Application.Models.DTOs.BookingViolationDTOs.Create;
 using NET_CarRentalSystem.Application.Models.DTOs.ReturnImageDTOs.Create;
+using Microsoft.Extensions.Configuration;
+using NET_CarRentalSystem.Shared.Constants;
 
 namespace NET_CarRentalSystem.Application.Features.Bookings.Commands.UpdateAfterReturnCommand;
 
@@ -29,8 +31,13 @@ public class UpdateAfterReturnCommandHandler(
     IUnitOfWork unitOfWork,
     ICloudinaryService cloudinaryService,
     IPublishEndpoint publishEndpoint,
-    IAiImageVerificationService aiVerificationService) : IRequestHandler<UpdateAfterReturnCommand, (bool, string, int, List<BookingViolation>)>
+    IAiImageVerificationService aiVerificationService,
+    IImageResizeService imageResizeService,
+    IConfiguration configuration) : IRequestHandler<UpdateAfterReturnCommand, (bool, string, int, List<BookingViolation>)>
 {
+    private readonly int _maxImageWidth = int.Parse(configuration[KeyConstants.FinalPaymentSettings.MaxImageWidth] ?? "1920");
+    private readonly int _maxImageHeight = int.Parse(configuration[KeyConstants.FinalPaymentSettings.MaxImageHeight] ?? "1080");
+    private readonly int _imageQuality = int.Parse(configuration[KeyConstants.FinalPaymentSettings.ImageQuality] ?? "80");
     public async Task<(bool, string, int, List<BookingViolation>)> Handle(
         UpdateAfterReturnCommand request,
         CancellationToken cancellationToken)
@@ -68,11 +75,9 @@ public class UpdateAfterReturnCommandHandler(
             var vehicleModel = await unitOfWork.GetWriteRepository<VehicleModel>()
                 .GetByIdAsync(booking.VehicleModelId, ct);
             
-            // Fetch existing pickup images (BookingImages) for comparison
             var pickupImages = await unitOfWork.GetWriteRepository<BookingImage>()
                 .GetAsync(filter: bi => bi.BookingId == booking.Id, cancellationToken: ct);
             
-            // Download pickup image bytes for AI comparison
             var pickupImageBytes = new List<byte[]>();
             string? detectedPickupPlate = null;
             
@@ -83,7 +88,6 @@ public class UpdateAfterReturnCommandHandler(
                 {
                     pickupImageBytes.Add(imageBytes);
                     
-                    // Try to extract plate from each pickup image (find the one with plate visible)
                     if (detectedPickupPlate == null && !string.IsNullOrEmpty(vehicleModel?.NumberPlate))
                     {
                         var pickupPlateResult = await aiVerificationService.ExtractLicensePlateAsync(
@@ -100,7 +104,6 @@ public class UpdateAfterReturnCommandHandler(
                 }
             }
             
-            // Prepare return image bytes for comparison
             var returnImageBytes = new List<byte[]>();
             byte[]? firstReturnImageBytes = null;
             
@@ -109,8 +112,17 @@ public class UpdateAfterReturnCommandHandler(
                 for (var i = 0; i < request.ReturnImages.Count; i++)
                 {
                     var returnImage = request.ReturnImages[i];
+                    
+                    var resizedReturnImage = await imageResizeService.ResizeAndCompressAsync(
+                        returnImage,
+                        _maxImageWidth,
+                        _maxImageHeight,
+                        _imageQuality);
+
+                    request.ReturnImages[i] = resizedReturnImage;
+
                     using var ms = new MemoryStream();
-                    await returnImage.Content.CopyToAsync(ms, ct);
+                    await resizedReturnImage.Content.CopyToAsync(ms, ct);
                     var imgBytes = ms.ToArray();
                     returnImageBytes.Add(imgBytes);
                     
@@ -119,15 +131,13 @@ public class UpdateAfterReturnCommandHandler(
                         firstReturnImageBytes = imgBytes;
                     }
                     
-                    // Reset stream position for upload later
-                    if (returnImage.Content.CanSeek)
+                    if (resizedReturnImage.Content.CanSeek)
                     {
-                        returnImage.Content.Position = 0;
+                        resizedReturnImage.Content.Position = 0;
                     }
                 }
             }
             
-            // License plate verification: compare return image plate with vehicle number plate
             if (!string.IsNullOrEmpty(vehicleModel?.NumberPlate) && firstReturnImageBytes != null)
             {
                 var plateResult = await aiVerificationService.ExtractLicensePlateAsync(
@@ -136,17 +146,14 @@ public class UpdateAfterReturnCommandHandler(
                     request.ReturnImages![0].FileName,
                     ct);
                 
-                // Check if detected plate matches vehicle's registered plate
                 if (!plateResult.WasSkipped && plateResult.PlateDetected && !plateResult.IsMatched)
                 {
                     return (false, string.Format(BookingMessage.AiVerification.LicensePlateMismatch, 
                         plateResult.DetectedPlate, vehicleModel.NumberPlate), 0, []);
                 }
                 
-                // Also verify consistency between pickup and return plates if we detected one in pickup
                 if (detectedPickupPlate != null && plateResult.PlateDetected)
                 {
-                    // Normalize plates and compare
                     var normalizedPickup = detectedPickupPlate.Replace("-", "").Replace(" ", "").ToUpperInvariant();
                     var normalizedReturn = plateResult.DetectedPlate.Replace("-", "").Replace(" ", "").ToUpperInvariant();
                     
@@ -163,7 +170,6 @@ public class UpdateAfterReturnCommandHandler(
             
             if (existingReturnImages.Count > 0)
             {
-                // Delete from Cloudinary first
                 foreach (var existingImage in existingReturnImages)
                 {
                     if (!string.IsNullOrEmpty(existingImage.PublicId))
@@ -234,10 +240,8 @@ public class UpdateAfterReturnCommandHandler(
                 });
             }
             
-            // Check for vehicle damage - either from admin notes or AI detection
             string? damageNotes = request.VehicleDamageNotes;
             
-            // If admin didn't provide damage notes, use AI to detect damage
             if (string.IsNullOrWhiteSpace(damageNotes) && pickupImageBytes.Count > 0 && returnImageBytes.Count > 0)
             {
                 var damageResult = await aiVerificationService.DetectDamageAsync(

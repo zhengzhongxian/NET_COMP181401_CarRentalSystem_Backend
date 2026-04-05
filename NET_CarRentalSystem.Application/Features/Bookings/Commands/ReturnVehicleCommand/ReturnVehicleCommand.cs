@@ -116,7 +116,7 @@ public class ReturnVehicleCommandHandler(
             #region Update Vehicle Model
 
             var location = await unitOfWork
-                .GetReadRepository<Location>()
+                .GetWriteRepository<Location>()
                 .GetByIdAsync(locationId, ct);
 
             var vehicleModel = await unitOfWork
@@ -147,7 +147,7 @@ public class ReturnVehicleCommandHandler(
                     .GetAsync(filter: vm => vm.VehicleId == vehicleModel.VehicleId, cancellationToken: ct);
                 
                 var locationIds = allModels.Where(vm => vm.LocationId.HasValue).Select(vm => vm.LocationId!.Value).Distinct().ToList();
-                var locations = await unitOfWork.GetReadRepository<Location>()
+                var locations = await unitOfWork.GetWriteRepository<Location>()
                     .GetAsync(filter: l => locationIds.Contains(l.Id), cancellationToken: ct);
                 var locationDict = locations.ToDictionary(l => l.Id);
 

@@ -55,7 +55,9 @@ public class VerifyDriverLicenseCommandHandler(
         }
 
         var result = new DriverLicenseVerificationResult();
-        var clientSession = $"WEB_CarRental_DL_{Guid.NewGuid():N}";
+        var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        var deviceId = Guid.NewGuid().ToString("N")[..16];
+        var clientSession = $"ANDROID_CarRental_30_Device_1.0.0_{deviceId}_{timestamp}";
         
         var uploadFront = await ekycService.UploadFileAsync(
             request.FrontImage.Content,
@@ -99,7 +101,7 @@ public class VerifyDriverLicenseCommandHandler(
 
         result.DriverLicenseNumber = ocrResult.Object.Id;
         result.DriverLicenseExpiry = ocrResult.Object.ValidDate;
-        result.DriverLicenseClass = ParseLicenseClass(ocrResult.Object.CardType);
+        result.DriverLicenseClass = ParseLicenseClass(ocrResult.Object.Rank);
         
         if (string.IsNullOrEmpty(userVerification.SelfieHash))
         {

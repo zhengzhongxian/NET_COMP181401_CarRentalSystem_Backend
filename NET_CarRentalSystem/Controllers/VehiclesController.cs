@@ -667,18 +667,18 @@ public class VehiclesController(ISender sender, IMapper mapper) : ControllerBase
                 Status = request.Status
             };
 
-            var success = await sender.Send(command, cancellationToken);
+            var (success, message) = await sender.Send(command, cancellationToken);
 
             if (!success)
             {
-                var notFoundResponse = ApiResponse.ErrorResult(
-                    VehicleMessage.UpdateVehicleModels.NotFound,
-                    StatusCodes.Status404NotFound);
+                var errorResponse = ApiResponse.ErrorResult(
+                    message ?? VehicleMessage.UpdateVehicleModels.NotFound,
+                    StatusCodes.Status400BadRequest);
 
-                return StatusCode(StatusCodes.Status404NotFound, notFoundResponse);
+                return StatusCode(StatusCodes.Status400BadRequest, errorResponse);
             }
 
-            var apiResponse = ApiResponse.SuccessResult(success, VehicleMessage.UpdateVehicleModels.Success);
+            var apiResponse = ApiResponse.SuccessResult(success, message ?? VehicleMessage.UpdateVehicleModels.Success);
             return StatusCode(apiResponse.StatusCode, apiResponse);
         }
         catch (Exception ex) when (!ex.IsInfrastructureException())

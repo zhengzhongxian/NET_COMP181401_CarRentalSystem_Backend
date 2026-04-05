@@ -31,28 +31,24 @@ public class UpdateAdminProfileCommandHandler(
 
         var customerRepo = unitOfWork.GetWriteRepository<Customer>();
         
-        // Admin profile data is stored in the Customer table
         var adminProfile = await customerRepo.GetFirstOrDefaultAsync(
             c => c.UserId == adminId.Value, 
             cancellationToken);
 
         if (adminProfile == null)
         {
-            // If the admin doesn't have a profile yet, we create one. 
-            // In some systems, admins might not have a Customer record initially.
             adminProfile = new Customer
             {
                 UserId = adminId.Value,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
                 PhoneNumber = cryptographyService.EncryptAes(request.PhoneNumber),
-                Dob = DateTime.UtcNow.AddYears(-18) // Default value, admins don't strictly need this but it's required in schema
+                Dob = DateTime.UtcNow.AddYears(-18)
             };
             await customerRepo.AddAsync(adminProfile, cancellationToken);
         }
         else
         {
-            // Check if the new phone number is already used by another user
             var encryptedPhone = cryptographyService.EncryptAes(request.PhoneNumber);
             var isPhoneTaken = await customerRepo.GetFirstOrDefaultAsync(
                 c => c.PhoneNumber == encryptedPhone && c.Id != adminProfile.Id,
@@ -60,7 +56,7 @@ public class UpdateAdminProfileCommandHandler(
 
             if (isPhoneTaken != null)
             {
-                return (false, UserMessage.UpdatePhoneError); // Phone already in use
+                return (false, UserMessage.UpdatePhoneError);
             }
 
             adminProfile.FirstName = request.FirstName;

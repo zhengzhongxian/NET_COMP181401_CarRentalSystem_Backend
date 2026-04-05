@@ -1,5 +1,6 @@
 using MassTransit;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Common.Extensions;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Vehicles.Events;
@@ -8,10 +9,11 @@ using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Shared.Utilities;
+using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 
 namespace NET_CarRentalSystem.Application.Features.Vehicles.Commands.UpdateVehicleModelsStatusCommand;
 
-public class UpdateVehicleModelsStatusCommand : ICommand<bool>
+public class UpdateVehicleModelsStatusCommand : ICommand<(bool Success, string Message)>
 {
     public required Guid VehicleId { get; init; }
     public required Guid VehicleModelId { get; init; }
@@ -20,20 +22,21 @@ public class UpdateVehicleModelsStatusCommand : ICommand<bool>
 
 public class UpdateVehicleModelsStatusCommandHandler(
     IUnitOfWork unitOfWork,
-    IPublishEndpoint publishEndpoint) : IRequestHandler<UpdateVehicleModelsStatusCommand, bool>
+    IPublishEndpoint publishEndpoint,
+    ILogger<UpdateVehicleModelsStatusCommandHandler> logger) : IRequestHandler<UpdateVehicleModelsStatusCommand, (bool, string)>
 {
-    public async Task<bool> Handle(UpdateVehicleModelsStatusCommand request, CancellationToken cancellationToken)
+    public async Task<(bool, string)> Handle(UpdateVehicleModelsStatusCommand request, CancellationToken cancellationToken)
     {
         return await unitOfWork.ExecuteInTransactionAsync(async (ct) =>
         {
             var vehicle = await unitOfWork.GetWriteRepository<Vehicle>()
                 .GetByIdAsync(request.VehicleId, ct);
 
-            if (vehicle == null) return false;
+            if (vehicle == null) return (false, VehicleMessage.UpdateVehicleModels.NotFound);
 
             var vehicleModel = await unitOfWork.GetWriteRepository<VehicleModel>()
                 .GetFirstAsync(x => x.Id == request.VehicleModelId && x.VehicleId == request.VehicleId, ct);
-            
+
             vehicleModel.Status = request.Status;
             
             if (request.Status == VehicleStatus.Available)
@@ -68,7 +71,8 @@ public class UpdateVehicleModelsStatusCommandHandler(
             await publishEndpoint.Publish(evt, ct);
             await unitOfWork.SaveChangesAsync(ct);
 
-            return true;
+            logger.LogInformation("[UpdateVehicleModelStatus] VehicleModel {Id} status changed to {Status}", request.VehicleModelId, request.Status);
+            return (true, "Cập nhật trạng thái xe thành công.");
         }, cancellationToken);
     }
 
@@ -102,3 +106,4 @@ public class UpdateVehicleModelsStatusCommandHandler(
         return jsonModels.ToJson();
     }
 }
+

@@ -350,7 +350,6 @@ public class PdfContractService : IPdfContractService
                 col.Item().Padding(10).Column(innerCol =>
                 {
                     var depositAmount = booking.TotalPrice * booking.DepositRatio;
-                    var remainingAmount = booking.TotalPrice - depositAmount;
 
                     innerCol.Item().Table(table =>
                     {
@@ -366,11 +365,22 @@ public class PdfContractService : IPdfContractService
                         table.Cell().Padding(5).Text("Tổng giá trị hợp đồng / Total Contract Value").FontSize(9);
                         table.Cell().Padding(5).AlignRight().Text($"{booking.TotalPrice:N0}").FontSize(9).Bold();
 
-                        table.Cell().Padding(5).Text($"Tiền đặt cọc / Deposit ({booking.DepositRatio * 100:N0}%)").FontSize(9);
-                        table.Cell().Padding(5).AlignRight().Text($"{depositAmount:N0}").FontSize(9).FontColor(Colors.Green.Darken2);
+                        table.Cell().Padding(5).Text($"Tiền đặt cọc / Deposit ({booking.DepositRatio * 100:N0}%) - giữ riêng").FontSize(9);
+                        table.Cell().Padding(5).AlignRight().Text($"{depositAmount:N0}").FontSize(9).FontColor(Colors.Orange.Darken2);
 
-                        table.Cell().BorderTop(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Còn lại phải thanh toán / Remaining Balance").FontSize(9).SemiBold();
-                        table.Cell().BorderTop(1).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text($"{remainingAmount:N0}").FontSize(10).Bold().FontColor(Colors.Red.Darken2);
+                        table.Cell().BorderTop(1).BorderColor(Colors.Grey.Lighten2).Padding(5).Text("Thanh toán khi nhận xe / Payment on Pickup (100%)").FontSize(9).SemiBold();
+                        table.Cell().BorderTop(1).BorderColor(Colors.Grey.Lighten2).Padding(5).AlignRight().Text($"{booking.TotalPrice:N0}").FontSize(10).Bold().FontColor(Colors.Red.Darken2);
+                    });
+
+                    innerCol.Item().PaddingTop(8).Background(Colors.Orange.Lighten5).Border(1).BorderColor(Colors.Orange.Lighten2).Padding(8).Column(noteCol =>
+                    {
+                        noteCol.Item().Text("⚠ Lưu ý về thanh toán / Payment Notice:").FontSize(9).SemiBold().FontColor(Colors.Orange.Darken3);
+                        noteCol.Item().PaddingTop(3).Text("• Tiền đặt cọc và tiền thuê xe là hai khoản riêng biệt.").FontSize(8);
+                        noteCol.Item().Text("  Deposit and rental fee are two separate payments.").FontSize(7).FontColor(Colors.Grey.Darken1).Italic();
+                        noteCol.Item().PaddingTop(2).Text("• Khi nhận xe, Bên B thanh toán 100% giá trị hợp đồng (chưa trừ cọc).").FontSize(8);
+                        noteCol.Item().Text("  Upon pickup, Party B pays 100% of contract value (deposit not deducted).").FontSize(7).FontColor(Colors.Grey.Darken1).Italic();
+                        noteCol.Item().PaddingTop(2).Text("• Tiền cọc sẽ được giữ tối thiểu 30 ngày sau khi trả xe và hoàn trả nếu không có vi phạm.").FontSize(8);
+                        noteCol.Item().Text("  Deposit will be held for at least 30 days after return and refunded if no violations.").FontSize(7).FontColor(Colors.Grey.Darken1).Italic();
                     });
 
                     innerCol.Item().PaddingTop(5).Background(Colors.Green.Lighten5).Padding(5).Row(row =>
@@ -381,31 +391,82 @@ public class PdfContractService : IPdfContractService
                 });
             });
 
-            // Section 5: Terms and Conditions
+            // Section 5: Legal Basis
+            column.Item().Border(1).BorderColor(borderColor).Column(col =>
+            {
+                col.Item().Background(primaryColor).Padding(8).Text("CĂN CỨ PHÁP LÝ / LEGAL BASIS").Bold().FontSize(10).FontColor(Colors.White);
+                col.Item().Padding(10).Column(innerCol =>
+                {
+                    innerCol.Item().Text("Hợp đồng này được lập trên cơ sở các văn bản pháp luật sau:").FontSize(8).Italic();
+                    innerCol.Item().PaddingTop(5).PaddingLeft(10).Text("• Bộ luật Dân sự 2015 (Luật số 91/2015/QH13), Phần thứ ba, Chương XVI - Hợp đồng thuê tài sản (Điều 472 - Điều 482).").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Luật Đường bộ 2024 (Luật số 35/2024/QH15) - Quy định về kinh doanh và điều kiện cho thuê xe tự lái.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Nghị định 100/2019/NĐ-CP (sửa đổi bởi NĐ 123/2021/NĐ-CP) - Xử phạt vi phạm hành chính trong lĩnh vực giao thông đường bộ.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Luật Bảo vệ quyền lợi người tiêu dùng 2023 (Luật số 19/2023/QH15).").FontSize(8);
+                });
+            });
+
+            // Section 6: Terms and Conditions
             column.Item().Border(1).BorderColor(borderColor).Column(col =>
             {
                 col.Item().Background(accentColor).Padding(8).Text("ĐIỀU KHOẢN VÀ ĐIỀU KIỆN / TERMS AND CONDITIONS").Bold().FontSize(10).FontColor(primaryColor);
                 col.Item().Padding(10).Column(innerCol =>
                 {
-                    innerCol.Item().Text("Điều 1: Quyền và nghĩa vụ của Bên A").SemiBold().FontSize(9);
-                    innerCol.Item().PaddingLeft(10).Text("• Cung cấp xe đúng như mô tả trong hợp đồng, đảm bảo xe trong tình trạng tốt.").FontSize(8);
-                    innerCol.Item().PaddingLeft(10).Text("• Hỗ trợ Bên B 24/7 trong suốt thời gian thuê xe.").FontSize(8);
+                    // Điều 1
+                    innerCol.Item().Text("Điều 1: Quyền và nghĩa vụ của Bên A (Bên cho thuê)").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Cung cấp xe đúng như mô tả trong hợp đồng, đảm bảo xe trong tình trạng kỹ thuật tốt, đã đăng kiểm và có bảo hiểm TNDS còn hiệu lực.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Giao xe đúng thời gian, địa điểm đã thỏa thuận kèm đầy đủ giấy tờ xe (bản sao công chứng đăng ký xe, bảo hiểm).").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Hỗ trợ Bên B 24/7 trong suốt thời gian thuê xe. Cung cấp xe thay thế trong trường hợp xe bị hỏng do lỗi kỹ thuật.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Không được đơn phương thu hồi xe khi hợp đồng còn hiệu lực, trừ trường hợp Bên B vi phạm nghiêm trọng điều khoản hợp đồng.").FontSize(8);
                     
-                    innerCol.Item().PaddingTop(5).Text("Điều 2: Quyền và nghĩa vụ của Bên B").SemiBold().FontSize(9);
-                    innerCol.Item().PaddingLeft(10).Text("• Sử dụng xe đúng mục đích, tuân thủ pháp luật giao thông.").FontSize(8);
-                    innerCol.Item().PaddingLeft(10).Text("• Chịu trách nhiệm về mọi vi phạm và thiệt hại trong thời gian thuê.").FontSize(8);
-                    innerCol.Item().PaddingLeft(10).Text("• Thanh toán đầy đủ và đúng hạn theo hợp đồng.").FontSize(8);
-                    
-                    innerCol.Item().PaddingTop(5).Text("Điều 3: Đặt cọc và hoàn trả").SemiBold().FontSize(9);
-                    innerCol.Item().PaddingLeft(10).Text("• Tiền đặt cọc sẽ được hoàn trả sau khi trả xe và kiểm tra không có hư hỏng.").FontSize(8);
-                    innerCol.Item().PaddingLeft(10).Text("• Trường hợp có thiệt hại, chi phí sẽ được khấu trừ từ tiền đặt cọc.").FontSize(8);
+                    // Điều 2
+                    innerCol.Item().PaddingTop(5).Text("Điều 2: Quyền và nghĩa vụ của Bên B (Bên thuê)").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Sử dụng xe đúng mục đích, tuân thủ pháp luật về giao thông đường bộ Việt Nam.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Bên B phải có Giấy phép lái xe còn hiệu lực, phù hợp với loại xe thuê theo quy định tại Luật Đường bộ 2024.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Chịu trách nhiệm bảo quản xe, không tự ý sửa chữa, thay đổi kết cấu, trang thiết bị của xe.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Chịu mọi chi phí nhiên liệu, phí cầu đường, phí đỗ xe phát sinh trong thời gian thuê.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Chịu trách nhiệm về mọi vi phạm giao thông, tai nạn và thiệt hại trong thời gian thuê theo Điều 601 Bộ luật Dân sự 2015 (trách nhiệm bồi thường thiệt hại do nguồn nguy hiểm cao độ gây ra).").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Thanh toán đầy đủ và đúng hạn các khoản phí theo hợp đồng.").FontSize(8);
 
-                    innerCol.Item().PaddingTop(5).Text("Điều 4: Hiệu lực hợp đồng").SemiBold().FontSize(9);
-                    innerCol.Item().PaddingLeft(10).Text("• Hợp đồng có hiệu lực kể từ ngày ký và kết thúc khi hoàn tất việc trả xe.").FontSize(8);
+                    // Điều 3
+                    innerCol.Item().PaddingTop(5).Text("Điều 3: Đặt cọc và hoàn trả").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text($"• Tiền đặt cọc ({booking.DepositRatio * 100:N0}% giá trị hợp đồng) được giữ riêng biệt, không khấu trừ vào tiền thuê xe (theo Điều 328 Bộ luật Dân sự 2015 về đặt cọc).").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Khi nhận xe, Bên B thanh toán 100% giá trị hợp đồng thuê xe. Tiền cọc là khoản bảo đảm riêng biệt.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Tiền cọc sẽ được hoàn trả sau tối thiểu 30 ngày kể từ ngày trả xe, nếu xe không có hư hỏng, không có vi phạm giao thông chưa xử lý.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Trường hợp Bên B vi phạm hợp đồng hoặc gây thiệt hại, tiền cọc sẽ bị khấu trừ tương ứng. Nếu thiệt hại vượt quá tiền cọc, Bên B có nghĩa vụ bồi thường phần chênh lệch.").FontSize(8);
+
+                    // Điều 4
+                    innerCol.Item().PaddingTop(5).Text("Điều 4: Bảo hiểm và trách nhiệm bồi thường").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Xe được bảo hiểm trách nhiệm dân sự bắt buộc (TNDS) theo quy định pháp luật. Bên A chịu trách nhiệm duy trì bảo hiểm TNDS.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Trường hợp xảy ra tai nạn: Bên B phải thông báo ngay cho Bên A và cơ quan công an. Bên B chịu trách nhiệm bồi thường phần thiệt hại không được bảo hiểm chi trả.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Bên B chịu hoàn toàn trách nhiệm về các khoản phạt vi phạm giao thông (\"phạt nguội\") phát sinh trong thời gian thuê xe.").FontSize(8);
+
+                    // Điều 5
+                    innerCol.Item().PaddingTop(5).Text("Điều 5: Hạn chế sử dụng xe").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Bên B không được sử dụng xe thuê để kinh doanh vận tải hành khách hoặc hàng hóa có thu tiền (theo Luật Đường bộ 2024).").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Không được cho người thứ ba thuê lại, cầm cố, thế chấp hoặc sử dụng xe làm tài sản bảo đảm dưới mọi hình thức.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Không được mang xe ra khỏi lãnh thổ Việt Nam nếu không có sự đồng ý bằng văn bản của Bên A.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Không lái xe khi sử dụng rượu bia, chất kích thích hoặc trong tình trạng sức khỏe không đảm bảo an toàn.").FontSize(8);
+
+                    // Điều 6
+                    innerCol.Item().PaddingTop(5).Text("Điều 6: Chấm dứt hợp đồng trước hạn").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Bên B có quyền trả xe trước hạn. Thời gian thuê thực tế sẽ được tính theo số ngày thực thuê, phần chênh lệch sẽ không được hoàn lại.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Bên A có quyền đơn phương chấm dứt hợp đồng nếu Bên B vi phạm nghiêm trọng (sử dụng sai mục đích, gây hư hỏng nặng, vi phạm pháp luật).").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Trường hợp chấm dứt do lỗi Bên B, Bên B không được hoàn lại tiền thuê và tiền cọc.").FontSize(8);
+
+                    // Điều 7
+                    innerCol.Item().PaddingTop(5).Text("Điều 7: Giải quyết tranh chấp").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Mọi tranh chấp phát sinh từ hợp đồng này trước hết được giải quyết bằng thương lượng, hòa giải giữa hai bên.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Trường hợp không thương lượng được, tranh chấp sẽ được đưa ra Tòa án nhân dân có thẩm quyền tại TP. Hồ Chí Minh để giải quyết theo quy định pháp luật Việt Nam.").FontSize(8);
+
+                    // Điều 8
+                    innerCol.Item().PaddingTop(5).Text("Điều 8: Hiệu lực hợp đồng").SemiBold().FontSize(9);
+                    innerCol.Item().PaddingLeft(10).Text("• Hợp đồng có hiệu lực kể từ ngày ký và kết thúc khi Bên B hoàn tất việc trả xe, thanh toán đầy đủ các khoản phí, và Bên A xác nhận tình trạng xe.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Các phụ lục, biên bản giao nhận xe, biên bản kiểm tra tình trạng xe là phần không tách rời của hợp đồng này.").FontSize(8);
+                    innerCol.Item().PaddingLeft(10).Text("• Hợp đồng được lập thành 02 bản có giá trị pháp lý như nhau, mỗi bên giữ 01 bản.").FontSize(8);
                 });
             });
 
-            // Section 6: Signatures
+            // Section 7: Signatures
             column.Item().PaddingTop(15).Row(row =>
             {
                 row.RelativeItem().Border(1).BorderColor(borderColor).Column(col =>
@@ -435,11 +496,13 @@ public class PdfContractService : IPdfContractService
             });
 
             // Legal Notice
-            column.Item().PaddingTop(10).Background(Colors.Grey.Lighten4).Padding(8).Column(col =>
+            column.Item().PaddingTop(10).Background(Colors.Grey.Lighten4).Border(1).BorderColor(Colors.Grey.Lighten2).Padding(8).Column(col =>
             {
                 col.Item().Text("Lưu ý quan trọng / Important Notice:").SemiBold().FontSize(8).FontColor(Colors.Red.Darken2);
-                col.Item().Text("Hợp đồng này được lập thành 02 bản có giá trị pháp lý như nhau, mỗi bên giữ 01 bản.").FontSize(7).FontColor(Colors.Grey.Darken2);
-                col.Item().Text("This contract is made in 02 copies with equal legal validity, each party keeps 01 copy.").FontSize(7).FontColor(Colors.Grey.Darken2);
+                col.Item().PaddingTop(3).Text("Hợp đồng này được lập căn cứ theo Bộ luật Dân sự 2015, Luật Đường bộ 2024 và các văn bản hướng dẫn thi hành. " +
+                    "Các bên đã đọc, hiểu rõ và đồng ý với toàn bộ nội dung hợp đồng trước khi ký.").FontSize(7).FontColor(Colors.Grey.Darken2);
+                col.Item().PaddingTop(2).Text("This contract is governed by the Civil Code 2015, Road Traffic Law 2024 and related regulations. " +
+                    "Both parties have read, understood, and agreed to all terms before signing.").FontSize(7).FontColor(Colors.Grey.Darken2).Italic();
             });
         });
     }

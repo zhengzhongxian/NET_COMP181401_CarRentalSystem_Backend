@@ -72,6 +72,7 @@ public class RegenerateFinalPaymentQueryHandler(
 
         var payOsResponse = await payOsService.CreatePaymentAsync(payOsRequest);
 
+        transaction.TransactionCode = newTransactionCode;
         transaction.ExternalTransactionId = payOsResponse.PaymentLinkId;
         unitOfWork.GetWriteRepository<PaymentTransaction>().Update(transaction);
         await unitOfWork.SaveChangesAsync(cancellationToken);

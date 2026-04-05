@@ -147,25 +147,42 @@ public class VnptEkycService : IVnptEkycService
         string clientSession,
         CancellationToken ct = default)
     {
+        // Bước 1: Thử OCR mặt trước GPLX với type=6 (endpoint riêng cho front)
+        var frontResult = await OcrDriverLicenseFrontAsync(frontHash, clientSession, 6, ct);
+        
+        // Bước 2: Nếu type=6 fail, thử lại với type=-1 (auto-detect)
+        if (!frontResult.IsSuccess)
+        {
+            _logger.LogWarning("[eKYC] Driver License OCR with type=6 failed, retrying with type=-1 (auto-detect)");
+            frontResult = await OcrDriverLicenseFrontAsync(frontHash, clientSession, -1, ct);
+        }
+        
+        return frontResult;
+    }
+
+    private async Task<EkycOcrResponse> OcrDriverLicenseFrontAsync(
+        string frontHash,
+        string clientSession,
+        int type,
+        CancellationToken ct)
+    {
         var requestBody = new
         {
             img_front = frontHash,
-            img_back = backHash,
             client_session = clientSession,
-            type = 6, // 6 = Giấy phép lái xe (Driver License)
+            type,
             validate_postcode = false,
             token = Guid.NewGuid().ToString("N")
         };
 
-        var content = new StringContent(
-            requestBody.ToJson(),
-            Encoding.UTF8,
-            "application/json");
+        var jsonBody = requestBody.ToJson();
+        _logger.LogInformation("[eKYC] Driver License OCR request (type={Type}): {Body}", type, jsonBody);
 
-        var response = await _httpClient.PostAsync("/ai/v1/ocr/id", content, ct);
+        var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+        var response = await _httpClient.PostAsync("/ai/v1/ocr/id/front", content, ct);
         var json = await response.Content.ReadAsStringAsync(ct);
         
-        _logger.LogInformation("[eKYC] Driver License OCR response: {Response}", json);
+        _logger.LogInformation("[eKYC] Driver License OCR response (type={Type}): {Response}", type, json);
         
         return json.FromJson<EkycOcrResponse>() ?? new EkycOcrResponse();
     }
@@ -334,6 +351,7 @@ public class VnptEkycService : IVnptEkycService
     private static string GenerateClientSession()
     {
         var timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
-        return $"WEB_CarRental_1.0.0_Device_{Guid.NewGuid():N}_{timestamp}";
+        var deviceId = Guid.NewGuid().ToString("N")[..16];
+        return $"ANDROID_CarRental_30_Device_1.0.0_{deviceId}_{timestamp}";
     }
 }

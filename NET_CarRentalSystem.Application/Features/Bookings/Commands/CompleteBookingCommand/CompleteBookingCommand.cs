@@ -3,6 +3,8 @@ using MediatR;
 using NET_CarRentalSystem.Application.Common.Extensions;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Bookings.Events;
+using NET_CarRentalSystem.Application.Features.Vehicles.Events;
+using NET_CarRentalSystem.Application.Models.DTOs.VehicleModelDTOs.Create;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
@@ -51,7 +53,6 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
             if (booking.Status == BookingStatus.Completed)
                 return (false, BookingMessage.CompleteBooking.AlreadyCompleted, 0, 0);
 
-            // 2. Check for unresolved violations
             var unresolvedViolations = violations
                 .Where(v => v.Status != ViolationStatus.Resolved && v.Status != ViolationStatus.Paid)
                 .ToList();
@@ -59,7 +60,6 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
             if (unresolvedViolations.Count != 0)
                 return (false, BookingMessage.CompleteBooking.HasUnresolvedViolations, 0, 0);
 
-            // 3. Get system settings for loyalty points
             var settings = await unitOfWork.GetReadRepository<SystemSetting>()
                 .GetAsync(cancellationToken: ct);
 
@@ -69,14 +69,12 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
             
             booking.Status = BookingStatus.Completed;
             
-            // 4. Schedule deposit refund (30 days from ActualEndDate/return date)
             var depositAmount = booking.TotalPrice * booking.DepositRatio;
             var refundScheduledDate = (booking.ActualEndDate ?? DateTime.UtcNow).AddDays(30);
             booking.DepositRefundScheduledAt = refundScheduledDate;
             
             unitOfWork.GetWriteRepository<Booking>().Update(booking);
             
-            // Create deposit refund request
             var depositRefundRequest = new RefundRequest
             {
                 BookingId = booking.Id,
@@ -110,8 +108,74 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
             booking.Customer.IsRenting = false;
             unitOfWork.GetWriteRepository<Customer>().Update(booking.Customer);
             
+            var vehicleModel = await unitOfWork.GetWriteRepository<VehicleModel>()
+                .GetFirstOrDefaultAsync(vm => vm.Id == booking.VehicleModelId, ct);
+
+            if (vehicleModel != null)
+            {
+                vehicleModel.Status = VehicleStatus.Available;
+                vehicleModel.LastAvailableAt = DateTime.UtcNow;
+                unitOfWork.GetWriteRepository<VehicleModel>().Update(vehicleModel);
+            }
+            
             await unitOfWork.SaveChangesAsync(ct);
             
+            if (vehicleModel != null)
+            {
+                var vehicle = await unitOfWork.GetWriteRepository<Vehicle>()
+                    .GetByIdAsync(vehicleModel.VehicleId, ct);
+
+                if (vehicle != null)
+                {
+                    var allModels = await unitOfWork.GetWriteRepository<VehicleModel>()
+                        .GetAsync(filter: vm => vm.VehicleId == vehicle.Id, cancellationToken: ct);
+
+                    vehicle.AvailableCount = allModels.Count(m => m.Status == VehicleStatus.Available);
+                    unitOfWork.GetWriteRepository<Vehicle>().Update(vehicle);
+
+                    var locationIds = allModels
+                        .Where(vm => vm.LocationId.HasValue)
+                        .Select(vm => vm.LocationId!.Value)
+                        .Distinct()
+                        .ToList();
+                    
+                    var locations = await unitOfWork.GetWriteRepository<Location>()
+                        .GetAsync(filter: l => locationIds.Contains(l.Id), cancellationToken: ct);
+                    var locationDict = locations.ToDictionary(l => l.Id);
+
+                    var modelsDto = allModels.Select(vm =>
+                    {
+                        var vmLocation = vm.LocationId.HasValue && locationDict.TryGetValue(vm.LocationId.Value, out var loc) ? loc : null;
+                        return new CreateJsonVehicleModelDto
+                        {
+                            Id = vm.Id,
+                            NumberPlate = vm.NumberPlate,
+                            Mileage = vm.Mileage,
+                            LocationId = vm.LocationId,
+                            LocationName = vmLocation?.Name,
+                            Address = vmLocation?.Address,
+                            Status = vm.Status,
+                            ConditionNotes = vm.ConditionNotes,
+                            LastAvailableAt = vm.LastAvailableAt
+                        };
+                    }).ToList();
+
+                    var vehicleModelsEvent = vehicle.ToUpdatedEvent<Vehicle, VehicleModelsUpdatedEvent, Guid>(_ => new VehicleModelsUpdatedEvent
+                    {
+                        Id = vehicle.Id,
+                        VehicleModelsJson = modelsDto.ToJson(),
+                        AvailableCount = vehicle.AvailableCount,
+                        CreatedAt = default,
+                        CreatedBy = null,
+                        UpdatedAt = default,
+                        UpdatedBy = null
+                    });
+
+                    await publishEndpoint.Publish(vehicleModelsEvent, ct);
+                    await unitOfWork.SaveChangesAsync(ct);
+                }
+            }
+
             var allViolations = await unitOfWork.GetWriteRepository<BookingViolation>()
                 .GetAsync(v => v.BookingId == booking.Id, null, null, ct);
 
@@ -153,3 +217,4 @@ public class CompleteBookingCommandHandler(IUnitOfWork unitOfWork, IPublishEndpo
         }, cancellationToken);
     }
 }
+

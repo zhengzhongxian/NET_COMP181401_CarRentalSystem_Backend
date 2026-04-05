@@ -68,4 +68,7 @@ public class EkycOcrObject
 
     [JsonPropertyName("warning_msg")]
     public List<string>? WarningMsg { get; set; }
+
+    [JsonPropertyName("rank")]
+    public string Rank { get; set; } = string.Empty;
 }

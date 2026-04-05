@@ -33,8 +33,7 @@ public class CloudinaryService : ICloudinaryService
             {
                 File = new FileDescription(file.FileName, file.Content),
                 Folder = folder,
-                PublicId = publicId,
-                Transformation = new Transformation().Height(500).Width(500).Crop("fill").Gravity("face")
+                PublicId = publicId
             };
 
             var uploadResult = await _cloudinary.UploadAsync(uploadParams);

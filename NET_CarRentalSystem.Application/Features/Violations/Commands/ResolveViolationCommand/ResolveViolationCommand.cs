@@ -54,7 +54,8 @@ public class ResolveViolationCommandHandler(
                     ViolationType = v.ViolationType.ToString(),
                     Amount = v.Amount,
                     Description = v.Description,
-                    Details = v.Details
+                    Details = v.Details,
+                    Status = v.Status.ToString()
                 }).ToList();
 
                 var violationsJson = violationsDto.ToJson();

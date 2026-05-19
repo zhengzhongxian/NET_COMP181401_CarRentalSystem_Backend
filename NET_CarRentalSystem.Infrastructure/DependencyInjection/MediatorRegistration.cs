@@ -1,4 +1,4 @@
-﻿using MediatR;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using NET_CarRentalSystem.Shared.Constants;
 using System.Reflection;
@@ -16,6 +16,7 @@ public static class MediatorRegistration
         services.AddMediatR(applicationAssembly);
         services.AddValidatorsFromAssembly(applicationAssembly);
         services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuditPipelineBehavior<,>));
         
         return services;
     }

@@ -9,7 +9,6 @@ using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
 using NET_CarRentalSystem.Application.Models.DTOs.TransactionDTOs;
-using NET_CarRentalSystem.Application.Models.Payments.PayOs;
 using NET_CarRentalSystem.Domain.Constants;
 using NET_CarRentalSystem.Domain.Entities;
 using NET_CarRentalSystem.Domain.Enums;
@@ -46,15 +45,17 @@ public class CreateBookingCommandHandler(
     IPayOsService payOsService,
     IPublishEndpoint publishEndpoint,
     ICacheService cacheService,
+    IEnumerable<ICreateBookingPaymentStrategy> createBookingPaymentStrategies,
     ILogger<CreateBookingCommandHandler> logger) : IRequestHandler<CreateBookingCommand, (bool, string, PaymentTransactionDto?)>
 {
+    private readonly Dictionary<PaymentMethod, ICreateBookingPaymentStrategy> _paymentStrategyMap =
+        createBookingPaymentStrategies.ToDictionary(s => s.PaymentMethod);
     private static readonly TimeSpan CustomerLockTimeout = TimeSpan.FromSeconds(60);
     
     public async Task<(bool, string, PaymentTransactionDto?)> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
     {
         var userId = currentUserService.GetUserId();
         
-        // ReadDB không có navigation property, query riêng
         var user = await unitOfWork.GetReadRepository<User>()
             .GetFirstAsync(c => c.Id == userId, cancellationToken: cancellationToken);
         
@@ -257,44 +258,19 @@ public class CreateBookingCommandHandler(
             await unitOfWork.GetWriteRepository<PaymentTransaction>().AddAsync(transaction, ct);
             await unitOfWork.SaveChangesAsync(ct);
             
-
-            string? qrCodeContent = null;
-            string? paymentUrl = null;
-            DateTime? expireDate = null;
+            if (!_paymentStrategyMap.TryGetValue(request.PaymentMethod, out var paymentStrategy))
+                throw new InvalidOperationException($"No booking payment strategy registered for payment method: {request.PaymentMethod}");
             
-            switch (request.PaymentMethod)
+            var paymentStrategyResult = await paymentStrategy.ProcessAsync(
+                new CreateBookingPaymentStrategyContext(transaction, customer, user),
+                ct);
+            
+            // Handler controls persistence — strategy only returns data
+            if (paymentStrategyResult.ExternalTransactionId != null)
             {
-                case PaymentMethod.VnPay:
-
-                case PaymentMethod.InCash:
-                    break;
-
-                case PaymentMethod.PayOs:
-                    var payOsRequest = new PayOsCreateRequest
-                    {
-                        TransactionCode = transactionCode,
-                        TotalAmount = (long)depositAmount,
-                        TransactorName = $"{customer.FirstName} {customer.LastName}",
-                        TransactorEmail = user.Email,
-                        TransactorPhone = customer.PhoneNumber,
-                        TransactorAddress = customer.Address ?? "N/A",
-                        Description = "Dat coc thue xe"
-                    };
-
-                    var payOsResponse = await payOsService.CreatePaymentAsync(payOsRequest);
-                    
-                    paymentUrl = payOsResponse.CheckoutUrl;
-                    qrCodeContent = payOsResponse.QrCode;
-                    
-                    if (payOsResponse.ExpiredAt.HasValue)
-                    {
-                        expireDate = DateTimeOffset.FromUnixTimeSeconds(payOsResponse.ExpiredAt.Value).UtcDateTime;
-                    }
-                    
-                    transaction.ExternalTransactionId = payOsResponse.PaymentLinkId;
-                    unitOfWork.GetWriteRepository<PaymentTransaction>().Update(transaction);
-                    await unitOfWork.SaveChangesAsync(ct);
-                    break;
+                transaction.ExternalTransactionId = paymentStrategyResult.ExternalTransactionId;
+                unitOfWork.GetWriteRepository<PaymentTransaction>().Update(transaction);
+                await unitOfWork.SaveChangesAsync(ct);
             }
             
             var transactionDto = new PaymentTransactionDto
@@ -305,9 +281,9 @@ public class CreateBookingCommandHandler(
                 Status = transaction.Status,
                 AmountToPay = transaction.Amount,
                 PaymentMethod = transaction.PaymentMethod,
-                PaymentUrl = paymentUrl,
-                QrCode = qrCodeContent,
-                ExpireDate = expireDate,
+                PaymentUrl = paymentStrategyResult.PaymentUrl,
+                QrCode = paymentStrategyResult.QrCode,
+                ExpireDate = paymentStrategyResult.ExpireDate,
                 TransactionType = TransactionType.Deposit
             };
             

@@ -1,9 +1,8 @@
-using MediatR;
+using MassTransit;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PayOS.Models.Webhooks;
-using NET_CarRentalSystem.Application.Features.Webhooks.Commands.ProcessPayOsWebhookCommand;
-using NET_CarRentalSystem.Application.Models.Payments.PayOs.Webhooks;
+using NET_CarRentalSystem.Application.Features.Webhooks.Events;
 using NET_CarRentalSystem.Shared.Constants.MessageConstants.Business;
 using NET_CarRentalSystem.Shared.Wrapper;
 
@@ -11,7 +10,9 @@ namespace NET_CarRentalSystem.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class WebhooksController(ISender sender, ILogger<WebhooksController> logger) : ControllerBase
+public class WebhooksController(
+    IPublishEndpoint publishEndpoint,
+    ILogger<WebhooksController> logger) : ControllerBase
 {
     [HttpPost("payos")]
     [AllowAnonymous]
@@ -19,24 +20,24 @@ public class WebhooksController(ISender sender, ILogger<WebhooksController> logg
     {
         try
         {
-            logger.LogInformation("[Webhook] Received PayOS webhook: OrderCode={OrderCode}, Amount={Amount}", 
+            logger.LogInformation("[Webhook] Received PayOS webhook: OrderCode={OrderCode}, Amount={Amount}",
                 webhook?.Data?.OrderCode, webhook?.Data?.Amount);
+
             if (webhook?.Data == null)
             {
                 logger.LogError("[Webhook] Webhook data is null");
                 return BadRequest(ApiResponse.ErrorResult("Invalid webhook payload"));
             }
-            
-            
-            if (webhook.Data.OrderCode == 123 && 
-                webhook.Data.Description == "VQRIO123" && 
+
+            if (webhook.Data.OrderCode == 123 &&
+                webhook.Data.Description == "VQRIO123" &&
                 webhook.Data.AccountNumber == "12345678")
             {
                 logger.LogInformation("[Webhook] Received PayOS test webhook - returning success");
                 return Ok(new { message = "Webhook processed successfully" });
             }
 
-            var webhookData = new PayOsWebhookData
+            var webhookEvent = new PaymentWebhookEvent
             {
                 OrderCode = webhook.Data.OrderCode,
                 Amount = webhook.Data.Amount,
@@ -55,45 +56,24 @@ public class WebhooksController(ISender sender, ILogger<WebhooksController> logg
                 VirtualAccountNumber = webhook.Data.VirtualAccountNumber
             };
 
-            var command = new ProcessPayOsWebhookCommand
-            {
-                WebhookData = webhookData
-            };
+            await publishEndpoint.Publish(webhookEvent, cancellationToken);
 
-            var result = await sender.Send(command, cancellationToken);
+            logger.LogInformation("[Webhook] Published PaymentWebhookEvent to RabbitMQ. OrderCode={OrderCode}",
+                webhook.Data.OrderCode);
 
-            if (result)
-            {
-                logger.LogInformation("[Webhook] Successfully processed webhook for OrderCode={OrderCode}", webhook.Data.OrderCode);
-                
-                var successResponse = ApiResponse.SuccessResult(
-                    new { orderCode = webhook.Data.OrderCode },
-                    WebhookMessage.PayOsWebhook.Success);
-                
-                return Ok(successResponse);
-            }
-
-            logger.LogWarning("[Webhook] Failed to process webhook for OrderCode={OrderCode}", webhook.Data.OrderCode);
-            
-            var failResponse = ApiResponse.ErrorResult(
-                WebhookMessage.PayOsWebhook.ProcessingError,
-                StatusCodes.Status500InternalServerError);
-            
-            return StatusCode(StatusCodes.Status500InternalServerError, failResponse);
+            return Ok(ApiResponse.SuccessResult(
+                new { orderCode = webhook.Data.OrderCode },
+                WebhookMessage.PayOsWebhook.Success));
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "[Webhook] Exception processing webhook: {Message}\nStackTrace: {StackTrace}\nInnerException: {InnerException}", 
-                ex.Message, 
-                ex.StackTrace,
-                ex.InnerException?.Message ?? "None");
-            
-            var errorResponse = ApiResponse.ErrorResult(
-                WebhookMessage.PayOsWebhook.ProcessingError,
-                StatusCodes.Status500InternalServerError,
-                [ex.Message, ex.InnerException?.Message ?? string.Empty]);
-            
-            return StatusCode(StatusCodes.Status500InternalServerError, errorResponse);
+            logger.LogError(ex, "[Webhook] Exception publishing webhook event: {Message}", ex.Message);
+
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                ApiResponse.ErrorResult(
+                    WebhookMessage.PayOsWebhook.ProcessingError,
+                    StatusCodes.Status500InternalServerError,
+                    [ex.Message, ex.InnerException?.Message ?? string.Empty]));
         }
     }
 
@@ -103,4 +83,3 @@ public class WebhooksController(ISender sender, ILogger<WebhooksController> logg
         return Task.FromResult<IActionResult>(Ok());
     }
 }
-

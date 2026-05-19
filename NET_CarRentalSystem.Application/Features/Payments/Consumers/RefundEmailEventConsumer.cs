@@ -12,9 +12,12 @@ namespace NET_CarRentalSystem.Application.Features.Payments.Consumers;
 public class RefundEmailEventConsumer(
     ILogger<RefundEmailEventConsumer> logger,
     IUnitOfWork unitOfWork,
-    IEmailService emailService,
+    IEnumerable<IRefundEmailStrategy> refundStrategies,
     IConfiguration configuration) : IConsumer<RefundEmailEvent>
 {
+    private readonly Dictionary<RefundEmailType, IRefundEmailStrategy> _strategyMap =
+        refundStrategies.ToDictionary(s => s.EmailType);
+
     public async Task Consume(ConsumeContext<RefundEmailEvent> context)
     {
         var @event = context.Message;
@@ -74,19 +77,16 @@ public class RefundEmailEventConsumer(
             
             var appUrl = configuration[KeyConstants.EmailRedirectUrl] ?? "http://localhost:5173";
             
-            switch (@event.EmailType)
+            if (_strategyMap.TryGetValue(@event.EmailType, out var strategy))
             {
-                case RefundEmailType.Notification:
-                    logger.LogInformation("[RefundEmailEventConsumer] Sending refund notification email. RefundRequestId={RefundRequestId}, Email={Email}",
-                        @event.RefundRequestId, user.Email);
-                    await SendRefundNotificationEmailAsync(user.Email, customer, bookingFlat, vehicleName, @event, appUrl, context.CancellationToken);
-                    break;
-                    
-                case RefundEmailType.Success:
-                    logger.LogInformation("[RefundEmailEventConsumer] Sending refund success email. RefundRequestId={RefundRequestId}, Email={Email}",
-                        @event.RefundRequestId, user.Email);
-                    await SendRefundSuccessEmailAsync(user.Email, customer, @event, appUrl, context.CancellationToken);
-                    break;
+                logger.LogInformation("[RefundEmailEventConsumer] Sending {EmailType} refund email. RefundRequestId={RefundRequestId}, Email={Email}",
+                    @event.EmailType, @event.RefundRequestId, user.Email);
+                await strategy.SendAsync(user.Email, customer, bookingFlat, vehicleName, @event, appUrl, context.CancellationToken);
+            }
+            else
+            {
+                logger.LogWarning("[RefundEmailEventConsumer] No email strategy found for EmailType={EmailType}",
+                    @event.EmailType);
             }
             
             logger.LogInformation("[RefundEmailEventConsumer] Successfully completed refund email processing. RefundRequestId={RefundRequestId}, EmailType={EmailType}",
@@ -97,94 +97,6 @@ public class RefundEmailEventConsumer(
             logger.LogError(ex, 
                 "[RefundEmailEventConsumer] Exception occurred while processing refund email. RefundRequestId={RefundRequestId}, BookingId={BookingId}, Error={ErrorMessage}, StackTrace={StackTrace}",
                 @event.RefundRequestId, @event.BookingId, ex.Message, ex.StackTrace);
-            throw;
-        }
-    }
-    
-    private async Task SendRefundNotificationEmailAsync(
-        string email,
-        Customer customer,
-        BookingReadFlat booking,
-        string vehicleName,
-        RefundEmailEvent @event,
-        string appUrl,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            logger.LogInformation(
-                "[RefundEmailEventConsumer] Preparing refund notification email. Email={Email}, RefundRequestId={RefundRequestId}, Amount={Amount}VND, Reason={Reason}",
-                email, @event.RefundRequestId, @event.Amount, @event.Reason ?? "Không có");
-
-            var emailData = new Dictionary<string, string>
-            {
-                { "{{CustomerName}}", $"{customer.FirstName} {customer.LastName}" },
-                { "{{BookingId}}", booking.BookingId.ToString() },
-                { "{{VehicleName}}", vehicleName },
-                { "{{RefundAmount}}", @event.Amount.ToString("N0") + " VND" },
-                { "{{CancellationReason}}", @event.Reason ?? "Không có lý do" },
-                { "{{ProcessingTime}}", "3-5 ngày làm việc" },
-                { "{{AppUrl}}", appUrl }
-            };
-            
-            await emailService.SendTemplateEmailViaGmailApiAsync(
-                email,
-                "Thông báo hoàn tiền - Renticar",
-                AppConstants.EmailTemplates.RefundNotification,
-                emailData,
-                cancellationToken
-            );
-
-            logger.LogInformation(
-                "[RefundEmailEventConsumer] Refund notification email sent successfully. Email={Email}, RefundRequestId={RefundRequestId}, Amount={Amount}VND",
-                email, @event.RefundRequestId, @event.Amount);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex,
-                "[RefundEmailEventConsumer] Failed to send refund notification email. Email={Email}, RefundRequestId={RefundRequestId}, Error={ErrorMessage}",
-                email, @event.RefundRequestId, ex.Message);
-            throw;
-        }
-    }
-    
-    private async Task SendRefundSuccessEmailAsync(
-        string email,
-        Customer customer,
-        RefundEmailEvent @event,
-        string appUrl,
-        CancellationToken cancellationToken)
-    {
-        try
-        {
-            logger.LogInformation(
-                "[RefundEmailEventConsumer] Preparing refund success email. Email={Email}, RefundRequestId={RefundRequestId}, Amount={Amount}VND",
-                email, @event.RefundRequestId, @event.Amount);
-
-            var emailData = new Dictionary<string, string>
-            {
-                { "{{CustomerName}}", $"{customer.FirstName} {customer.LastName}" },
-                { "{{RefundAmount}}", @event.Amount.ToString("N0") + " VND" },
-                { "{{AppUrl}}", appUrl }
-            };
-            
-            await emailService.SendTemplateEmailViaGmailApiAsync(
-                email,
-                "Hoàn tiền thành công - Renticar",
-                AppConstants.EmailTemplates.RefundSuccess,
-                emailData,
-                cancellationToken
-            );
-
-            logger.LogInformation(
-                "[RefundEmailEventConsumer] Refund success email sent successfully. Email={Email}, RefundRequestId={RefundRequestId}, Amount={Amount}VND",
-                email, @event.RefundRequestId, @event.Amount);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex,
-                "[RefundEmailEventConsumer] Failed to send refund success email. Email={Email}, RefundRequestId={RefundRequestId}, Error={ErrorMessage}",
-                email, @event.RefundRequestId, ex.Message);
             throw;
         }
     }

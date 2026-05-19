@@ -1,6 +1,8 @@
-﻿using System.Linq.Expressions;
+using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
+using NET_CarRentalSystem.Application.Interfaces.Services.Audit;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Entities;
@@ -14,7 +16,9 @@ public sealed class RenticarReadDbContext : RenticarBaseDbContext
     
     public RenticarReadDbContext(
         DbContextOptions<RenticarReadDbContext> options, 
-        ICurrentUserService currentUserService) : base(options, currentUserService)
+        ICurrentUserService currentUserService,
+        IAuditLogService auditLogService,
+        IHttpContextAccessor httpContextAccessor) : base(options, currentUserService, auditLogService, httpContextAccessor)
     {
         ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
     }

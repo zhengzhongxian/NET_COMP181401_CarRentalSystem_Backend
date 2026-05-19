@@ -117,6 +117,42 @@ services:
       - ./appsettings.${ASPNETCORE_ENVIRONMENT}.sync.json:/app/appsettings.${ASPNETCORE_ENVIRONMENT}.json
     networks:
       - renticar-network
+  # 7. Elasticsearch (Audit Logs)
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.0
+    container_name: renticar-elasticsearch-${ASPNETCORE_ENVIRONMENT}
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    restart: always
+    ports:
+      - "${ELASTIC_PORT:-9200}:9200"
+    volumes:
+      - ./elasticsearch_data_${ASPNETCORE_ENVIRONMENT}:/usr/share/elasticsearch/data
+    networks:
+      - renticar-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # 8. Kibana (Log Dashboard)
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.13.0
+    container_name: renticar-kibana-${ASPNETCORE_ENVIRONMENT}
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    restart: always
+    ports:
+      - "${KIBANA_PORT:-5601}:5601"
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    networks:
+      - renticar-network
 
 volumes:
   sqlserver_data_Production:
@@ -131,6 +167,9 @@ volumes:
   minio_data_Production:
   minio_data_Test:
   minio_data_Development:
+  elasticsearch_data_Production:
+  elasticsearch_data_Test:
+  elasticsearch_data_Development:
 
 
 networks:

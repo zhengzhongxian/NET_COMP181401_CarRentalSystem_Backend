@@ -1,8 +1,10 @@
+using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using NET_CarRentalSystem.Application.Configurations;
 using NET_CarRentalSystem.Application.Configurations.ApiClientSettings;
+using NET_CarRentalSystem.Application.Features.Bookings.Commands.CreateBookingCommand;
 using NET_CarRentalSystem.Application.Interfaces.Http;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
@@ -10,6 +12,7 @@ using NET_CarRentalSystem.Application.Interfaces.Services.Documents;
 using NET_CarRentalSystem.Application.Interfaces.Services.Notifications;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
 using NET_CarRentalSystem.Application.Interfaces.Services.Security;
+using NET_CarRentalSystem.Application.Interfaces.Services.Audit;
 using NET_CarRentalSystem.Application.Interfaces.Services.Storage;
 using NET_CarRentalSystem.Domain.Interfaces.Persistence;
 using NET_CarRentalSystem.Infrastructure.Configurations;
@@ -26,6 +29,7 @@ using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Jobs;
 using NET_CarRentalSystem.Infrastructure.Services.Scheduling.Schedulers;
 using NET_CarRentalSystem.Infrastructure.Services.Security;
 using NET_CarRentalSystem.Infrastructure.Services.Storage;
+using NET_CarRentalSystem.Infrastructure.Services.Audit;
 using NET_CarRentalSystem.Infrastructure.Services.Ekyc;
 using NET_CarRentalSystem.Infrastructure.Services.Sms;
 using NET_CarRentalSystem.Application.Interfaces.Services.Ekyc;
@@ -34,7 +38,13 @@ using NET_CarRentalSystem.Application.Interfaces.Services.Sms;
 using NET_CarRentalSystem.Application.Interfaces.Services.Search;
 using NET_CarRentalSystem.Infrastructure.Services.Search;
 using NET_CarRentalSystem.Infrastructure.Services.Mapping;
+using NET_CarRentalSystem.Application.Features.Payments.Strategies;
+using NET_CarRentalSystem.Application.Common.Queue;
+using NET_CarRentalSystem.Application.Features.Bookings.Commands.CreateBookingCommand;
+using NET_CarRentalSystem.Application.Models.DTOs.TransactionDTOs;
+using Microsoft.Extensions.Logging;
 using PayOS;
+using TaskQueueKeys = NET_CarRentalSystem.Shared.Constants.KeyConstants.TaskQueueSettings;
 
 
 namespace NET_CarRentalSystem.Infrastructure.DependencyInjection;
@@ -69,12 +79,16 @@ public static class ServiceRegistration
         services.Configure<TwilioSettings>(configuration.GetSection(TwilioSettings.SectionName));
         services.Configure<GrpcServicesSettings>(configuration.GetSection(GrpcServicesSettings.SectionName));
         
-        // Initialize GrpcChannelFactory with settings
         var grpcSettings = configuration.GetSection(GrpcServicesSettings.SectionName).Get<GrpcServicesSettings>()!;
         Grpc.GrpcChannelFactory.Settings(grpcSettings);
         
         services.Configure<CheckToolAliveSettings>(configuration.GetSection(CheckToolAliveSettings.SectionName));
         services.Configure<FileValidationSettings>(configuration.GetSection(FileValidationSettings.SectionName));
+        #endregion
+
+        #region Audit & HttpContext
+        services.AddHttpContextAccessor();
+        services.AddScoped<IAuditLogService, AuditLogService>();
         #endregion
 
         #region Scoped Services
@@ -83,6 +97,9 @@ public static class ServiceRegistration
         services.AddScoped<IImageResizeService, ImageResizeService>();
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IPayOsService, PayOsService>();
+        services.AddScoped<ICreateBookingPaymentStrategy, PayOsCreateBookingPaymentStrategy>();
+        services.AddScoped<ICreateBookingPaymentStrategy, NoExternalCreateBookingPaymentStrategy>();
+        services.AddScoped<ICreateBookingPaymentStrategy, VnPayCreateBookingPaymentStrategy>();
         services.AddScoped<ICryptographyService, CryptographyService>();
         services.AddScoped<ICacheService, CacheService>();
         services.AddScoped<IIdentityService, IdentityService>();
@@ -99,6 +116,17 @@ public static class ServiceRegistration
         services.AddScoped<DepositRefundJob>();
         services.AddScoped<IVehicleSearchService, VehicleSearchService>();
         services.AddScoped<IOsrmService, OsrmService>();
+
+        services.AddScoped<IPaymentCommandStrategy, DepositPaymentStrategy>();
+        services.AddScoped<IPaymentCommandStrategy, FinalPaymentStrategy>();
+        services.AddScoped<IPaymentCommandStrategy, ViolationPaymentStrategy>();
+        services.AddScoped<IPaymentCommandDispatcher, PaymentCommandDispatcher>();
+
+        services.AddScoped<IPaymentEmailStrategy, DepositPaymentEmailStrategy>();
+        services.AddScoped<IPaymentEmailStrategy, FinalPaymentEmailStrategy>();
+
+        services.AddScoped<IRefundEmailStrategy, RefundNotificationEmailStrategy>();
+        services.AddScoped<IRefundEmailStrategy, RefundSuccessEmailStrategy>();
         #endregion
 
         #region Http Clients
@@ -121,6 +149,24 @@ public static class ServiceRegistration
             );
         });
         services.AddSingleton<ITwilioSmsVerifyService, TwilioSmsVerifyService>();
+
+        services.AddSingleton(sp =>
+        {
+            var scopeFactory = sp.GetRequiredService<IServiceScopeFactory>();
+            var config = sp.GetRequiredService<IConfiguration>();
+            var logger = sp.GetRequiredService<ILogger<TaskQueue<CreateBookingCommand, (bool, string, PaymentTransactionDto?)>>>();
+            var maxWorkers = config.GetValue(TaskQueueKeys.CreateBookingMaxWorkers, 5);
+            var maxQueue = config.GetValue(TaskQueueKeys.CreateBookingMaxQueue, 100);
+
+            return new TaskQueue<CreateBookingCommand, (bool, string, PaymentTransactionDto?)>(
+                async (request, ct) =>
+                {
+                    using var scope = scopeFactory.CreateScope();
+                    var mediator = scope.ServiceProvider.GetRequiredService<ISender>();
+                    return await mediator.Send(request, ct);
+                },
+                maxWorkers, maxQueue, logger);
+        });
         #endregion
         
         #region Other Services

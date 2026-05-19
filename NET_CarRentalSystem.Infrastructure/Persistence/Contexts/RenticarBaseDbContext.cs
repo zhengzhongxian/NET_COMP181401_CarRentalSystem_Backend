@@ -1,16 +1,29 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using NET_CarRentalSystem.Domain.Common;
 using NET_CarRentalSystem.Domain.Entities;
 using System.Linq.Expressions;
 using System.Reflection;
+using Microsoft.AspNetCore.Http;
+using NET_CarRentalSystem.Application.Interfaces.Services.Audit;
 using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
+using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 
 public abstract class RenticarBaseDbContext(
     DbContextOptions options,
-    ICurrentUserService currentUserService) : DbContext(options)
+    ICurrentUserService currentUserService,
+    IAuditLogService auditLogService,
+    IHttpContextAccessor httpContextAccessor) : DbContext(options)
 {
+    private static readonly HashSet<string> ExcludedEntities =
+    [
+        nameof(TransactionProcessingLog),
+        nameof(RefundProcessingLog),
+        nameof(WebhookLog),
+        nameof(UserSession)
+    ];
+    
     public DbSet<Vehicle> Vehicles => Set<Vehicle>();
     public DbSet<VehicleCategory> VehicleCategories => Set<VehicleCategory>();
     public DbSet<Fuel> Fuels => Set<Fuel>();
@@ -88,14 +101,101 @@ public abstract class RenticarBaseDbContext(
 
     public override int SaveChanges()
     {
+        var auditEntries = CaptureAuditEntries();
         UpdateAuditFields();
-        return base.SaveChanges();
+        var result = base.SaveChanges();
+        auditLogService.PublishAuditLogs(auditEntries);
+        return result;
     }
 
     public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
+        var auditEntries = CaptureAuditEntries();
         UpdateAuditFields();
-        return await base.SaveChangesAsync(cancellationToken);
+        var result = await base.SaveChangesAsync(cancellationToken);
+        auditLogService.PublishAuditLogs(auditEntries);
+        return result;
+    }
+
+    private List<AuditLog> CaptureAuditEntries()
+    {
+        ChangeTracker.DetectChanges();
+        var auditLogs = new List<AuditLog>();
+
+        var userId = currentUserService.GetUserId()?.ToString();
+        var httpContext = httpContextAccessor.HttpContext;
+        var ipAddress = httpContext?.Connection.RemoteIpAddress?.ToString();
+        var requestPath = httpContext?.Request.Path.ToString();
+
+        foreach (var entry in ChangeTracker.Entries<IAuditable>())
+        {
+            if (entry.State is EntityState.Detached or EntityState.Unchanged)
+                continue;
+
+            var entityName = entry.Entity.GetType().Name;
+            
+            // Skip noisy entities
+            if (ExcludedEntities.Contains(entityName))
+                continue;
+
+            var entityId = entry.Property("Id").CurrentValue?.ToString() ?? "N/A";
+
+            var audit = new AuditLog
+            {
+                Action = entry.State.ToString(),
+                EntityName = entityName,
+                EntityId = entityId,
+                UserId = userId,
+                IpAddress = ipAddress,
+                RequestPath = requestPath,
+                Timestamp = DateTime.UtcNow
+            };
+
+            switch (entry.State)
+            {
+                case EntityState.Added:
+                    audit.NewValues = SerializeProperties(
+                        entry.Properties
+                            .Where(p => p.CurrentValue != null)
+                            .ToDictionary(p => p.Metadata.Name, p => p.CurrentValue));
+                    break;
+
+                case EntityState.Modified:
+                    var changedProps = entry.Properties
+                        .Where(p => p.IsModified)
+                        .ToList();
+
+                    audit.ChangedProperties = string.Join(", ", changedProps.Select(p => p.Metadata.Name));
+                    audit.OldValues = SerializeProperties(
+                        changedProps.ToDictionary(p => p.Metadata.Name, p => p.OriginalValue));
+                    audit.NewValues = SerializeProperties(
+                        changedProps.ToDictionary(p => p.Metadata.Name, p => p.CurrentValue));
+                    break;
+
+                case EntityState.Deleted:
+                    audit.OldValues = SerializeProperties(
+                        entry.Properties
+                            .Where(p => p.OriginalValue != null)
+                            .ToDictionary(p => p.Metadata.Name, p => p.OriginalValue));
+                    break;
+            }
+
+            auditLogs.Add(audit);
+        }
+
+        return auditLogs;
+    }
+
+    private static string? SerializeProperties(Dictionary<string, object?> properties)
+    {
+        try
+        {
+            return properties.Count == 0 ? null : properties.ToJson();
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private void UpdateAuditFields()

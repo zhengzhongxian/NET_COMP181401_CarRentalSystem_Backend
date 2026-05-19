@@ -1,4 +1,4 @@
-﻿namespace NET_CarRentalSystem.Shared.Constants;
+namespace NET_CarRentalSystem.Shared.Constants;
 
 public static class KeyConstants
 {
@@ -67,5 +67,11 @@ public static class KeyConstants
     {
         public const string ExpireInSecond = "QrReturnVehicleUrl:ExpireInSecond";
         public const string BaseUrl = "QrReturnVehicleUrl:BaseUrl";
+    }
+
+    public static class TaskQueueSettings
+    {
+        public const string CreateBookingMaxWorkers = "TaskQueue:CreateBooking:MaxWorkers";
+        public const string CreateBookingMaxQueue = "TaskQueue:CreateBooking:MaxQueue";
     }
 }

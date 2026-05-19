@@ -44,4 +44,9 @@ public static class CacheKeyHelper
     {
         return $"phone_otp_count:{userId}:{DateTime.UtcNow:yyyyMMdd}";
     }
+
+    public static string GetPaymentTransactionLockKey(long transactionCode)
+    {
+        return $"lock:payment:transaction:{transactionCode}";
+    }
 }

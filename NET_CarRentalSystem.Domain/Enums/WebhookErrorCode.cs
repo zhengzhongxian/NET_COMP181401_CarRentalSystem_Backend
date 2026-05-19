@@ -10,5 +10,6 @@ public enum WebhookErrorCode
     InvalidPayload = 5,
     BookingAlreadyCancelled = 6,
     CustomerLocked = 7,
+    DispatchFailed = 8,
     UnknownError = 99
 }

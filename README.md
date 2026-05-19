@@ -62,6 +62,7 @@ The solution follows **Clean Architecture** with **CQRS** (Command Query Respons
 │               Infrastructure Layer                       │
 │  EF Core (Read/Write DbContext) | Dapper                │
 │  Redis | RabbitMQ/MassTransit | MinIO | SignalR         │
+│  Elasticsearch + Kibana | Serilog Sink                  │
 │  gRPC | JWT Auth | Google OAuth | Quartz Scheduler      │
 │  Payment (PayOS, VnPay) | SMS (Twilio) | eKYC (VNPT)    │
 │  Cloudinary | Email (SMTP/Gmail API) | AI Services       │
@@ -75,6 +76,9 @@ The solution follows **Clean Architecture** with **CQRS** (Command Query Respons
 | **CQRS** | Separate `RenticarWriteDbContext` (commands) and `RenticarReadDbContext` (queries) |
 | **MediatR** | All use cases as Commands (`ICommand<T>`) and Queries (`IQuery<T>`) |
 | **Repository + Unit of Work** | `IReadRepository<T>`, `IWriteRepository<T>`, `IUnitOfWork` with transaction support |
+| **Strategy Pattern** | `ICreateBookingPaymentStrategy` (PayOS/VnPay/NoExternal), `IPaymentCommandStrategy` (Deposit/Final/Violation), `IPaymentEmailStrategy`, `IRefundEmailStrategy` |
+| **TaskQueue (Bounded Channel)** | `TaskQueue<TRequest, TResult>` with configurable worker pool to control concurrency for high-traffic endpoints (e.g., CreateBooking) |
+| **Distributed Locking** | Redis-based `AcquireLockAsync`/`ReleaseLockAsync` for payment transaction safety and customer operation exclusivity |
 | **Soft Deletes** | `ISoftDelete` interface with `IsDeleted`/`DeletedAt`/`DeletedBy` |
 | **Auditing** | `IAuditable` with `CreatedAt`/`CreatedBy`/`UpdatedAt`/`UpdatedBy` |
 | **Optimistic Concurrency** | `IRowVersion` with `byte[]` row versioning |
@@ -105,7 +109,8 @@ The solution follows **Clean Architecture** with **CQRS** (Command Query Respons
 | **PDF** | QuestPDF (contract generation) |
 | **Scheduling** | Quartz.NET |
 | **Real-time** | SignalR (`/hubs/notification`) |
-| **Logging** | Serilog (console + rolling files) |
+| **Search & Analytics** | Elasticsearch 8.13 + Kibana 8.13 |
+| **Logging** | Serilog (console + rolling files + Elasticsearch sink) |
 | **Validation** | FluentValidation |
 | **Mapping** | AutoMapper |
 | **Containerization** | Docker + Docker Compose |
@@ -158,7 +163,7 @@ The solution follows **Clean Architecture** with **CQRS** (Command Query Respons
 | **SystemSettings** | 1 | 2 | Update settings, public/private settings retrieval |
 | **Ekyc** | 2 | – | CCCD identity verification, driver license verification (VNPT) |
 | **Violations** | 2 | – | Create violation payments, resolve violations |
-| **Webhooks** | 1 | – | Process PayOS webhook callbacks |
+| **Webhooks** | – | – | Async PayOS webhook processing via RabbitMQ consumers |
 | **Permissions** | – | 1 | Get available permissions |
 
 ---
@@ -191,6 +196,8 @@ docker-compose up -d
 | RabbitMQ Management | 15672 | http://localhost:15672 (guest/guest) |
 | MinIO Console | 9001 | http://localhost:9001 (vagabond/blacksun) |
 | MinIO API | 9000 | http://localhost:9000 |
+| Elasticsearch | 9200 | http://localhost:9200 |
+| Kibana | 5601 | http://localhost:5601 |
 
 Stop all services:
 
@@ -265,6 +272,7 @@ dotnet user-secrets set "PayOsSettings:ClientId" "your-client-id"
 Serilog is configured with:
 - **Console** output
 - **Rolling file** output (`Logs/log-{date}.txt`), daily rotation, 7-day retention
+- **Elasticsearch** sink – structured logs indexed for Kibana dashboards and search
 
 ---
 
@@ -358,10 +366,12 @@ const connection = new signalR.HubConnectionBuilder()
 
 ### Architecture Rules
 
-- **Controllers are thin** – they only map DTOs via AutoMapper and dispatch via MediatR `ISender`
+- **Controllers are thin** – they only map DTOs via AutoMapper and dispatch via MediatR `ISender` or `TaskQueue`
 - **No business logic in controllers** – all logic lives in Application layer handlers
 - **Domain layer is pure** – no external dependencies, only interfaces
 - **Infrastructure depends on Domain & Application** – never the reverse
+- **Strategy Pattern for extensibility** – new payment methods or email templates are added as new strategy classes without modifying existing code
+- **TaskQueue for high-traffic endpoints** – bounded channel with configurable worker pool prevents thread explosion under load
 
 ### Folder Structure (Features)
 

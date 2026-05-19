@@ -2,6 +2,7 @@ using AutoMapper;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using NET_CarRentalSystem.Application.Common.Queue;
+using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Models.DTOs.TransactionDTOs;
 using NET_CarRentalSystem.API.Attributes;
 using NET_CarRentalSystem.API.Extensions;
@@ -37,6 +38,7 @@ namespace NET_CarRentalSystem.API.Controllers;
 public class BookingsController(
     ISender sender,
     IMapper mapper,
+    ICurrentUserService currentUserService,
     TaskQueue<CreateBookingCommand, (bool, string, PaymentTransactionDto?)> createBookingQueue) : ControllerBase
 {
     #region Admin APIs
@@ -212,6 +214,7 @@ public class BookingsController(
     public async Task<IActionResult> CreateBooking([FromBody] CreateBookingRequest request, CancellationToken ct)
     {
         var command = mapper.Map<CreateBookingCommand>(request);
+        command.UserId = currentUserService.GetUserId()!.Value;
         var (success, message, transactionDto) = await createBookingQueue.EnqueueAsync(command, ct);
 
         if (!success || transactionDto is null)

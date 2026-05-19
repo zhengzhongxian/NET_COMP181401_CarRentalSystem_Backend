@@ -5,7 +5,6 @@ using NET_CarRentalSystem.Application.Common.Extensions;
 using NET_CarRentalSystem.Application.Common.Interfaces.CQRS;
 using NET_CarRentalSystem.Application.Features.Bookings.Events;
 using NET_CarRentalSystem.Application.Features.Payments.Events;
-using NET_CarRentalSystem.Application.Interfaces.Services.Authentication;
 using NET_CarRentalSystem.Application.Interfaces.Services.Caching;
 using NET_CarRentalSystem.Application.Interfaces.Services.Payments;
 using NET_CarRentalSystem.Application.Models.DTOs.TransactionDTOs;
@@ -20,6 +19,8 @@ namespace NET_CarRentalSystem.Application.Features.Bookings.Commands.CreateBooki
 
 public class CreateBookingCommand : ICommand<(bool, string, PaymentTransactionDto?)>
 {
+    public Guid UserId { get; set; }
+    
     public required Guid VehicleId { get; init; }
     
     public required Guid PickupLocationId { get; init; }
@@ -41,7 +42,6 @@ public class CreateBookingCommand : ICommand<(bool, string, PaymentTransactionDt
 
 public class CreateBookingCommandHandler(
     IUnitOfWork unitOfWork,
-    ICurrentUserService currentUserService,
     IPayOsService payOsService,
     IPublishEndpoint publishEndpoint,
     ICacheService cacheService,
@@ -54,7 +54,7 @@ public class CreateBookingCommandHandler(
     
     public async Task<(bool, string, PaymentTransactionDto?)> Handle(CreateBookingCommand request, CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetUserId();
+        var userId = request.UserId;
         
         var user = await unitOfWork.GetReadRepository<User>()
             .GetFirstAsync(c => c.Id == userId, cancellationToken: cancellationToken);

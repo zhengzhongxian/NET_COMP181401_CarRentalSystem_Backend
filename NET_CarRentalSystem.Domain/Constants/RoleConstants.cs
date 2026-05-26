@@ -12,4 +12,7 @@ public static class RoleConstants
 
     // Vai trò Khách hàng: Người dùng cuối, đặt xe
     public const string Customer = "Customer";
+
+    // Vai trò Developer: Phát triển hệ thống, điều khiển và gỡ lỗi từ xa
+    public const string Developer = "Developer";
 }

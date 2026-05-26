@@ -37,6 +37,7 @@ public static class KeyConstants
         public const string CheckToolAlive = "Quartz:CheckToolAlive";
         public const string DepositRefundJob = "Quartz:DepositRefundJob";
         public const string FileValidationSettings = "FileValidationSettings";
+        public const string ImpersonationSettings = "ImpersonationSettings";
     }
 
     public static class DatabaseInitializationSettings

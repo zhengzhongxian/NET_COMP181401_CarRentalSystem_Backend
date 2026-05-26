@@ -4,10 +4,6 @@ using NET_CarRentalSystem.Domain.Common;
 
 namespace NET_CarRentalSystem.Infrastructure.Services.Audit;
 
-/// <summary>
-/// Publishes audit log entries as structured Serilog logs.
-/// Serilog's Elasticsearch sink automatically ships these to Elasticsearch.
-/// </summary>
 public class AuditLogService(ILogger<AuditLogService> logger) : IAuditLogService
 {
     public void PublishAuditLogs(IEnumerable<AuditLog> auditLogs)

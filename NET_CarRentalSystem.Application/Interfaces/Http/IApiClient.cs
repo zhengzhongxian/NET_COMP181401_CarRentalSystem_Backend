@@ -34,6 +34,18 @@ public interface IApiClient
     Task<TResponse?> PostAsync<TRequest, TResponse>(string endpoint, TRequest data, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default);
 
     /// <summary>
+    /// Gửi POST request với JSON body và trả về raw string (không deserialize).
+    /// Hữu ích khi cần parse thủ công (VD: JsonNode.Parse cho Elasticsearch).
+    /// </summary>
+    /// <typeparam name="TRequest">Kiểu dữ liệu request</typeparam>
+    /// <param name="endpoint">Đường dẫn API</param>
+    /// <param name="data">Dữ liệu gửi đi</param>
+    /// <param name="headers">Headers tùy chọn</param>
+    /// <param name="cancellationToken">Token hủy bỏ</param>
+    /// <returns>Raw string response</returns>
+    Task<string> PostStringAsync<TRequest>(string endpoint, TRequest data, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default);
+
+    /// <summary>
     /// Gửi POST request với form-data
     /// </summary>
     /// <typeparam name="T">Kiểu dữ liệu response</typeparam>

@@ -45,6 +45,20 @@ public class ApiClient(HttpClient httpClient) : IApiClient
         return content.FromJson<TResponse>();
     }
 
+    public async Task<string> PostStringAsync<TRequest>(string endpoint, TRequest data, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
+    {
+        using var request = new HttpRequestMessage(HttpMethod.Post, endpoint);
+        AddHeaders(request, headers);
+
+        var json = data.ToJson();
+        request.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        using var response = await httpClient.SendAsync(request, cancellationToken);
+        response.EnsureSuccessStatusCode();
+
+        return await response.Content.ReadAsStringAsync(cancellationToken);
+    }
+
     public async Task<T?> PostFormDataAsync<T>(string endpoint, Dictionary<string, object> formData, Dictionary<string, string>? headers = null, CancellationToken cancellationToken = default)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post,

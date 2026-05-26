@@ -31,6 +31,12 @@ public static class UserRoleSeeder
                 UserRoleId = Guid.NewGuid(),
                 UserId = Guid.Parse("44444444-4444-4444-4444-444444444444"),
                 RoleId = RoleSeeder.CustomerRoleId
+            },
+            new UserRole
+            {
+                UserRoleId = Guid.Parse("a5e83a7c-28b9-a4e2-abb3-30c15d0d4b1a"),
+                UserId = Guid.Parse("55555555-5555-5555-5555-555555555555"),
+                RoleId = RoleSeeder.DeveloperRoleId
             }
         ];
     }

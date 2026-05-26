@@ -57,6 +57,18 @@ public static class UserSeeder
 				CreatedAt = now,
 				UpdatedAt = now,
 				IsDeleted = false
+			},
+			new()
+			{
+				Id = Guid.Parse("55555555-5555-5555-5555-555555555555"),
+				UserName = "developer",
+				Password = BCrypt.Net.BCrypt.HashPassword("Developer@123"),
+				Email = "developer@example.com",
+				IsVerified = true,
+				Status = UserStatus.Active,
+				CreatedAt = now,
+				UpdatedAt = now,
+				IsDeleted = false
 			}
 		];
 	}

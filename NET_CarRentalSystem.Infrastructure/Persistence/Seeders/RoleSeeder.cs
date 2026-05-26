@@ -9,6 +9,7 @@ public static class RoleSeeder
 	public static readonly Guid ManagerRoleId = Guid.Parse("1e46a445-4351-4d0a-86a4-454351dd0aa6");
 	public static readonly Guid StaffRoleId = Guid.Parse("2fd185ee-d561-4b48-9185-eed5617b4881"); 
 	public static readonly Guid CustomerRoleId = Guid.Parse("7a908619-1c82-4d16-9086-191c82fd1671"); 
+	public static readonly Guid DeveloperRoleId = Guid.Parse("5e83a7c2-8b9a-4e2a-bb33-0c15d0d4b1a2");
 	
 	public static IEnumerable<Role> Seed()
 	{
@@ -18,7 +19,8 @@ public static class RoleSeeder
 			{
 				Id = AdminRoleId,
 				Name = RoleConstants.Admin,
-				NormalizedName = RoleConstants.Admin.ToUpper()
+				NormalizedName = RoleConstants.Admin.ToUpper(),
+				Accessibility = NET_CarRentalSystem.Domain.Enums.RoleAccessibility.Both
 			},
 			new Role
 			{
@@ -37,6 +39,13 @@ public static class RoleSeeder
 				Id = CustomerRoleId,
 				Name = RoleConstants.Customer,
 				NormalizedName = RoleConstants.Customer.ToUpper()
+			},
+			new Role
+			{
+				Id = DeveloperRoleId,
+				Name = RoleConstants.Developer,
+				NormalizedName = RoleConstants.Developer.ToUpper(),
+				Accessibility = NET_CarRentalSystem.Domain.Enums.RoleAccessibility.Both
 			}
 		];
 	}

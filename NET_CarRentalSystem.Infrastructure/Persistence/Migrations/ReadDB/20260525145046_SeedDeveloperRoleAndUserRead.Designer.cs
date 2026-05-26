@@ -3,17 +3,20 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NET_CarRentalSystem.Infrastructure.Persistence.Contexts;
 
 #nullable disable
 
-namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
+namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.ReadDB
 {
-    [DbContext(typeof(RenticarWriteDbContext))]
-    partial class RenticarWriteDbContextModelSnapshot : ModelSnapshot
+    [DbContext(typeof(RenticarReadDbContext))]
+    [Migration("20260525145046_SeedDeveloperRoleAndUserRead")]
+    partial class SeedDeveloperRoleAndUserRead
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,176 +24,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.InboxState", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
-
-                    b.Property<DateTime?>("Consumed")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("ConsumerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime?>("Delivered")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpirationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastSequenceNumber")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("LockId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("ReceiveCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Received")
-                        .HasColumnType("datetime2");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Delivered");
-
-                    b.ToTable("InboxState");
-                });
-
-            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
-                {
-                    b.Property<long>("SequenceNumber")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("SequenceNumber"));
-
-                    b.Property<string>("Body")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContentType")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<Guid?>("ConversationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("CorrelationId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("DestinationAddress")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime?>("EnqueueTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("ExpirationTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("FaultAddress")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<string>("Headers")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("InboxConsumerId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("InboxMessageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid?>("InitiatorId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("MessageId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MessageType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("OutboxId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Properties")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<Guid?>("RequestId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("ResponseAddress")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.Property<DateTime>("SentTime")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("SourceAddress")
-                        .HasMaxLength(256)
-                        .HasColumnType("nvarchar(256)");
-
-                    b.HasKey("SequenceNumber");
-
-                    b.HasIndex("EnqueueTime");
-
-                    b.HasIndex("ExpirationTime");
-
-                    b.HasIndex("OutboxId", "SequenceNumber")
-                        .IsUnique()
-                        .HasFilter("[OutboxId] IS NOT NULL");
-
-                    b.HasIndex("InboxMessageId", "InboxConsumerId", "SequenceNumber")
-                        .IsUnique()
-                        .HasFilter("[InboxMessageId] IS NOT NULL AND [InboxConsumerId] IS NOT NULL");
-
-                    b.ToTable("OutboxMessage");
-                });
-
-            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxState", b =>
-                {
-                    b.Property<Guid>("OutboxId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime?>("Delivered")
-                        .HasColumnType("datetime2");
-
-                    b.Property<long?>("LastSequenceNumber")
-                        .HasColumnType("bigint");
-
-                    b.Property<Guid>("LockId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<byte[]>("RowVersion")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate()
-                        .HasColumnType("rowversion");
-
-                    b.HasKey("OutboxId");
-
-                    b.HasIndex("Created");
-
-                    b.ToTable("OutboxState");
-                });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Booking", b =>
                 {
@@ -343,16 +176,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId");
-
-                    b.HasIndex("PickupLocationId");
-
-                    b.HasIndex("ReturnLocationId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.HasIndex("VehicleModelId");
-
                     b.ToTable("bookings", (string)null);
                 });
 
@@ -480,11 +303,223 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId");
-
-                    b.HasIndex("InsurancePackageId");
-
                     b.ToTable("booking_insurances", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingReadFlat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<DateTime?>("ActualEndDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("actual_end_date");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("booking_id_src");
+
+                    b.Property<string>("BookingImagesJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("booking_images_json");
+
+                    b.Property<string>("BookingViolationsJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("booking_violations_json");
+
+                    b.Property<string>("CancellationReason")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("cancellation_reason");
+
+                    b.Property<string>("ConditionNotes")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("condition_notes");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<string>("CustomerEmail")
+                        .HasMaxLength(256)
+                        .HasColumnType("nvarchar(256)")
+                        .HasColumnName("customer_email");
+
+                    b.Property<Guid>("CustomerId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("customer_id");
+
+                    b.Property<string>("CustomerName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("customer_name");
+
+                    b.Property<string>("CustomerPhone")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("customer_phone");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<decimal>("DepositRatio")
+                        .HasColumnType("decimal(18, 4)")
+                        .HasColumnName("deposit_ratio");
+
+                    b.Property<DateTime?>("DepositRefundScheduledAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deposit_refund_scheduled_at");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("description");
+
+                    b.Property<decimal>("DiscountRate")
+                        .HasColumnType("decimal(18, 4)")
+                        .HasColumnName("discount_rate");
+
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("end_date");
+
+                    b.Property<string>("FileName")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)")
+                        .HasColumnName("file_name");
+
+                    b.Property<int?>("FuelLevelEnd")
+                        .HasColumnType("int")
+                        .HasColumnName("fuel_level_end");
+
+                    b.Property<int>("FuelLevelStart")
+                        .HasColumnType("int")
+                        .HasColumnName("fuel_level_start");
+
+                    b.Property<decimal?>("FuelPrice")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("fuel_price");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<decimal>("LatePenaltyRatio")
+                        .HasColumnType("decimal(18, 4)")
+                        .HasColumnName("late_penalty_ratio");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("metadata");
+
+                    b.Property<int?>("MileageEnd")
+                        .HasColumnType("int")
+                        .HasColumnName("mileage_end");
+
+                    b.Property<int>("MileageStart")
+                        .HasColumnType("int")
+                        .HasColumnName("mileage_start");
+
+                    b.Property<string>("NumberPlate")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("number_plate");
+
+                    b.Property<Guid>("PickupLocationId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("pickup_location_id");
+
+                    b.Property<string>("PickupLocationName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("pickup_location_name");
+
+                    b.Property<string>("ReturnImagesJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("return_images_json");
+
+                    b.Property<Guid?>("ReturnLocationId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("return_location_id");
+
+                    b.Property<string>("ReturnLocationName")
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)")
+                        .HasColumnName("return_location_name");
+
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("start_date");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("status");
+
+                    b.Property<string>("SwapReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("swap_reason");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("total_price");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<Guid>("VehicleId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_id");
+
+                    b.Property<Guid>("VehicleModelId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_model_id");
+
+                    b.Property<decimal>("VehiclePricePerHour")
+                        .HasColumnType("decimal(18, 2)")
+                        .HasColumnName("vehicle_price_per_hour");
+
+                    b.Property<string>("VehicleStatus")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("vehicle_status");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .HasDatabaseName("IX_booking_read_flat_booking_id");
+
+                    b.HasIndex("CustomerId")
+                        .HasDatabaseName("IX_booking_read_flat_customer_id");
+
+                    b.HasIndex("StartDate")
+                        .HasDatabaseName("IX_booking_read_flat_start_date");
+
+                    b.HasIndex("VehicleId")
+                        .HasDatabaseName("IX_booking_read_flat_vehicle_id");
+
+                    b.ToTable("booking_read_flat", (string)null);
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingViolation", b =>
@@ -574,12 +609,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("violation_type");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
-
-                    b.HasIndex("PaymentTransactionId")
-                        .IsUnique()
-                        .HasFilter("[payment_transaction_id] IS NOT NULL");
 
                     b.ToTable("booking_violations", (string)null);
                 });
@@ -773,7 +802,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2015, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "0s7H23SQolvCsrWr20Orjw==",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             Dob = new DateTime(1995, 5, 20, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl1-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -791,7 +820,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "fupEgUxoPV44LCKJSY7JLw==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
@@ -803,7 +832,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2014, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "cVXHyBreralnzAB1L4PQPg==",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             Dob = new DateTime(1992, 10, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl2-back.jpg",
                             DriverLicenseExpiry = new DateTime(2030, 2, 2, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -821,7 +850,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "8JAbpw+SbCGaHGhEfWg3g==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
                         new
@@ -833,7 +862,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2016, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = " MK+LCGCQBxHbW7CoM5pipw==",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             Dob = new DateTime(1998, 3, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl3-back.jpg",
                             DriverLicenseExpiry = new DateTime(2031, 3, 3, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -851,7 +880,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "Ha5ZLxongotYMMoHd5FJxg==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
@@ -863,7 +892,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             CccdIssueDate = new DateTime(2013, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             CccdIssuePlace = "TP.HCM",
                             CccdNumber = "c3UJRjSHiGUa76qRID5QIg==",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             Dob = new DateTime(1990, 7, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DriverLicenseBackUrl = "https://example.com/dl4-back.jpg",
                             DriverLicenseExpiry = new DateTime(2032, 4, 4, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -881,7 +910,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             LoyaltyPoints = 0,
                             PhoneNumber = "BFW3YFm70nX+X+CmDyqtrQ==",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(2158),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 727, DateTimeKind.Utc).AddTicks(9279),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         });
                 });
@@ -947,32 +976,32 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("e1b2c3d4-a5f6-7890-1234-567890abcdef"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(8680),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(3296),
                             Description = "Sử dụng xăng",
                             IsDeleted = false,
                             Name = "Gasoline",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(8680)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(3296)
                         },
                         new
                         {
                             Id = new Guid("f2c3d4e5-b6a7-8901-2345-67890abcdef0"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(8680),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(3296),
                             Description = "Sử dụng dầu Diesel",
                             IsDeleted = false,
                             Name = "Diesel",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(8680)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(3296)
                         },
                         new
                         {
                             Id = new Guid("a3d4e5f6-c7b8-9012-3456-7890abcdef01"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(8680),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(3296),
                             Description = "Sử dụng năng lượng điện",
                             IsDeleted = false,
                             Name = "Electric",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 6, DateTimeKind.Utc).AddTicks(8680)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(3296)
                         });
                 });
 
@@ -1059,7 +1088,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
                             CoverageAmount = 50000000m,
                             CoverageDetails = "- Bảo hiểm trách nhiệm dân sự bên thứ 3\n- Thiệt hại tài sản tối đa 50 triệu\n- Chi phí y tế cơ bản\n- Hỗ trợ pháp lý 24/7",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(5660),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(7626),
                             Description = "Bảo hiểm trách nhiệm dân sự bắt buộc, bảo vệ bạn trước các chi phí pháp lý cơ bản.",
                             DisplayOrder = 1,
                             IsActive = true,
@@ -1072,7 +1101,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
                             CoverageAmount = 100000000m,
                             CoverageDetails = "- Tất cả quyền lợi gói Cơ bản\n- Bảo hiểm vật chất xe\n- Bảo hiểm tai nạn lái xe và hành khách\n- Hỗ trợ cứu hộ 24/7\n- Không khấu trừ khi xảy ra sự cố",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(5663),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(7629),
                             Description = "Bảo vệ toàn diện cho xe và hành khách với mức bồi thường cao hơn.",
                             DisplayOrder = 2,
                             IsActive = true,
@@ -1085,7 +1114,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             CoverageAmount = 200000000m,
                             CoverageDetails = "- Tất cả quyền lợi gói Tiêu chuẩn\n- Bảo hiểm mất trộm xe\n- Bảo hiểm thiên tai, hỏa hoạn\n- Xe thay thế khi sửa chữa\n- Bồi thường không giới hạn cho bên thứ 3\n- Hỗ trợ VIP 24/7",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(5665),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 728, DateTimeKind.Utc).AddTicks(7631),
                             Description = "Gói bảo hiểm toàn diện nhất với mức bồi thường tối đa và nhiều quyền lợi đặc biệt.",
                             DisplayOrder = 3,
                             IsActive = true,
@@ -1194,7 +1223,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             Id = new Guid("10000000-0000-0000-0000-000000000001"),
                             Address = "123 Lê Lợi, P. Bến Nghé",
                             City = "Hồ Chí Minh",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887),
                             IsDeleted = false,
                             Latitude = 10.7758,
                             Longitude = 106.702,
@@ -1202,14 +1231,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "02838123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000002"),
                             Address = "456 Xuân Thủy, P. Dịch Vọng Hậu",
                             City = "Hà Nội",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887),
                             IsDeleted = false,
                             Latitude = 21.036000000000001,
                             Longitude = 105.782,
@@ -1217,14 +1246,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             OpeningHours = "7:30 - 19:30",
                             PhoneNumber = "02439123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000003"),
                             Address = "789 Hùng Vương, Hải Châu",
                             City = "Đà Nẵng",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887),
                             IsDeleted = false,
                             Latitude = 16.054400000000001,
                             Longitude = 108.2022,
@@ -1232,14 +1261,14 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "023639123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887)
                         },
                         new
                         {
                             Id = new Guid("10000000-0000-0000-0000-000000000004"),
                             Address = "12 Trần Phú, Lộc Thọ",
                             City = "Khánh Hòa",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887),
                             IsDeleted = false,
                             Latitude = 12.238799999999999,
                             Longitude = 109.19670000000001,
@@ -1247,7 +1276,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                             OpeningHours = "8:00 - 20:00",
                             PhoneNumber = "025839123456",
                             RowVersion = new byte[0],
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 7, DateTimeKind.Utc).AddTicks(9807)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 729, DateTimeKind.Utc).AddTicks(887)
                         });
                 });
 
@@ -1337,8 +1366,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("updated_by");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
 
                     b.ToTable("payment_transactions", (string)null);
                 });
@@ -1603,7 +1630,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
                             Accessibility = 2,
-                            ConcurrencyStamp = "a5ad0bb4-a48a-4bd7-acd4-46ab16ba82ea",
+                            ConcurrencyStamp = "331b28c9-b0fe-4da1-84a8-2b3d20f50459",
                             IsDeleted = false,
                             Name = "Admin",
                             NormalizedName = "ADMIN"
@@ -1612,7 +1639,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
                             Accessibility = 0,
-                            ConcurrencyStamp = "707820ee-7240-41cb-b784-e4136fdf3b37",
+                            ConcurrencyStamp = "46cd1c8b-ecd7-4b04-a8d5-f57aa3a0f607",
                             IsDeleted = false,
                             Name = "Manager",
                             NormalizedName = "MANAGER"
@@ -1621,7 +1648,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
                             Accessibility = 0,
-                            ConcurrencyStamp = "e2a996d5-cbbc-4f3d-aae1-9ea84b94cabc",
+                            ConcurrencyStamp = "fe939689-a9ca-460f-be08-664b2d9597a0",
                             IsDeleted = false,
                             Name = "Staff",
                             NormalizedName = "STAFF"
@@ -1630,7 +1657,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
                             Accessibility = 0,
-                            ConcurrencyStamp = "8ca2952d-a461-4838-bebd-e492552b903b",
+                            ConcurrencyStamp = "dd44910f-92ce-4da8-a3b0-492dc742fa62",
                             IsDeleted = false,
                             Name = "Customer",
                             NormalizedName = "CUSTOMER"
@@ -1639,7 +1666,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("5e83a7c2-8b9a-4e2a-bb33-0c15d0d4b1a2"),
                             Accessibility = 2,
-                            ConcurrencyStamp = "de85cdd0-a4d7-46c7-9eea-f3e0df0757c1",
+                            ConcurrencyStamp = "486b4e48-070d-40fc-8ae0-30fcb5e5651c",
                             IsDeleted = false,
                             Name = "Developer",
                             NormalizedName = "DEVELOPER"
@@ -1669,406 +1696,404 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("RoleId");
-
                     b.ToTable("role_claims", (string)null);
 
                     b.HasData(
                         new
                         {
-                            Id = new Guid("5dfa2c37-5bfc-4a91-843d-349a06445d71"),
+                            Id = new Guid("9bbbd4c6-e936-46b6-8b6f-45104ce52508"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("dcbbef74-0738-4c3b-9c47-972e2ecb4d16"),
+                            Id = new Guid("3b5eb15b-e145-4f9d-b002-3d372ecbb1b9"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("f9213272-aa9c-427b-b8fa-c432bf7b4393"),
+                            Id = new Guid("ddaff64c-4503-4f01-9ec1-32cf052697c5"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("7de03e1b-f324-42a1-887c-7e56eab3610d"),
+                            Id = new Guid("39287fff-eb7b-4e87-8fec-dfbf678a7393"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("30b63f9f-64ca-4001-8294-0d79322c6f83"),
+                            Id = new Guid("4aba9c53-d7a5-478b-b06b-3247a004925d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.SendEmail",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("917b24da-9fda-44b8-b483-2fb18c2a74eb"),
+                            Id = new Guid("b2e44c2f-6530-49a0-822f-d75ce6cc3dfc"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("27d0f0b7-a471-4a4a-bb02-72eda382f375"),
+                            Id = new Guid("bf7de4fb-478f-4128-a33c-b126853b9cbc"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ViewDetail",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8743f435-36ea-4510-9df0-02125625c383"),
+                            Id = new Guid("51ee191a-8004-4818-8c8f-632acc7d37c5"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1a17a2b5-f5f7-4182-b05d-ec42c5aa60e3"),
+                            Id = new Guid("f02dfe71-01f5-4c06-9f1b-269c8400dce8"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8616c3d6-1ec4-49bb-859f-6199f32b6961"),
+                            Id = new Guid("2d4b006b-f7a0-451c-9457-2f50a095f394"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.SwapVehicleModel",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b281e848-fcd1-413c-849a-aef244d195d0"),
+                            Id = new Guid("62b2cca1-552f-474c-999e-e5e598b5616e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Cancel",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("ff9e8ee8-a5a2-46d1-99c2-585fff592edc"),
+                            Id = new Guid("b5c927db-0067-4289-ae51-efffd505de39"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.GenerateContract",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("02589f26-e130-4aa8-aa76-420e355c3c74"),
+                            Id = new Guid("f166b2b5-53af-47b2-b7e8-03e0c0bd0118"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ExportContract",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("a514c034-7691-4658-9087-df2c8696f9c6"),
+                            Id = new Guid("7a551aef-15b9-4ee2-9eee-5d5a7484348c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.UpdateFinalPayment",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("29c3ce31-af41-4b48-8add-b992062119cb"),
+                            Id = new Guid("63442691-a5ae-4b46-b5a8-8b080dc43781"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.CreateFinalPayment",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("a946cf11-f27e-448a-b79a-66821923355d"),
+                            Id = new Guid("4d8493fc-3675-494c-8c98-8d08389a43a9"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("9e382f55-f476-4afd-bfed-e524e1681b1b"),
+                            Id = new Guid("75ee7885-d4bb-4e6e-b667-d40ba1a3bb75"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("c47231ab-9c73-435c-9b46-4b729137be65"),
+                            Id = new Guid("48a26094-a7c8-4517-9789-5b730212a65e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("593ea8ef-6e85-47fc-a01b-fff5cd9e4b4f"),
+                            Id = new Guid("600b27fa-c0db-4b8e-af4c-7e1fcc3e7e7f"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("4d019fe3-ac43-4476-a35b-cab177924578"),
+                            Id = new Guid("4513bedd-6bd2-4542-ba42-56b6cbdc613e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("d1488005-cc92-4543-a78f-57cba5dbe3cf"),
+                            Id = new Guid("5018ca9b-fb5f-435e-b987-736bdff5bd75"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b78d4e72-f663-4e9e-ad4c-66d6c2ed9fb2"),
+                            Id = new Guid("42c1e210-999c-4abe-a027-285e618bc3db"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("658c38cd-62c9-4bfc-a873-6cb9c951cc16"),
+                            Id = new Guid("82909a19-c8d4-4480-8afc-972a38cdb7b8"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Transmissions.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("06b157b6-6eb0-42c0-bd39-b14f085544b1"),
+                            Id = new Guid("a070b840-9a40-4d74-8903-03adf2547f33"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("48b924d3-9fe3-4206-b943-1e950961c8fc"),
+                            Id = new Guid("5416acae-5803-4e85-a789-1c865b0468b2"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("649a39b2-c3d0-4104-baf9-5d96395ff93a"),
+                            Id = new Guid("c4d5bf7c-bcce-41a6-9db3-3ecd270daf33"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("30587eb1-5404-48d9-92e7-5bbbeb7d5f18"),
+                            Id = new Guid("97134251-a80b-4576-889f-9dfef3cf6d88"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.VehicleCategory.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("61254e5a-06e5-4fd5-8f3e-d0ce5dd1c79d"),
+                            Id = new Guid("b176d047-65f7-4be3-973a-b9294ea061eb"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1cd576ec-dfe9-4bf4-9dab-8501388f1b72"),
+                            Id = new Guid("0fc6c6af-56a4-4310-8ef6-125611fa3a14"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Create",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b8a84163-4b73-4099-8f23-4da760301079"),
+                            Id = new Guid("41378232-85c6-408d-a24c-b0ee2e2232d3"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Edit",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("1e54d470-0da5-46f9-a859-6698cb5a1580"),
+                            Id = new Guid("e171f4c2-c790-4b6c-8b20-b52e059b640d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Locations.Delete",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("5e1b0af0-d327-4e96-85d5-3d5f48c4a9eb"),
+                            Id = new Guid("608ece18-f3da-4795-b926-456e0ed12cfd"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.RefundRequests.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("babd0d8f-3fdf-4e2f-8f69-63cdaa39eb54"),
+                            Id = new Guid("850d1520-7bee-424e-8b70-5fd48907493a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.RefundRequests.Approve",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("8fd3ec3d-6b0a-422a-8f93-888496defd0f"),
+                            Id = new Guid("607ca4bb-0d53-4979-b88a-90af6949cde1"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.RefundRequests.Reject",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("c9db2a5f-e60c-44d7-901c-e4cbe0530b4d"),
+                            Id = new Guid("6eaf0bd3-734b-411a-8b35-d7e6a9800dbd"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Violations.View",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("eefc8613-417d-4e16-a4d3-c4c8c3b32d1e"),
+                            Id = new Guid("ca5c4d02-fc1b-47be-ad98-90c8fb25a80a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Violations.Resolve",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("a530889a-9771-47d1-b367-727b42702ea1"),
+                            Id = new Guid("ab5e52d2-7005-4ef7-9c76-1fa4cf44f5ab"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.IdentityVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("0977e899-70d2-44ab-98f5-bf629be31310"),
+                            Id = new Guid("66ac8f7d-a74a-46ba-aac6-55557138c250"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.PhoneVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("7c2fb6ce-5f67-4514-aa38-8a244a443c74"),
+                            Id = new Guid("0b1901a4-f0b8-41ef-9be7-62d4dc7abbcd"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.DriverLicenseVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("ffe25f0a-9f7b-448e-bb44-044be498af7c"),
+                            Id = new Guid("16e085d3-a998-47e1-9e2f-1480b9d144c1"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Ekyc.FullyVerified",
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826")
                         },
                         new
                         {
-                            Id = new Guid("b4a726d6-56b4-4170-a90e-d3c30bf92b3c"),
+                            Id = new Guid("ed439669-aa1c-4226-bc01-7a15e9bd2ee0"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("5d6846b4-d298-42bf-aadf-530c751d2f27"),
+                            Id = new Guid("cb29f794-2f4f-410c-91fb-013a552e491c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("ee864ff3-e34a-4918-a5c7-35e8e3f11c93"),
+                            Id = new Guid("96eaed5d-7ad3-43ad-913e-e7b863a03a7c"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("b49e0ae9-62eb-4869-9276-d84a2a4bc4a1"),
+                            Id = new Guid("4a8f9cad-f5dc-4b36-bba4-12c9f2ece44a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("ffdaddbf-b67e-4780-9d66-5fc2247d7fcc"),
+                            Id = new Guid("7c6e2875-91e0-4ec8-a052-12d08030cd76"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ViewDetail",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("fffacc28-5b60-4d60-a221-da35e510c373"),
+                            Id = new Guid("ec1146b9-11e3-452c-8a15-21714d44ff96"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("2c55a1af-3eb3-482e-8eb9-780113f03ed3"),
+                            Id = new Guid("c6454f49-f4fb-4d22-bde4-f4ab5ab2d66e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Create",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("26274449-448a-4a07-bf9d-ffe69bfefce4"),
+                            Id = new Guid("fd3e0e17-6d67-4710-bb4b-841c5c5dc773"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Edit",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("8d29b6e1-6851-41a1-9299-c1611680e9ea"),
+                            Id = new Guid("cfbfe08a-25d2-41da-b985-a712defb9dba"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.View",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("c5084178-8a4c-4d74-8212-e2acbffee10e"),
+                            Id = new Guid("7f5b663b-e0c9-459b-a0fe-d408f49a000e"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Fuels.Delete",
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6")
                         },
                         new
                         {
-                            Id = new Guid("002d2402-f24d-4fd4-a1f6-d2b758cba0f6"),
+                            Id = new Guid("1c6f3e97-0039-4b1f-ae5b-eb1b5a68b2d1"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Vehicles.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("889e8f43-2f99-4f80-82e4-5de7137761f6"),
+                            Id = new Guid("20248b02-91f7-4b80-bcd1-52be4d2e259b"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("debff2a0-6d0e-432b-8f0b-330057404c27"),
+                            Id = new Guid("f069a4a8-04e3-4bab-bb30-a0e67089da63"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.ViewDetail",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("a2ba6b61-2d99-4b49-bcc5-92364c06aea5"),
+                            Id = new Guid("80dd44db-6066-4e35-984e-9fa50fd5ea7a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881")
                         },
                         new
                         {
-                            Id = new Guid("1bb1ed1d-278f-4cc7-910b-060354b90616"),
+                            Id = new Guid("e87651f5-bd1b-4129-9371-b6fa3d96413a"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Create",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         },
                         new
                         {
-                            Id = new Guid("00194890-2b22-41b2-a848-e00b34725e88"),
+                            Id = new Guid("6bcdfd1d-d7cf-4e81-b597-9029d056f84d"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.View",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
                         },
                         new
                         {
-                            Id = new Guid("a6385c78-5b76-47b3-8854-94a80b09a8f9"),
+                            Id = new Guid("3826d0f4-123f-438b-9320-4a18481aeff4"),
                             ClaimType = "Permission",
                             ClaimValue = "Permissions.Bookings.Cancel",
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671")
@@ -2337,7 +2362,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000001"),
                             Content = "<h2>1. ĐIỀU KIỆN THUÊ XE</h2>\r\n<p>Khách hàng phải đáp ứng các điều kiện sau:</p>\r\n<ul>\r\n    <li>Tuổi từ 21 trở lên</li>\r\n    <li>Có giấy phép lái xe hợp lệ còn hiệu lực ít nhất 1 năm</li>\r\n    <li>Có CCCD/CMND còn hiệu lực</li>\r\n    <li>Đặt cọc theo quy định</li>\r\n</ul>\r\n\r\n<h2>2. QUY ĐỊNH VỀ ĐẶT CỌC</h2>\r\n<p>Khách hàng phải đặt cọc 30% giá trị hợp đồng khi đặt xe. Tiền cọc sẽ được hoàn trả sau khi trả xe và kiểm tra tình trạng xe.</p>\r\n\r\n<h2>3. TRÁCH NHIỆM CỦA KHÁCH HÀNG</h2>\r\n<ul>\r\n    <li>Sử dụng xe đúng mục đích đã đăng ký</li>\r\n    <li>Không cho người khác mượn xe</li>\r\n    <li>Không sử dụng xe vào mục đích vi phạm pháp luật</li>\r\n    <li>Bảo quản xe cẩn thận, không hút thuốc trong xe</li>\r\n    <li>Đổ đúng loại nhiên liệu theo quy định</li>\r\n    <li>Trả xe đúng hạn và đúng địa điểm</li>\r\n</ul>\r\n\r\n<h2>4. PHÍ PHẠT</h2>\r\n<ul>\r\n    <li>Trả xe trễ: 50.000đ/giờ (tối đa 500.000đ/ngày)</li>\r\n    <li>Thiếu xăng: Theo giá thị trường + 20% phí dịch vụ</li>\r\n    <li>Hư hỏng xe: Theo đánh giá thực tế</li>\r\n    <li>Mất xe: Đền bù 100% giá trị xe</li>\r\n</ul>\r\n\r\n<h2>5. CHÍNH SÁCH HỦY ĐẶT XE</h2>\r\n<ul>\r\n    <li>Hủy trước 24h: Hoàn 100% tiền cọc</li>\r\n    <li>Hủy trong vòng 24h: Hoàn 50% tiền cọc</li>\r\n    <li>Không đến nhận xe: Mất 100% tiền cọc</li>\r\n</ul>\r\n\r\n<h2>6. ĐIỀU KHOẢN KHÁC</h2>\r\n<p>Renticar có quyền từ chối cho thuê xe nếu khách hàng không đáp ứng các điều kiện trên hoặc có hành vi không phù hợp.</p>",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 13, DateTimeKind.Utc).AddTicks(9971),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 734, DateTimeKind.Utc).AddTicks(4505),
                             EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsDeleted = false,
@@ -2349,7 +2374,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000002"),
                             Content = "<h2>1. PHẠM VI BẢO HIỂM</h2>\r\n<p>Bảo hiểm chỉ có hiệu lực trong thời gian thuê xe và trong phạm vi lãnh thổ Việt Nam.</p>\r\n\r\n<h2>2. CÁC TRƯỜNG HỢP ĐƯỢC BẢO HIỂM</h2>\r\n<ul>\r\n    <li>Tai nạn giao thông</li>\r\n    <li>Va chạm với phương tiện khác</li>\r\n    <li>Thiệt hại do thiên tai (gói Premium)</li>\r\n    <li>Mất trộm xe (gói Premium)</li>\r\n</ul>\r\n\r\n<h2>3. CÁC TRƯỜNG HỢP KHÔNG ĐƯỢC BẢO HIỂM</h2>\r\n<ul>\r\n    <li>Lái xe khi say rượu bia hoặc sử dụng chất kích thích</li>\r\n    <li>Cố ý gây thiệt hại</li>\r\n    <li>Sử dụng xe vào mục đích bất hợp pháp</li>\r\n    <li>Cho người không có giấy phép lái xe</li>\r\n</ul>\r\n\r\n<h2>4. THỦ TỤC YÊU CẦU BỒI THƯỜNG</h2>\r\n<p>Khi xảy ra sự cố, khách hàng cần:</p>\r\n<ul>\r\n    <li>Liên hệ hotline ngay lập tức</li>\r\n    <li>Không di chuyển xe khỏi hiện trường (nếu có thể)</li>\r\n    <li>Chụp ảnh hiện trường</li>\r\n    <li>Lập biên bản với cơ quan chức năng (nếu cần)</li>\r\n</ul>",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 13, DateTimeKind.Utc).AddTicks(9982),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 734, DateTimeKind.Utc).AddTicks(4513),
                             EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsDeleted = false,
@@ -2361,7 +2386,7 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000003"),
                             Content = "<h2>1. GIỚI THIỆU</h2>\r\n<p>Chào mừng bạn đến với Renticar - dịch vụ cho thuê xe hàng đầu Việt Nam.</p>\r\n\r\n<h2>2. QUYỀN RIÊNG TƯ</h2>\r\n<p>Chúng tôi cam kết bảo vệ thông tin cá nhân của khách hàng theo quy định của pháp luật.</p>\r\n\r\n<h2>3. QUYỀN SỞ HỮU TRÍ TUỆ</h2>\r\n<p>Tất cả nội dung trên website thuộc quyền sở hữu của Renticar.</p>\r\n\r\n<h2>4. LIÊN HỆ</h2>\r\n<p>Mọi thắc mắc xin liên hệ:</p>\r\n<ul>\r\n    <li>Hotline: 1900 xxxx</li>\r\n    <li>Email: support@renticar.vn</li>\r\n</ul>",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 13, DateTimeKind.Utc).AddTicks(9985),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 734, DateTimeKind.Utc).AddTicks(4516),
                             EffectiveDate = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             IsActive = true,
                             IsDeleted = false,
@@ -2568,66 +2593,66 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         new
                         {
                             Id = new Guid("11111111-1111-1111-1111-111111111111"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             Email = "admin@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$GA92747zxi5Mnw96VW35lOIJ3aDPccsOIsLEhre/bD/8ruGwxrDZm",
+                            Password = "$2a$11$HyYvgGmw0ALPdoP0yu.4be8sq5XYa3CQcw.TnjoV5gs56ECPh.PdS",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             UserName = "admin"
                         },
                         new
                         {
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             Email = "staff1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$qM0WaLkvBevmLekTXqd4zeHyFZUaCS6lVizicU556wVUApmDxxltu",
+                            Password = "$2a$11$4oRNhArEekqj5IY99rWIAOQbEB.KzJ4nZnYz2/qX0faLfU3vUgdbG",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             UserName = "staff1"
                         },
                         new
                         {
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             Email = "customer1@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$CaK.hRG8gB/kp0MqnxkKCObemcU8n0ZsF8r26L9Om3NyvUmHo6hy6",
+                            Password = "$2a$11$Jc4I/t2tAf7mFET9.x/sv.ClWct52BK9D0ARXi1gUn7DCTdQk0r1i",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             UserName = "customer1"
                         },
                         new
                         {
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             Email = "customer2@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$CFY1c3omjpL3ojiq00JjeuKe68hc.0CqKQM2zLzps6q9a.0NyhkDu",
+                            Password = "$2a$11$9hSJ2HpSN2cG/cJyQvnwauUFjWUoig/mupi5B6YOGf.PDgybEozY.",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             UserName = "customer2"
                         },
                         new
                         {
                             Id = new Guid("55555555-5555-5555-5555-555555555555"),
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             Email = "developer@example.com",
                             IsDeleted = false,
                             IsVerified = true,
-                            Password = "$2a$11$PPGkrdzZcJeTMOWUOWi4XuR4cT75wA1WY3OurcnVxjsa1xOFDc8z6",
+                            Password = "$2a$11$V5YVThvWdOa0x7VA.O665Octb69ircxfOoCc4T3G2xd6BkES3oYG.",
                             RowVersion = new byte[0],
                             Status = "Active",
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 16, DateTimeKind.Utc).AddTicks(2270),
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 44, 737, DateTimeKind.Utc).AddTicks(320),
                             UserName = "developer"
                         });
                 });
@@ -2656,8 +2681,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("user_claims", (string)null);
                 });
@@ -2694,8 +2717,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.HasKey("UserLoginId")
                         .HasName("PK_user_logins");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("user_logins", (string)null);
                 });
 
@@ -2717,34 +2738,30 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasKey("UserRoleId");
 
-                    b.HasIndex("RoleId");
-
-                    b.HasIndex("UserId");
-
                     b.ToTable("user_roles", (string)null);
 
                     b.HasData(
                         new
                         {
-                            UserRoleId = new Guid("4fc1e9ba-269d-4204-8308-fd0ad169ec92"),
+                            UserRoleId = new Guid("1c5ddcbb-22fc-48b6-8f96-bbeec08a345f"),
                             RoleId = new Guid("71af4b53-dcd0-4498-af4b-53dcd0249826"),
                             UserId = new Guid("11111111-1111-1111-1111-111111111111")
                         },
                         new
                         {
-                            UserRoleId = new Guid("fdc518e2-1d36-4b27-9a7d-ff097eecc615"),
+                            UserRoleId = new Guid("7cf40089-595e-42aa-aeaf-16ca6b3d5b23"),
                             RoleId = new Guid("1e46a445-4351-4d0a-86a4-454351dd0aa6"),
                             UserId = new Guid("22222222-2222-2222-2222-222222222222")
                         },
                         new
                         {
-                            UserRoleId = new Guid("7393ba5c-f82d-43a4-83a3-331468cc0f83"),
+                            UserRoleId = new Guid("26d84818-96df-4d76-ba43-822f6c325115"),
                             RoleId = new Guid("2fd185ee-d561-4b48-9185-eed5617b4881"),
                             UserId = new Guid("33333333-3333-3333-3333-333333333333")
                         },
                         new
                         {
-                            UserRoleId = new Guid("c9f91b3f-30b5-4d6f-a068-4a529d9f7af7"),
+                            UserRoleId = new Guid("19ecd71b-6ad4-4b91-9b31-c8528a73a70f"),
                             RoleId = new Guid("7a908619-1c82-4d16-9086-191c82fd1671"),
                             UserId = new Guid("44444444-4444-4444-4444-444444444444")
                         },
@@ -2815,8 +2832,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("user_id");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("user_sessions", (string)null);
                 });
@@ -3135,12 +3150,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("FuelId");
-
-                    b.HasIndex("TransmissionId");
-
-                    b.HasIndex("VehicleCategoryId");
-
                     b.ToTable("vehicles", (string)null);
                 });
 
@@ -3168,8 +3177,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("vehicle_id");
 
                     b.HasKey("AttributeId");
-
-                    b.HasIndex("VehicleId");
 
                     b.ToTable("vehicle_attributes", (string)null);
 
@@ -3270,45 +3277,45 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a01"),
                             CategoryCode = "SEDAN",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037),
                             Description = "Xe sedan 4-5 chỗ, phổ thông",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 5,
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a02"),
                             CategoryCode = "SUV",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037),
                             Description = "Xe thể thao đa dụng, gầm cao",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 7,
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a03"),
                             CategoryCode = "HATCHBACK",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037),
                             Description = "Xe cỡ nhỏ cho đô thị",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 5,
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037)
                         },
                         new
                         {
                             Id = new Guid("f7a3f3a0-3b1a-4b0a-8f0a-0a0a0a0a0a04"),
                             CategoryCode = "MINIVAN",
-                            CreatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475),
+                            CreatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037),
                             Description = "Xe gia đình, rộng rãi",
                             IsDeleted = false,
                             RowVersion = new byte[0],
                             Seat = 7,
-                            UpdatedAt = new DateTime(2026, 5, 25, 14, 49, 10, 631, DateTimeKind.Utc).AddTicks(9475)
+                            UpdatedAt = new DateTime(2026, 5, 25, 14, 50, 45, 385, DateTimeKind.Utc).AddTicks(3037)
                         });
                 });
 
@@ -3346,8 +3353,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("vehicle_id");
 
                     b.HasKey("ImageId");
-
-                    b.HasIndex("VehicleId");
 
                     b.ToTable("vehicle_images", (string)null);
 
@@ -3458,15 +3463,152 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
 
                     b.HasKey("Id");
 
-                    b.HasIndex("LocationId");
-
                     b.HasIndex("NumberPlate")
                         .IsUnique()
                         .HasFilter("[number_plate] IS NOT NULL");
 
-                    b.HasIndex("VehicleId");
-
                     b.ToTable("vehicle_models", (string)null);
+                });
+
+            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleReadFlat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_id")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("AttributesJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("attributes_json");
+
+                    b.Property<int>("AvailableCount")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("available_count");
+
+                    b.Property<string>("CategoryName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("category_name");
+
+                    b.Property<string>("Color")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("color");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("created_at");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("created_by");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("deleted_at");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("deleted_by");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("description");
+
+                    b.Property<Guid?>("FuelId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("fuel_id");
+
+                    b.Property<string>("FuelName")
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("fuel_name");
+
+                    b.Property<string>("ImagesJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("images_json");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("is_deleted");
+
+                    b.Property<string>("Manufacturer")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("manufacturer");
+
+                    b.Property<string>("Metadata")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("metadata");
+
+                    b.Property<string>("Model")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)")
+                        .HasColumnName("model");
+
+                    b.Property<decimal>("PricePerHour")
+                        .HasPrecision(18, 2)
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("price_per_hour");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("real")
+                        .HasColumnName("rating");
+
+                    b.Property<int>("RequiredLicenseClass")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasDefaultValue(0)
+                        .HasColumnName("required_license_class");
+
+                    b.Property<string>("Thumbnail")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("thumbnail");
+
+                    b.Property<string>("Title")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)")
+                        .HasColumnName("title");
+
+                    b.Property<Guid?>("TransmissionId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("transmission_id");
+
+                    b.Property<string>("TransmissionName")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)")
+                        .HasColumnName("transmission_name");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("updated_at");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("updated_by");
+
+                    b.Property<Guid?>("VehicleCategoryId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("vehicle_category_id");
+
+                    b.Property<string>("VehicleModelsJson")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("vehicle_models_json");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IsDeleted");
+
+                    b.HasIndex("UpdatedAt");
+
+                    b.HasIndex("VehicleCategoryId");
+
+                    b.ToTable("vehicle_read_flat", (string)null);
                 });
 
             modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleReturnImage", b =>
@@ -3528,8 +3670,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                         .HasColumnName("updated_by");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("BookingId");
 
                     b.ToTable("vehicle_return_images", (string)null);
                 });
@@ -3616,398 +3756,6 @@ namespace NET_CarRentalSystem.Infrastructure.Persistence.Migrations.WriteDB
                     b.HasKey("Id");
 
                     b.ToTable("webhook_logs", (string)null);
-                });
-
-            modelBuilder.Entity("MassTransit.EntityFrameworkCoreIntegration.OutboxMessage", b =>
-                {
-                    b.HasOne("MassTransit.EntityFrameworkCoreIntegration.OutboxState", null)
-                        .WithMany()
-                        .HasForeignKey("OutboxId");
-
-                    b.HasOne("MassTransit.EntityFrameworkCoreIntegration.InboxState", null)
-                        .WithMany()
-                        .HasForeignKey("InboxMessageId", "InboxConsumerId")
-                        .HasPrincipalKey("MessageId", "ConsumerId");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Booking", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Customer", "Customer")
-                        .WithMany("Bookings")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "PickupLocation")
-                        .WithMany()
-                        .HasForeignKey("PickupLocationId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "ReturnLocation")
-                        .WithMany()
-                        .HasForeignKey("ReturnLocationId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("Bookings")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.VehicleModel", "VehicleModel")
-                        .WithMany("Bookings")
-                        .HasForeignKey("VehicleModelId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-
-                    b.Navigation("PickupLocation");
-
-                    b.Navigation("ReturnLocation");
-
-                    b.Navigation("Vehicle");
-
-                    b.Navigation("VehicleModel");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingImage", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
-                        .WithMany("BookingImages")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingInsurance", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
-                        .WithMany("BookingInsurances")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.InsurancePackage", "InsurancePackage")
-                        .WithMany("BookingInsurances")
-                        .HasForeignKey("InsurancePackageId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
-
-                    b.Navigation("InsurancePackage");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.BookingViolation", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
-                        .WithMany("Violations")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", "PaymentTransaction")
-                        .WithOne("ViolationPayment")
-                        .HasForeignKey("NET_CarRentalSystem.Domain.Entities.BookingViolation", "PaymentTransactionId");
-
-                    b.Navigation("Booking");
-
-                    b.Navigation("PaymentTransaction");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Customer", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithOne("Customer")
-                        .HasForeignKey("NET_CarRentalSystem.Domain.Entities.Customer", "UserId");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
-                        .WithMany("Transactions")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.RefundProcessingLog", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.RefundRequest", "RefundRequest")
-                        .WithMany()
-                        .HasForeignKey("RefundRequestId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("FK_refund_processing_logs_refund_requests_refund_request_id");
-
-                    b.Navigation("RefundRequest");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.RoleClaim", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Role", "Role")
-                        .WithMany("RoleClaims")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.TransactionProcessingLog", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", "PaymentTransaction")
-                        .WithMany("ProcessingLogs")
-                        .HasForeignKey("PaymentTransactionId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("PaymentTransaction");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserClaim", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithMany("UserClaims")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserLogin", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithMany("UserLogins")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserRole", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Role", "Role")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithMany("UserRoles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Role");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserSession", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithMany("UserSessions")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserToken", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithMany("UserTokens")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.UserVerification", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.User", "User")
-                        .WithOne()
-                        .HasForeignKey("NET_CarRentalSystem.Domain.Entities.UserVerification", "UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Vehicle", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Fuel", "Fuel")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("FuelId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Transmission", "Transmission")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("TransmissionId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.VehicleCategory", "VehicleCategory")
-                        .WithMany("Vehicles")
-                        .HasForeignKey("VehicleCategoryId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.Navigation("Fuel");
-
-                    b.Navigation("Transmission");
-
-                    b.Navigation("VehicleCategory");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleAttribute", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("VehicleAttributes")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleImage", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("VehicleImages")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleModel", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Location", "Location")
-                        .WithMany("VehicleModels")
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.SetNull);
-
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Vehicle", "Vehicle")
-                        .WithMany("VehicleModels")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Location");
-
-                    b.Navigation("Vehicle");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleReturnImage", b =>
-                {
-                    b.HasOne("NET_CarRentalSystem.Domain.Entities.Booking", "Booking")
-                        .WithMany("VehicleReturnImages")
-                        .HasForeignKey("BookingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Booking");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Booking", b =>
-                {
-                    b.Navigation("BookingImages");
-
-                    b.Navigation("BookingInsurances");
-
-                    b.Navigation("Transactions");
-
-                    b.Navigation("VehicleReturnImages");
-
-                    b.Navigation("Violations");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Customer", b =>
-                {
-                    b.Navigation("Bookings");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Fuel", b =>
-                {
-                    b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.InsurancePackage", b =>
-                {
-                    b.Navigation("BookingInsurances");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Location", b =>
-                {
-                    b.Navigation("VehicleModels");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.PaymentTransaction", b =>
-                {
-                    b.Navigation("ProcessingLogs");
-
-                    b.Navigation("ViolationPayment");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Role", b =>
-                {
-                    b.Navigation("RoleClaims");
-
-                    b.Navigation("UserRoles");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Transmission", b =>
-                {
-                    b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.User", b =>
-                {
-                    b.Navigation("Customer");
-
-                    b.Navigation("UserClaims");
-
-                    b.Navigation("UserLogins");
-
-                    b.Navigation("UserRoles");
-
-                    b.Navigation("UserSessions");
-
-                    b.Navigation("UserTokens");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.Vehicle", b =>
-                {
-                    b.Navigation("Bookings");
-
-                    b.Navigation("VehicleAttributes");
-
-                    b.Navigation("VehicleImages");
-
-                    b.Navigation("VehicleModels");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleCategory", b =>
-                {
-                    b.Navigation("Vehicles");
-                });
-
-            modelBuilder.Entity("NET_CarRentalSystem.Domain.Entities.VehicleModel", b =>
-                {
-                    b.Navigation("Bookings");
                 });
 #pragma warning restore 612, 618
         }

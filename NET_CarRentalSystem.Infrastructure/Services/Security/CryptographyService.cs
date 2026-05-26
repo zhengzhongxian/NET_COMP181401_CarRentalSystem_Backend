@@ -95,4 +95,12 @@ public class CryptographyService(IOptions<RsaSettings> rsaSettings, IOptions<Aes
             return encryptedValue;
         }
     }
+    
+    public string ComputeHmac(string data, string key)
+    {
+        var keyBytes = Encoding.UTF8.GetBytes(key);
+        var dataBytes = Encoding.UTF8.GetBytes(data);
+        var hmac = HMACSHA256.HashData(keyBytes, dataBytes);
+        return Convert.ToHexString(hmac).ToLowerInvariant()[..16];
+    }
 }

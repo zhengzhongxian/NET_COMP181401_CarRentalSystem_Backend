@@ -84,6 +84,7 @@ public static class ServiceRegistration
         
         services.Configure<CheckToolAliveSettings>(configuration.GetSection(CheckToolAliveSettings.SectionName));
         services.Configure<FileValidationSettings>(configuration.GetSection(FileValidationSettings.SectionName));
+        services.Configure<ImpersonationSettings>(configuration.GetSection(ImpersonationSettings.SectionName));
         #endregion
 
         #region Audit & HttpContext

@@ -1,10 +1,11 @@
+using System.Net;
+using System.Net.Http;
 using System.Text.Json.Nodes;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NET_CarRentalSystem.Application.Interfaces.Http;
 using NET_CarRentalSystem.Shared.Pagination;
-using NET_CarRentalSystem.Shared.Utilities;
 
 namespace NET_CarRentalSystem.Application.Features.Audit.Queries;
 
@@ -52,7 +53,9 @@ public class GetAuditLogsQueryHandler(
                 query = queryFilter
             };
 
-            var parsed = await apiClient.PostAsync<object, JsonNode>(elasticUrl, queryObj, null, cancellationToken);
+            // Dùng PostStringAsync để nhận raw string, tránh lỗi JsonHelper.FromJson<JsonNode>
+            var responseString = await apiClient.PostStringAsync(elasticUrl, queryObj, null, cancellationToken);
+            var parsed = JsonNode.Parse(responseString);
             
             if (parsed == null)
             {
@@ -72,25 +75,41 @@ public class GetAuditLogsQueryHandler(
                     var source = hit["_source"];
                     if (source == null) continue;
 
+                    // Debug: log cấu trúc document ES đầu tiên
+                    if (logs.Count == 0)
+                    {
+                        logger.LogInformation("ES first hit _source keys: {Keys}", source.ToJsonString());
+                    }
+
+                    // Serilog ES sink lưu properties ở nhiều path tùy version:
+                    // - source["fields"]["Action"] (ESv7 default)
+                    // - source["Properties"]["Action"]
+                    // - source["Action"] (flattened)
+                    var props = source["fields"] ?? source["Properties"] ?? source["properties"];
+
                     var log = new AuditLogDto
                     {
                         Timestamp = source["@timestamp"]?.ToString() ?? source["Timestamp"]?.ToString(),
-                        Message = source["Message"]?.ToString(),
-                        Action = source["Properties"]?["Action"]?.ToString() ?? source["Action"]?.ToString(),
-                        EntityName = source["Properties"]?["EntityName"]?.ToString() ?? source["EntityName"]?.ToString(),
-                        EntityId = source["Properties"]?["EntityId"]?.ToString() ?? source["EntityId"]?.ToString(),
-                        UserId = source["Properties"]?["UserId"]?.ToString() ?? source["UserId"]?.ToString(),
-                        IpAddress = source["Properties"]?["IpAddress"]?.ToString() ?? source["IpAddress"]?.ToString(),
-                        RequestPath = source["Properties"]?["RequestPath"]?.ToString() ?? source["RequestPath"]?.ToString(),
-                        ChangedProperties = source["Properties"]?["ChangedProperties"]?.ToString() ?? source["ChangedProperties"]?.ToString(),
-                        OldValues = source["Properties"]?["OldValues"]?.ToString() ?? source["OldValues"]?.ToString(),
-                        NewValues = source["Properties"]?["NewValues"]?.ToString() ?? source["NewValues"]?.ToString(),
+                        Message = source["message"]?.ToString() ?? source["Message"]?.ToString() ?? source["@m"]?.ToString(),
+                        Action = props?["Action"]?.ToString() ?? source["Action"]?.ToString(),
+                        EntityName = props?["EntityName"]?.ToString() ?? source["EntityName"]?.ToString(),
+                        EntityId = props?["EntityId"]?.ToString() ?? source["EntityId"]?.ToString(),
+                        UserId = props?["UserId"]?.ToString() ?? source["UserId"]?.ToString(),
+                        IpAddress = props?["IpAddress"]?.ToString() ?? source["IpAddress"]?.ToString(),
+                        RequestPath = props?["RequestPath"]?.ToString() ?? source["RequestPath"]?.ToString(),
+                        ChangedProperties = props?["ChangedProperties"]?.ToString() ?? source["ChangedProperties"]?.ToString(),
+                        OldValues = props?["OldValues"]?.ToString() ?? source["OldValues"]?.ToString(),
+                        NewValues = props?["NewValues"]?.ToString() ?? source["NewValues"]?.ToString(),
                     };
                     logs.Add(log);
                 }
             }
 
             return new PagedList<AuditLogDto>(logs, hitsTotal, request.PageNumber, request.PageSize);
+        }
+        catch (HttpRequestException httpEx) when (httpEx.StatusCode == HttpStatusCode.NotFound)
+        {
+            return new PagedList<AuditLogDto>([], 0, request.PageNumber, request.PageSize);
         }
         catch (Exception ex)
         {

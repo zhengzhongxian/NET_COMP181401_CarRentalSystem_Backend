@@ -15,5 +15,7 @@ public interface ICryptographyService
     string DecryptAes(string cipherText);
     
     string? SafeDecryptAes(string? encryptedValue);
+    
+    string ComputeHmac(string data, string key);
 }
 

@@ -49,4 +49,24 @@ public static class CacheKeyHelper
     {
         return $"lock:payment:transaction:{transactionCode}";
     }
+    
+    public static string GetImpersonationSessionKey(string tokenRaw)
+    {
+        return $"impersonation:{tokenRaw}";
+    }
+
+    public static string GetDevCodeByUserKey(Guid devUserId)
+    {
+        return $"devcode:by_user:{devUserId}";
+    }
+
+    public static string GetDevCodeByCodeKey(string code)
+    {
+        return $"devcode:by_code:{code}";
+    }
+
+    public static string GetAdminActiveImpersonationKey(Guid adminUserId)
+    {
+        return $"admin_active_impersonation:{adminUserId}";
+    }
 }

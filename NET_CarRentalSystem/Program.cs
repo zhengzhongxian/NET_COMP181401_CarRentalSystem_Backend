@@ -23,6 +23,7 @@ var app = builder.Build();
 app.InitializeQueryExecutor();
 
 _ = app.ApplyMigrationsAsync();
+_ = app.ApplyElasticsearchIlmPolicyAsync();
 
 app.UseStaticFiles();
 app.UseSwagger();
@@ -37,6 +38,7 @@ app.UseSerilogRequestLogging();
 app.UseCors(AppConstants.CorsPolicy.DefaultCorsPolicy);
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseMiddleware<UserEnrichmentMiddleware>();
 app.UseRateLimitingMiddleware();
 
 app.MapControllers();

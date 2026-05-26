@@ -19,8 +19,13 @@ public class TokenService(IOptions<JwtSettings> jwtSettings, IUnitOfWork unitOfW
     private readonly JwtSettings _jwtSettings = jwtSettings.Value;
 
     public async Task<TokenResponse> GenerateTokensAsync(User user, CancellationToken cancellationToken = default)
+        => await GenerateTokensAsync(user, [], cancellationToken);
+
+    public async Task<TokenResponse> GenerateTokensAsync(User user, List<Claim> additionalClaims, CancellationToken cancellationToken = default)
     {
         var claims = await GetClaimsAsync(user, cancellationToken);
+        claims.AddRange(additionalClaims);
+
         var accessTokenExpiry = DateTime.UtcNow.AddMinutes(_jwtSettings.AccessTokenDurationInMinutes);
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Key));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
